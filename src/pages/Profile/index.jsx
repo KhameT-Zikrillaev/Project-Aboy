@@ -26,7 +26,7 @@ export default function Home() {
   if (location.pathname === "/Admin") {
     userRole = "Administrator";
     cards = AdminCards;
-  } else if (location.pathname === "/sklad") {
+  } else if (location.pathname === "/warehouse") {
     userRole = "Skladchik";
     cards = SkladCards;
   } else {

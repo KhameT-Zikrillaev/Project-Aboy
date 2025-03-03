@@ -14,7 +14,7 @@ export const AdminCards = [
     icon: React.createElement(FaCog, { className: "text-4xl text-white mb-4" }),
     title: "Admin panel",
     description: "Tizimni boshqarish",
-    link: "/admin-panel/statistics",
+    link: "/admin/admin-panel/statistics",
   },
   {
     icon: React.createElement(FaListAlt, {
