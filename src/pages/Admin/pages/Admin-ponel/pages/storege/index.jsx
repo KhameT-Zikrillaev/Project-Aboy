@@ -1,24 +1,42 @@
 import React, { useState } from "react";
-import { Table, Button, Space, Popconfirm, Pagination } from "antd";
+import { Table, Button, Space, Popconfirm, Pagination, Tag } from "antd";
 import { EditOutlined, DeleteOutlined, LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { Input } from "antd";
 import ModalComponent from "@/components/modal/Modal";
 import AddStorage from "./components/AddStorage";
 import EditStorage from "./components/EditStorage";
 import useFetch from "@/hooks/useFetch";
+import useApiMutation from "@/hooks/useApiMutation";
 
 const { Search } = Input;
-
-
 
 const Statistics = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [storageSingleData, setStorageSingleData] = useState(null);
   const [formType, setFormType] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const [searchQuery, setSearchQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const limit = 10;
 
-  const { data, isLoading, error, refetch } = useFetch('warehouse', 'warehouse');
+  const { data, isLoading, refetch } = useFetch('warehouse', 'warehouse', { limit, page, name: searchQuery });
+  
+  const { mutate: deleteWarehouse} = useApiMutation({
+    url: 'warehouse', // Asosiy API endpoint
+    method: 'DELETE',
+    onSuccess: () => {
+      console.log('Mahsulot muvaffaqiyatli o‘chirildi');
+      refetch();
+    },
+    onError: (error) => {
+      console.error('Xatolik yuz berdi:', error.message);
+    },
+  });
+
+  const handleDelete = (id) => {
+    deleteWarehouse({ id });
+  };
+
+  
 
   const showModal = (type) => {
     setFormType(type);
@@ -35,7 +53,12 @@ const Statistics = () => {
     showModal("edit");
   };
 
-  const onSearch = (value) => console.log(value);
+  const handlePageChange = (page) => {
+    setPage(page);
+    refetch();
+  };
+
+  const onSearch = (value) => setSearchQuery(value);
 
   const itemRender = (page, type, originalElement) => {
     if (type === "prev") {
@@ -72,7 +95,7 @@ const Statistics = () => {
       title: "№",
       dataIndex: "key",
       key: "key",
-      render: (text) => <span className="text-gray-100 font-semibold">{text}</span>,
+      render: (_, __, index) => <span className="text-gray-100 font-semibold">{(page - 1) * limit + index + 1}</span>,
       width: 70,
     },
     {
@@ -85,7 +108,7 @@ const Statistics = () => {
       title: "Ruxsat berilgan",
       dataIndex: "isTrusted",
       key: "isTrusted",
-      render: (text) => <span className="text-gray-100 font-semibold">{text}</span>,
+      render: (text) => <span className="text-gray-100 font-semibold">{text  ? <Tag color="green">Ruxsat berilgan</Tag> : <Tag color="red">Ruxsat berilmagan</Tag>}</span>,
     },
     {
       title: "Actions",
@@ -100,7 +123,7 @@ const Statistics = () => {
           />
           <Popconfirm
             title="O‘chirishni tasdiqlaysizmi?"
-            onConfirm={() => console.log("Deleted", record?.id)}
+            onConfirm={() => handleDelete(record?.id)}
             okText="Ha"
             cancelText="Yo‘q"
           >
@@ -147,10 +170,10 @@ const Statistics = () => {
         <div className="flex justify-center mt-5">
           <Pagination
             className="custom-pagination"
-            current={currentPage}
+            current={page}
             total={data?.data?.total}
-            pageSize={pageSize}
-            onChange={(page) => setCurrentPage(page)}
+            pageSize={limit}
+            onChange={handlePageChange}
             itemRender={itemRender}
           />
         </div>
@@ -160,7 +183,7 @@ const Statistics = () => {
         onClose={onClose}
         title={formType === "add" ? "Ombor qo'shish" : "Omborni tahrirlash"}
       >
-        {formType === "add" ? <AddStorage onClose={onClose} refetch={refetch} /> : <EditStorage onClose={onClose} storageSingleData={storageSingleData} />}
+        {formType === "add" ? <AddStorage onClose={onClose} refetch={refetch} /> : <EditStorage onClose={onClose} refetch={refetch} storageSingleData={storageSingleData} />}
       </ModalComponent>
     </div>
   );

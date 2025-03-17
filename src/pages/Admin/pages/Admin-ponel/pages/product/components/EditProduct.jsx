@@ -1,21 +1,36 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { Input, Button, Form, message } from "antd";
+import { Input, Button, Form, Upload } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+import useApiMutation from "@/hooks/useApiMutation";
 
 const { TextArea } = Input;
 
-const EditProduct = ({ onClose, productSingleData }) => {
+const EditProduct = ({ onClose, productSingleData, refetch }) => {
   const {
     handleSubmit,
     control,
     formState: { errors },
+    setValue,
     reset,
+    watch,
   } = useForm();
+  const imageFile = watch("image");
+  const [previewImage, setPreviewImage] = useState(null);
 
   // storageSingleData bor bo‘lsa, formani shu ma’lumotlar bilan to‘ldiramiz
+  console.log(productSingleData);
+  
   useEffect(() => {
     if (productSingleData) {
-      reset(productSingleData);
+      reset({
+        article: productSingleData.article,
+        name: productSingleData.name,
+        batch_number: productSingleData.batch_number,
+        quantity: productSingleData.quantity,
+        price: productSingleData.price,
+        image: productSingleData.image_url,
+      });
     }
   }, [productSingleData, reset]);
 
@@ -24,6 +39,21 @@ const EditProduct = ({ onClose, productSingleData }) => {
     message.success("Mahsulot muvaffaqiyatli yangilandi!");
     reset(); // Formani tozalash
     onClose();
+  };
+
+  const beforeUpload = (file) => {
+    const isImage = file.type.startsWith("image/");
+    if (!isImage) {
+      message.error("Faqat rasm yuklash mumkin!");
+      return false;
+    }
+
+    setValue("image", file); // Rasmni react-hook-form state ga saqlash
+    const reader = new FileReader();
+    reader.onload = () => setPreviewImage(reader.result);
+    reader.readAsDataURL(file);
+
+    return false; // Ant Design uploadni avtomatik yuborishining oldini olish
   };
 
   return (
@@ -51,11 +81,11 @@ const EditProduct = ({ onClose, productSingleData }) => {
 
         <Form.Item
           label={<span className="text-gray-100 font-semibold">Partiya</span>}
-          validateStatus={errors.batch ? "error" : ""}
-          help={errors.batch?.message}
+          validateStatus={errors.batch_number ? "error" : ""}
+          help={errors.batch_number?.message}
         >
           <Controller
-            name="batch"
+            name="batch_number"
             control={control}
             rules={{ required: "Partiya majburiy" }}
             render={({ field }) => (
@@ -71,11 +101,11 @@ const EditProduct = ({ onClose, productSingleData }) => {
           label={
             <span className="text-gray-100 font-semibold">Rulon soni</span>
           }
-          validateStatus={errors.roll_count ? "error" : ""}
-          help={errors.roll_count?.message}
+          validateStatus={errors.quantity ? "error" : ""}
+          help={errors.quantity?.message}
         >
           <Controller
-            name="roll_count"
+            name="quantity"
             control={control}
             rules={{ required: "Rulon soni majburiy" }}
             render={({ field }) => (
@@ -104,6 +134,47 @@ const EditProduct = ({ onClose, productSingleData }) => {
                 className="custom-input"
                 {...field}
               />
+            )}
+          />
+        </Form.Item>
+        <Form.Item
+          label={
+            <span className="text-gray-100 font-semibold">Rasm yuklash</span>
+          }
+          validateStatus={errors.image ? "error" : ""}
+          help={errors.image?.message}
+        >
+          <Controller
+            name="image"
+            control={control}
+            rules={{ required: "Rasm yuklash majburiy" }}
+            render={({ field }) => (
+              <Upload
+                listType="picture-card"
+                className="avatar-uploader"
+                showUploadList={false}
+                beforeUpload={(file) => {
+                  beforeUpload(file);
+                  return false;
+                }}
+              >
+                {imageFile ? (
+                  <img
+                    src={previewImage}
+                    alt="avatar"
+                    style={{ width: "100%" }}
+                  />
+                ) : (
+                  <div className="upload-text">
+                    <PlusOutlined style={{ color: "#fff", fontSize: "24px" }} />
+                    <div
+                      style={{ marginTop: 8, color: "#fff", fontWeight: "500" }}
+                    >
+                      Rasm yuklash
+                    </div>
+                  </div>
+                )}
+              </Upload>
             )}
           />
         </Form.Item>

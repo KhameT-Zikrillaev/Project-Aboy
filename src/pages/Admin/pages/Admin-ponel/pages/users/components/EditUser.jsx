@@ -1,27 +1,50 @@
 import React, { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { Input, Button, Form, message, Switch  } from "antd";
+import { Input, Button, Form, Select} from "antd";
+import useFetch from "@/hooks/useFetch";
+import useApiMutation from "@/hooks/useApiMutation";
 
-const EditUser = ({ onClose, storageSingleData }) => {
+const { Option } = Select;
+
+const EditUser = ({ onClose, storageSingleData,refetch }) => {
   const {
     handleSubmit,
     control,
     formState: { errors },
     reset,
+    watch
   } = useForm();
+
+  const { data: warehouses } = useFetch('warehouse', 'warehouse');
+    const { data: shops } = useFetch('shop', 'shop');
 
   // storageSingleData bor bo‘lsa, formani shu ma’lumotlar bilan to‘ldiramiz
   useEffect(() => {
     if (storageSingleData) {
-      reset(storageSingleData);
+      reset({
+        name: storageSingleData.name,
+        warehouse_id: storageSingleData.warehouse_id,
+        shop_id: storageSingleData.shop_id,
+        phone: storageSingleData.phone,
+        password: "",
+      });
     }
   }, [storageSingleData, reset]);
+  const { mutate, isLoading } = useApiMutation({
+    url: `users/${storageSingleData?.id}`,
+    method: "PUT",
+    onSuccess: () => {
+      onClose();
+      refetch();
+      reset()
+    },
+    onError: (error) => {
+      console.error("Xatolik yuz berdi:", error.message);
+    },
+  });
 
   const onSubmit = (data) => {
-    console.log("Forma ma'lumotlari:", data);
-    message.success("Ombor 2 muvaffaqiyatli yangilandi!");
-    reset(); // Formani tozalash
-    onClose();
+    mutate(data);
   };
 
   return (
@@ -29,48 +52,147 @@ const EditUser = ({ onClose, storageSingleData }) => {
       <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
         {/* Ombor nomi */}
         <Form.Item
-          label={<span className="text-gray-100 font-semibold">Ombor 2 nomi</span>}
+          label={
+            <span className="text-gray-100 font-semibold">
+              Foydalanuvchi nomi
+            </span>
+          }
           validateStatus={errors.name ? "error" : ""}
           help={errors.name?.message}
         >
           <Controller
             name="name"
             control={control}
-            rules={{ required: "Ombor 2 nomi majburiy" }}
+            rules={{ required: "Foydalanuvchi nomi majburiy" }}
             render={({ field }) => (
-              <Input placeholder="Ombor 2 nomini kiriting" className="custom-input" {...field} />
+              <Input
+                placeholder="Foydalanuvchi nomini kiriting"
+                className="custom-input"
+                {...field}
+              />
             )}
           />
         </Form.Item>
 
-        {/* Telefon raqami */}
-        <Form.Item
-          label={<span className="text-gray-100 font-semibold">Telefon raqami</span>}
-          validateStatus={errors.phone_number ? "error" : ""}
-          help={errors.phone_number?.message}
+        {/* <Form.Item
+          label={
+            <span className="text-gray-100 font-semibold">
+              Foydalanuvchi roli
+            </span>
+          }
+          validateStatus={errors.role ? "error" : ""}
+          help={errors.role?.message}
         >
           <Controller
-            name="phone_number"
+            name="role"
+            control={control}
+            rules={{ required: "Foydalanuvchi roli" }}
+            render={({ field }) => (
+              <Select
+                {...field}
+                placeholder="Foydalanuvchi roli"
+                className="custom-select"
+                onChange={(value) => field.onChange(value)}
+                dropdownClassName="custom-dropdown"
+              >
+                <Option value="staff">Omborchi</Option>
+                <Option value="seller">Sotuvchi</Option>
+                <Option value="user">Sotuvchi 2</Option>
+              </Select>
+            )}
+          />
+        </Form.Item> */}
+
+        
+        {storageSingleData?.role === 'staff' && (
+          <Form.Item
+          label={
+            <span className="text-gray-100 font-semibold">
+              Ombor nomi
+            </span>
+          }
+          validateStatus={errors.warehouse_id ? "error" : ""}
+          help={errors.warehouse_id?.message}
+        >
+          <Controller
+            name="warehouse_id"
+            control={control}
+            rules={{ required: "Ombor majburiy" }}
+            render={({ field }) => (
+              <Select
+                {...field}
+                placeholder="Omborni tanlang"
+                className="custom-select"
+                onChange={(value) => field.onChange(value)}
+                dropdownClassName="custom-dropdown"
+              >
+
+                {
+                  warehouses?.data?.warehouses?.map((warehouse) => (
+                    <Option key={warehouse?.id} value={warehouse?.id}>
+                      {warehouse?.name}
+                    </Option>
+                  ))
+                }
+              </Select>
+            )}
+          />
+        </Form.Item>
+        )}
+
+        {(storageSingleData?.role === 'seller' || storageSingleData?.role === 'user') && (
+          <Form.Item
+          label={
+            <span className="text-gray-100 font-semibold">
+              Magazin nomi
+            </span>
+          }
+          validateStatus={errors.shop_id ? "error" : ""}
+          help={errors.shop_id?.message}
+        >
+          <Controller
+            name="shop_id"
+            control={control}
+            rules={{ required: "Magazin majburiy" }}
+            render={({ field }) => (
+              <Select
+                {...field}
+                placeholder="Magazinni tanlang"
+                className="custom-select"
+                onChange={(value) => field.onChange(value)}
+                dropdownClassName="custom-dropdown"
+              >
+                {
+                  shops?.data?.shops?.map((shop) => (
+                    <Option key={shop?.id} value={shop?.id}>
+                      {shop?.name}
+                    </Option>
+                  ))
+                }
+              </Select>
+            )}
+          />
+        </Form.Item>
+        )}
+
+        {/* Telfon nomer */}
+        <Form.Item
+          label={
+            <span className="text-gray-100 font-semibold">Telefon raqami</span>
+          }
+          validateStatus={errors.phone ? "error" : ""}
+          help={errors.phone?.message}
+        >
+          <Controller
+            name="phone"
             control={control}
             rules={{ required: "Telefon raqami majburiy" }}
             render={({ field }) => (
-              <Input placeholder="Telefon raqamini kiriting" className="custom-input" {...field} />
-            )}
-          />
-        </Form.Item>
-
-        {/* Login */}
-        <Form.Item
-          label={<span className="text-gray-100 font-semibold">Login</span>}
-          validateStatus={errors.login ? "error" : ""}
-          help={errors.login?.message}
-        >
-          <Controller
-            name="login"
-            control={control}
-            rules={{ required: "Login majburiy" }}
-            render={({ field }) => (
-              <Input placeholder="Login kiriting" className="custom-input" {...field} />
+              <Input
+                placeholder="Telefon raqamini kiriting"
+                className="custom-input"
+                {...field}
+              />
             )}
           />
         </Form.Item>
@@ -86,28 +208,20 @@ const EditUser = ({ onClose, storageSingleData }) => {
             control={control}
             rules={{ required: "Parol majburiy" }}
             render={({ field }) => (
-              <Input placeholder="Parolni kiriting" type="text" className="custom-input" {...field} />
-            )}
-          />
-        </Form.Item>
-        <Form.Item label={<span className="text-gray-100 font-semibold">Ruxsat berish</span>}>
-          <Controller
-            name="isAllowed"
-            control={control}
-            render={({ field }) => (
-              <Switch
-                checked={field.value}
-                onChange={field.onChange}
+              <Input
+                placeholder="Parolni kiriting"
+                className="custom-input"
+                {...field}
               />
             )}
           />
         </Form.Item>
-
         {/* Yuborish tugmasi */}
         <Form.Item>
           <Button
             type="primary"
             htmlType="submit"
+            loading={isLoading}
             style={{
               backgroundColor: "#364153",
               color: "#f3f4f6",

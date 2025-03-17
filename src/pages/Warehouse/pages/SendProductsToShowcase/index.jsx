@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import SearchForm from "@/components/SearchForm/SearchForm";
 
 const products = [
   { id: 1, name: "Chilanzar", description: "Описание Chilanzar" },
@@ -11,11 +12,16 @@ const products = [
 ];
 
 export default function WarehouseProducts() {
+  const [visibleDistricts, setVisibleDistricts] = useState(12);
+  const [filteredData, setFilteredData] = useState(products);
+  const loadMoreDistricts = () => {
+    setVisibleDistricts((prevVisibleDistricts) => prevVisibleDistricts + 12);
+  };
   return (
     <div className="DirectorProduct mt-[150px] p-4">
-      <h3 className="text-white mb-4">Список Магазинов</h3>
+       <SearchForm data={products} name="" title="Sotuvchilar" showDatePicker={false} onSearch={setFilteredData} />
       <div className="grid grid-cols-2 gap-4">
-        {products.map((product) => (
+        {filteredData.slice(0, visibleDistricts).map((product) => (
           <Link
             key={product.id}
             to={`/warehouse/send-to-showcase/${product.name}`}
@@ -26,6 +32,16 @@ export default function WarehouseProducts() {
           </Link>
         ))}
       </div>
+      {visibleDistricts < filteredData.length && (
+        <div className="flex justify-center mt-4">
+          <button
+            onClick={loadMoreDistricts}
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+          >
+            Yana
+          </button>
+        </div>
+      )}
     </div>
   );
 }

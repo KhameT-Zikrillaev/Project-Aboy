@@ -1,20 +1,39 @@
 import React from "react";
 import { useForm, Controller } from "react-hook-form";
-import { Input, Button, Form, message, Switch } from "antd";
+import { Input, Button, Form, Select } from "antd";
+import useFetch from "@/hooks/useFetch";
+import useApiMutation from "@/hooks/useApiMutation";
 
-const AddUser = ({ onClose }) => {
+const { Option } = Select;
+
+const AddUser = ({ onClose, refetch }) => {
   const {
     handleSubmit,
     control,
     formState: { errors },
     reset,
+    watch
   } = useForm();
 
+  const { data: warehouses } = useFetch('warehouse', 'warehouse');
+  const { data: shops } = useFetch('shop', 'shop');
+
+  const { mutate, isLoading } = useApiMutation({
+        url: "users",
+        method: "POST",
+        onSuccess: () => {
+          reset(); // Formani tozalash
+          onClose();
+          refetch();
+        },
+        onError: (error) => {
+          console.error("Error creating user:", error);
+          alert("Xatolik yuz berdi!");
+        },
+      });
+
   const onSubmit = (data) => {
-    console.log("Forma ma'lumotlari:", data);
-    message.success("Ombor 2 muvaffaqiyatli qo‘shildi!");
-    reset(); // Formani tozalash
-    onClose();
+    mutate(data);
   };
 
   return (
@@ -22,48 +41,147 @@ const AddUser = ({ onClose }) => {
       <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
         {/* Ombor nomi */}
         <Form.Item
-          label={<span className="text-gray-100 font-semibold">Ombor 2 nomi</span>}
+          label={
+            <span className="text-gray-100 font-semibold">
+              Foydalanuvchi nomi
+            </span>
+          }
           validateStatus={errors.name ? "error" : ""}
           help={errors.name?.message}
         >
           <Controller
             name="name"
             control={control}
-            rules={{ required: "Ombor 2 nomi majburiy" }}
+            rules={{ required: "Foydalanuvchi nomi majburiy" }}
             render={({ field }) => (
-              <Input placeholder="Ombor 2 nomini kiriting" className="custom-input" {...field} />
+              <Input
+                placeholder="Foydalanuvchi nomini kiriting"
+                className="custom-input"
+                {...field}
+              />
             )}
           />
         </Form.Item>
+
+        <Form.Item
+          label={
+            <span className="text-gray-100 font-semibold">
+              Foydalanuvchi roli
+            </span>
+          }
+          validateStatus={errors.role ? "error" : ""}
+          help={errors.role?.message}
+        >
+          <Controller
+            name="role"
+            control={control}
+            rules={{ required: "Foydalanuvchi roli" }}
+            render={({ field }) => (
+              <Select
+                {...field}
+                placeholder="Foydalanuvchi roli"
+                className="custom-select"
+                onChange={(value) => field.onChange(value)}
+                dropdownClassName="custom-dropdown"
+              >
+                <Option value="staff">Omborchi</Option>
+                <Option value="seller">Sotuvchi</Option>
+                <Option value="user">Sotuvchi 2</Option>
+              </Select>
+            )}
+          />
+        </Form.Item>
+
+        
+        {watch('role') === 'staff' && (
+          <Form.Item
+          label={
+            <span className="text-gray-100 font-semibold">
+              Ombor nomi
+            </span>
+          }
+          validateStatus={errors.warehouse_id ? "error" : ""}
+          help={errors.warehouse_id?.message}
+        >
+          <Controller
+            name="warehouse_id"
+            control={control}
+            rules={{ required: "Ombor majburiy" }}
+            render={({ field }) => (
+              <Select
+                {...field}
+                placeholder="Omborni tanlang"
+                className="custom-select"
+                onChange={(value) => field.onChange(value)}
+                dropdownClassName="custom-dropdown"
+              >
+
+                {
+                  warehouses?.data?.warehouses?.map((warehouse) => (
+                    <Option key={warehouse?.id} value={warehouse?.id}>
+                      {warehouse?.name}
+                    </Option>
+                  ))
+                }
+              </Select>
+            )}
+          />
+        </Form.Item>
+        )}
+
+        {(watch('role') === 'seller' || watch('role') === 'user') && (
+          <Form.Item
+          label={
+            <span className="text-gray-100 font-semibold">
+              Magazin nomi
+            </span>
+          }
+          validateStatus={errors.shop_id ? "error" : ""}
+          help={errors.shop_id?.message}
+        >
+          <Controller
+            name="shop_id"
+            control={control}
+            rules={{ required: "Magazin majburiy" }}
+            render={({ field }) => (
+              <Select
+                {...field}
+                placeholder="Magazinni tanlang"
+                className="custom-select"
+                onChange={(value) => field.onChange(value)}
+                dropdownClassName="custom-dropdown"
+              >
+                {
+                  shops?.data?.shops?.map((shop) => (
+                    <Option key={shop?.id} value={shop?.id}>
+                      {shop?.name}
+                    </Option>
+                  ))
+                }
+              </Select>
+            )}
+          />
+        </Form.Item>
+        )}
 
         {/* Telfon nomer */}
         <Form.Item
-          label={<span className="text-gray-100 font-semibold">Telefon raqami</span>}
-          validateStatus={errors.phone_number ? "error" : ""}
-          help={errors.phone_number?.message}
+          label={
+            <span className="text-gray-100 font-semibold">Telefon raqami</span>
+          }
+          validateStatus={errors.phone ? "error" : ""}
+          help={errors.phone?.message}
         >
           <Controller
-            name="phone_number"
+            name="phone"
             control={control}
             rules={{ required: "Telefon raqami majburiy" }}
             render={({ field }) => (
-              <Input placeholder="Telefon raqamini kiriting" className="custom-input" {...field} />
-            )}
-          />
-        </Form.Item>
-
-        {/* Login */}
-        <Form.Item
-          label={<span className="text-gray-100 font-semibold">Login</span>}
-          validateStatus={errors.login ? "error" : ""}
-          help={errors.login?.message}
-        >
-          <Controller
-            name="login"
-            control={control}
-            rules={{ required: "Login majburiy" }}
-            render={({ field }) => (
-              <Input placeholder="Login kiriting" className="custom-input" {...field} />
+              <Input
+                placeholder="Telefon raqamini kiriting"
+                className="custom-input"
+                {...field}
+              />
             )}
           />
         </Form.Item>
@@ -79,20 +197,10 @@ const AddUser = ({ onClose }) => {
             control={control}
             rules={{ required: "Parol majburiy" }}
             render={({ field }) => (
-              <Input placeholder="Parolni kiriting" className="custom-input" {...field} />
-            )}
-          />
-        </Form.Item>
-
-        {/* Ruxsat berish Switch */}
-        <Form.Item label={<span className="text-gray-100 font-semibold">Ruxsat berish</span>}>
-          <Controller
-            name="isAllowed"
-            control={control}
-            render={({ field }) => (
-              <Switch
-                checked={field.value}
-                onChange={field.onChange}
+              <Input
+                placeholder="Parolni kiriting"
+                className="custom-input"
+                {...field}
               />
             )}
           />
@@ -103,6 +211,7 @@ const AddUser = ({ onClose }) => {
           <Button
             type="primary"
             htmlType="submit"
+            loading={isLoading}
             style={{
               backgroundColor: "#364153",
               color: "#f3f4f6",

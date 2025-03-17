@@ -1,20 +1,50 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { Input, Button, Form, message } from "antd";
+import { Input, Button, Form, Upload } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+import useApiMutation from "@/hooks/useApiMutation";
 
-const AddProduct = ({onClose}) => {
+const AddProduct = ({ onClose, refetch }) => {
   const {
     handleSubmit,
     control,
     formState: { errors },
+    setValue,
     reset,
+    watch,
   } = useForm();
+  const imageFile = watch("image");
+  const [previewImage, setPreviewImage] = useState(null);
+
+  const { mutate, isLoading } = useApiMutation({
+    url: 'product',
+    method: 'POST', 
+    isFormData: true, 
+    onSuccess: (data) => {
+      reset(); // Formani tozalash
+      onClose();
+      refetch();
+    },
+    onError: (error) => console.error('Xatolik:', error),
+  });
 
   const onSubmit = (data) => {
-    console.log("Forma ma'lumotlari:", data);
-    message.success("Ombor muvaffaqiyatli qo‘shildi!");
-    reset(); // Formani tozalash
-    onClose();
+    mutate(data)
+  };
+
+  const beforeUpload = (file) => {
+    const isImage = file.type.startsWith("image/");
+    if (!isImage) {
+      message.error("Faqat rasm yuklash mumkin!");
+      return false;
+    }
+
+    setValue("image", file); // Rasmni react-hook-form state ga saqlash
+    const reader = new FileReader();
+    reader.onload = () => setPreviewImage(reader.result);
+    reader.readAsDataURL(file);
+
+    return false; // Ant Design uploadni avtomatik yuborishining oldini olish
   };
 
   return (
@@ -31,36 +61,51 @@ const AddProduct = ({onClose}) => {
             control={control}
             rules={{ required: "Artikul majburiy" }}
             render={({ field }) => (
-              <Input placeholder="Artikulni kiriting" className="custom-input" {...field} />
+              <Input
+                placeholder="Artikulni kiriting"
+                className="custom-input"
+                {...field}
+              />
             )}
           />
         </Form.Item>
-        
+
         <Form.Item
           label={<span className="text-gray-100 font-semibold">Partiya</span>}
-          validateStatus={errors.batch ? "error" : ""}
-          help={errors.batch?.message}
+          validateStatus={errors.batch_number ? "error" : ""}
+          help={errors.batch_number?.message}
         >
           <Controller
-            name="batch"
+            name="batch_number"
             control={control}
             rules={{ required: "Partiya majburiy" }}
             render={({ field }) => (
-              <Input placeholder="Partiyani kiriting" className="custom-input" {...field} />
+              <Input
+                placeholder="Partiyani kiriting"
+                className="custom-input"
+                {...field}
+              />
             )}
           />
         </Form.Item>
         <Form.Item
-          label={<span className="text-gray-100 font-semibold">Rulon soni</span>}
-          validateStatus={errors.roll_count ? "error" : ""}
-          help={errors.roll_count?.message}
+          label={
+            <span className="text-gray-100 font-semibold">Rulon soni</span>
+          }
+          validateStatus={errors.quantity ? "error" : ""}
+          help={errors.quantity?.message}
         >
           <Controller
-            name="roll_count"
+            name="quantity"
             control={control}
             rules={{ required: "Rulon soni majburiy" }}
             render={({ field }) => (
-              <Input placeholder="Rulon sonini kiriting" type="number" className="custom-input" {...field} />
+              <Input
+                placeholder="Rulon sonini kiriting"
+                type="number"
+                className="custom-input"
+                {...field}
+              />
             )}
           />
         </Form.Item>
@@ -74,7 +119,54 @@ const AddProduct = ({onClose}) => {
             control={control}
             rules={{ required: "Narxi majburiy" }}
             render={({ field }) => (
-              <Input placeholder="Narxini kiriting" type="number" className="custom-input" {...field} />
+              <Input
+                placeholder="Narxini kiriting"
+                type="number"
+                className="custom-input"
+                {...field}
+              />
+            )}
+          />
+        </Form.Item>
+
+        <Form.Item
+          label={
+            <span className="text-gray-100 font-semibold">Rasm yuklash</span>
+          }
+          validateStatus={errors.image ? "error" : ""}
+          help={errors.image?.message}
+        >
+          <Controller
+            name="image"
+            control={control}
+            rules={{ required: "Rasm yuklash majburiy" }}
+            render={({ field }) => (
+              <Upload
+                listType="picture-card"
+                className="avatar-uploader"
+                showUploadList={false}
+                beforeUpload={(file) => {
+                  beforeUpload(file);
+                  return false;
+                }}
+              >
+                {imageFile ? (
+                  <img
+                    src={previewImage}
+                    alt="avatar"
+                    style={{ width: "100%" }}
+                  />
+                ) : (
+                  <div className="upload-text">
+                    <PlusOutlined style={{ color: "#fff", fontSize: "24px" }} />
+                    <div
+                      style={{ marginTop: 8, color: "#fff", fontWeight: "500" }}
+                    >
+                      Rasm yuklash
+                    </div>
+                  </div>
+                )}
+              </Upload>
             )}
           />
         </Form.Item>
@@ -84,6 +176,7 @@ const AddProduct = ({onClose}) => {
           <Button
             type="primary"
             htmlType="submit"
+            loading={isLoading}
             style={{
               backgroundColor: "#364153",
               color: "#f3f4f6",
@@ -91,7 +184,7 @@ const AddProduct = ({onClose}) => {
               padding: "15px 20px",
               borderRadius: "8px",
               fontSize: "18px",
-              width: "100%"
+              width: "100%",
             }}
           >
             Yaratish

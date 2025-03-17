@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import SearchForm from "@/components/SearchForm/SearchForm";
+import useFetch from "@/hooks/useFetch";
 
 const districts = [
   { id: 1, name: "Chilanzar", description: "Описание Chilanzar" },
@@ -36,11 +37,25 @@ export default function DirectorProduct() {
     setVisibleDistricts((prevVisibleDistricts) => prevVisibleDistricts + 12);
   };
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ZAPROS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+const { data, isLoading, refetch } = useFetch('warehouse', 'warehouse', {});
+
+useEffect(() => {
+  refetch()
+}, [])
+
+useEffect(() => {
+  setFilteredData(data?.data?.warehouses)
+}, [data])
+
+console.log(data)
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ZAPROS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   return (
     <div className="DirectorProduct pt-[150px] p-4">
       <SearchForm data={districts} name="" title="Omborlar" showDatePicker={false} onSearch={setFilteredData} />
       <div className="grid grid-cols-2 gap-4">
-        {filteredData.slice(0, visibleDistricts).map((district) => (
+        {filteredData?.slice(0, visibleDistricts).map((district) => (
           <Link
             key={district.id}
             to={`/director/product-list/${district.name}`}

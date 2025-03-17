@@ -1,10 +1,12 @@
 import React from "react";
 import { useForm, Controller } from "react-hook-form";
-import { Input, Button, Form, message, Select } from "antd";
+import { Input, Button, Form, Select } from "antd";
+import useApiMutation from "@/hooks/useApiMutation";
+import useFetch from "@/hooks/useFetch";
 
 const { Option } = Select;
 
-const AddSeller = ({ onClose }) => {
+const AddSeller = ({ onClose, refetch }) => {
   const {
     handleSubmit,
     control,
@@ -12,11 +14,24 @@ const AddSeller = ({ onClose }) => {
     reset,
   } = useForm();
 
+  const { data: warehouses } = useFetch('warehouse', 'warehouse');
+
+  const { mutate, isLoading } = useApiMutation({
+      url: "shop",
+      method: "POST",
+      onSuccess: () => {
+        reset(); // Formani tozalash
+        onClose();
+        refetch();
+      },
+      onError: (error) => {
+        console.error("Error creating user:", error);
+        alert("Xatolik yuz berdi!");
+      },
+    });
+
   const onSubmit = (data) => {
-    console.log("Forma ma'lumotlari:", data);
-    message.success("Sotuvchi muvaffaqiyatli qo‘shildi!");
-    reset(); // Formani tozalash
-    onClose();
+    mutate(data);
   };
 
   return (
@@ -56,9 +71,13 @@ const AddSeller = ({ onClose }) => {
                 onChange={(value) => field.onChange(value)}
                 dropdownClassName="custom-dropdown"
               >
-                <Option value="electronics">Elektronika</Option>
-                <Option value="clothing">Kiyim-kechak</Option>
-                <Option value="food">Oziq-ovqat</Option>
+                {
+                  warehouses?.data?.warehouses?.map((warehouse) => (
+                    <Option key={warehouse?.id} value={warehouse?.id}>
+                      {warehouse?.name}
+                    </Option>
+                  ))
+                }
               </Select>
             )}
           />
@@ -69,6 +88,7 @@ const AddSeller = ({ onClose }) => {
           <Button
             type="primary"
             htmlType="submit"
+            loading={isLoading}
             style={{
               backgroundColor: "#364153",
               color: "#f3f4f6",

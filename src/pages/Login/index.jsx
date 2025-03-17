@@ -24,11 +24,10 @@ export default function Login() {
     return () => clearTimeout(timer); // Очистка таймера при размонтировании компонента
   }, []);
 
-  const { mutate, isLoading, isSuccess, isError, error } = useApiMutation({
+  const { mutate, isLoading, error } = useApiMutation({
     url: "auth/login",
     method: "POST",
     onSuccess: async (data) => {
-      console.log(data?.accsessToken);
       if (data?.accessToken) {
         localStorage.setItem("tokenWall", data.accessToken); // Tokenni saqlaymiz
         try {
@@ -36,12 +35,13 @@ export default function Login() {
           const response = await api.get("auth/profile", {
             headers: { Authorization: `Bearer ${data.accessToken}` }
           });
-          console.log("User data:", response.data);
 
           setUser(response?.data);
 
           if(response?.data?.role === "admin"){
             navigate("/admin"); // Agar foydalanuvchi ma'lumotlari olingan bo'lsa, dashboardga yo'naltiramiz
+          }else if(response?.data?.role === "staff"){
+            navigate("/warehouse");
           }
 
           // navigate("/admin"); // Agar foydalanuvchi ma'lumotlari olingan bo'lsa, dashboardga yo'naltiramiz
@@ -54,8 +54,7 @@ export default function Login() {
       }
     },
     onError: (error) => {
-      console.error("Error creating user:", error);
-      alert("Xatolik yuz berdi!");
+      navigate("/");
     },
   });
 
@@ -72,9 +71,9 @@ export default function Login() {
     }
 
     // Здесь можно добавить логику проверки логина и пароля
-    if (username === "sklad" && password === "sklad123") {
-      navigate("/warehouse"); // Перенаправление на домашнюю страницу
-    }
+    // if (username === "sklad" && password === "sklad123") {
+    //   navigate("/warehouse"); // Перенаправление на домашнюю страницу
+    // }
     if (username === "seller" && password === "seller123") {
       navigate("/seller"); // Перенаправление на домашнюю страницу
     } 

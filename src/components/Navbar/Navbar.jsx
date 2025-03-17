@@ -2,11 +2,11 @@ import React from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom"; // Импортируем Link, useNavigate и useLocation из react-router-dom
 import { FaArrowLeft } from "react-icons/fa"; // Импортируем иконку стрелки назад
 import logo from "@/assets/images/logo.png"; // Укажите правильный путь к вашему логотипу
-
+import useUserStore from "@/store/useUser";
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
+  const { user, isLoggedIn } = useUserStore();
   const handleGoBack = () => {
     // Переход на родительский маршрут вместо истории браузера
     const pathParts = location.pathname.split('/');
@@ -50,8 +50,8 @@ const Navbar = () => {
       <div className="right-content flex items-center space-x-4">
         <div className="text-right">
           <h2 className="text-sm md:text-lg font-semibold text-white">
-            Xamidullabek <br />{" "}
-            <span className="text-blue-600">Admin</span>
+            {user?.name} <br />{" "}
+            <span className="text-blue-600">{user?.role}</span>
           </h2>
         </div>
         <Link

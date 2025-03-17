@@ -222,6 +222,41 @@ body {
   .custom-dropdown .ant-select-item-option-selected {
     background-color: #374151 !important;
   }
+
+
+
+  .custom-select-filter .ant-select-arrow svg {
+    fill: #a0aec0 !important;
+  }
+
+  .ant-select, .ant-select-open .custom-select-filter .ant-select-selector{
+    color: white !important;
+  }
+  
+  .custom-select-filter .ant-select-selector {
+    background-color: #17212b !important; /* Input fon rangi */
+    color: white !important; /* Matn oq bo‘lsin */
+    border: 1px solid #4a5568 !important; /* Chegarasi */
+    padding: 3px 10px!important; /* Input paddingi */
+    font-size: 18px;
+    min-width: 200px;
+  }
+
+  .custom-select-filter .ant-select-selector:hover {
+    background-color: #17212b !important; /* Input fon rangi */
+    color: white !important; /* Matn oq bo‘lsin */
+    border: 1px solid #4a5568 !important; /* Chegarasi */
+    padding: 3px 10px!important; /* Input paddingi */
+    font-size: 18px;
+  }
+
+  .custom-select-filter .ant-select-item-option-active {
+    color: white !important;
+  }
+
+  .custom-select-filter .ant-select-selector .ant-select-selection-wrap .ant-select-selection-placeholder{
+    color: #a0aec0 !important; /* Placeholder rangi */
+  }
   
 
 

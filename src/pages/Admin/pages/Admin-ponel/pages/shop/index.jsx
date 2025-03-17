@@ -5,64 +5,36 @@ import { Input } from 'antd';
 import ModalComponent from "@/components/modal/Modal";
 import AddShop from "./components/AddShop";
 import EditShop from "./components/EditShop";
+import useFetch from "@/hooks/useFetch";
+import useApiMutation from "@/hooks/useApiMutation";
 const { Search } = Input;
-
-const data = [
-  {
-    key: 1,
-    name: "Sotuvchi 1",
-  },
-  {
-    key: 2,
-    name: "Sotuvchi 2",
-  },
-  {
-    key: 3,
-    name: "Sotuvchi 3",
-  },
-  {
-    key: 4,
-    name: "Sotuvchi 4",
-  },
-  {
-    key: 5,
-    name: "Sotuvchi 5",
-  },
-  {
-    key: 6,
-    name: "Sotuvchi 6",
-  },
-  {
-    key: 7,
-    name: "Sotuvchi 7",
-  },
-  {
-    key: 8,
-    name: "Sotuvchi 8",
-  },
-  {
-    key: 9,
-    name: "Sotuvchi 9",
-  },
-  {
-    key: 10,
-    name: "Sotuvchi 10",
-  },
-  {
-    key: 11,
-    name: "Sotuvchi 11",
-  }
-]
-
-
 
 
 const Seller = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sellerSingleData, setSellerSingleData] = useState(null);
   const [formType, setFormType] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const [searchQuery, setSearchQuery] = useState('');
+    const [page, setPage] = useState(1);
+    const limit = 10;
+
+    const { data, isLoading, refetch } = useFetch('shop', 'shop', { limit, page, name: searchQuery });
+
+    const { mutate: deleteShop} = useApiMutation({
+        url: 'shop', // Asosiy API endpoint
+        method: 'DELETE',
+        onSuccess: () => {
+          refetch();
+        },
+        onError: (error) => {
+          console.error('Xatolik yuz berdi:', error.message);
+        },
+      });
+    
+      const handleDelete = (id) => {
+        deleteShop({ id });
+      };
+
 
   const showModal = (type) => {
     setFormType(type);
@@ -79,7 +51,12 @@ const Seller = () => {
     showModal("edit");
   };
 
-  const onSearch = (value) => console.log(value);
+  const handlePageChange = (page) => {
+    setPage(page);
+    refetch();
+  };
+
+  const onSearch = (value) => setSearchQuery(value);
 
   const itemRender = (page, type, originalElement) => {
     if (type === "prev") {
@@ -114,9 +91,7 @@ const Seller = () => {
   const columns = [
     {
       title: "№",
-      dataIndex: "key",
-      key: "key",
-      render: (text) => <span className="text-gray-100 font-semibold">{text}</span>,
+      render: (_, __, index) => <span className="text-gray-100 font-semibold">{(page - 1) * limit + index + 1}</span>,
       width: 70,
     },
     {
@@ -127,8 +102,8 @@ const Seller = () => {
     },
     {
       title: "Ombor nomi",
-      dataIndex: "warehouse",
-      key: "warehouse",
+      dataIndex: "warehouseName",
+      key: "warehouseName",
       render: (text) => <span className="text-gray-100 font-semibold">{text}</span>,
     },
     {
@@ -144,7 +119,7 @@ const Seller = () => {
           />
           <Popconfirm
             title="O‘chirishni tasdiqlaysizmi?"
-            onConfirm={() => console.log("Deleted", record.key)}
+            onConfirm={() => handleDelete(record?.id)}
             okText="Ha"
             cancelText="Yo‘q"
           >
@@ -181,19 +156,20 @@ const Seller = () => {
       <div className="text-gray-100">
         <Table
           columns={columns}
-          dataSource={data.slice((currentPage - 1) * pageSize, currentPage * pageSize)}
+          dataSource={data?.data?.shops}
           pagination={false}
           className="custom-table"
           rowClassName={() => "custom-row"}
           bordered
+          loading={isLoading}
         />
         <div className="flex justify-center mt-5">
           <Pagination
             className="custom-pagination"
-            current={currentPage}
-            total={data.length}
-            pageSize={pageSize}
-            onChange={(page) => setCurrentPage(page)}
+            current={page}
+            total={data?.data?.total}
+            pageSize={limit}
+            onChange={handlePageChange}
             itemRender={itemRender}
           />
         </div>
@@ -203,7 +179,7 @@ const Seller = () => {
         onClose={onClose}
         title={formType === "add" ? "Magazin qo'shish" : "Magazinni tahrirlash"}
       >
-       {formType === "add" ?<AddShop onClose={onClose}/> : <EditShop onClose={onClose} sellerSingleData={sellerSingleData}/>} 
+       {formType === "add" ?<AddShop onClose={onClose} refetch={refetch}/> : <EditShop onClose={onClose} refetch={refetch} sellerSingleData={sellerSingleData}/>} 
       </ModalComponent>
     </div>
   );

@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { Input, Button, Form, message, Select  } from "antd";
+import { Input, Button, Form, Select  } from "antd";
+import useApiMutation from "@/hooks/useApiMutation";
 
 const { Option } = Select;
-const EditSeller = ({ onClose, sellerSingleData }) => {
+const EditSeller = ({ onClose, sellerSingleData, refetch }) => {
   const {
     handleSubmit,
     control,
@@ -14,15 +15,27 @@ const EditSeller = ({ onClose, sellerSingleData }) => {
   // storageSingleData bor bo‘lsa, formani shu ma’lumotlar bilan to‘ldiramiz
   useEffect(() => {
     if (sellerSingleData) {
-      reset(sellerSingleData);
+      reset({
+        name: sellerSingleData.name,
+        warehouse_id: sellerSingleData.warehouse_id
+      });
     }
   }, [sellerSingleData, reset]);
 
+  const { mutate, isLoading} = useApiMutation({
+      url: `shop/${sellerSingleData?.id}`,
+      method: 'PATCH',
+      onSuccess: () => {
+        onClose();
+        refetch();
+      },
+      onError: (error) => {
+        console.error('Xatolik yuz berdi:', error.message);
+      },
+    });
+
   const onSubmit = (data) => {
-    console.log("Forma ma'lumotlari:", data);
-    message.success("Sotuvchi muvaffaqiyatli yangilandi!");
-    reset(); // Formani tozalash
-    onClose();
+    mutate(data);
   };
 
   return (
@@ -74,6 +87,7 @@ const EditSeller = ({ onClose, sellerSingleData }) => {
           <Button
             type="primary"
             htmlType="submit"
+            loading={isLoading}
             style={{
               backgroundColor: "#364153",
               color: "#f3f4f6",
