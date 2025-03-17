@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import SearchForm from "@/components/SearchForm/SearchForm";
 import useFetch from "@/hooks/useFetch";
+import { Spin } from "antd";
 
 const districts = [
   { id: 1, name: "Chilanzar", description: "Описание Chilanzar" },
@@ -39,21 +40,26 @@ export default function CashRegister() {
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ZAPROS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-const { data, isLoading, refetch } = useFetch('warehouse', 'warehouse', {});
+const { data, isLoading, refetch } = useFetch('shop', 'shop', {});
 
 // useEffect(() => {
 //   refetch()
 // }, [])
 
-// useEffect(() => {
-//   setFilteredData(data?.data?.warehouses)
-// }, [data])
+useEffect(() => {
+  setFilteredData(data?.data?.shops)
+}, [data])
 
 console.log(data)
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ZAPROS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   return (
     <div className="DirectorProduct pt-[150px] p-4">
-      <SearchForm data={districts} name="" title="Omborlar" showDatePicker={false} onSearch={setFilteredData} />
+      <SearchForm data={data?.data?.warehouses} name="" title="Omborlar" showDatePicker={false} onSearch={setFilteredData} />
+      {isLoading ? (
+  <div className="flex justify-center items-center h-[300px]">
+    <Spin size="large" />
+  </div>
+      ):(
       <div className="grid grid-cols-2 gap-4">
         {filteredData?.slice(0, visibleDistricts).map((district) => (
           <Link
@@ -66,7 +72,8 @@ console.log(data)
           </Link>
         ))}
       </div>
-      {visibleDistricts < filteredData.length && (
+      )}
+      {visibleDistricts < filteredData?.length && (
         <div className="flex justify-center mt-4">
           <button
             onClick={loadMoreDistricts}

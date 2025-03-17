@@ -3,6 +3,7 @@ import "antd/dist/reset.css";
 import { Link } from "react-router-dom";
 import SearchForm from "@/components/SearchForm/SearchForm";
 import useFetch from "@/hooks/useFetch";
+import { Spin } from "antd";
 const products = [
   { id: 1, name: "Chilanzar", description: "Описание Chilanzar" },
   { id: 2, name: "Yunsabad", description: "Описание Yunsabad" },
@@ -21,6 +22,11 @@ export default function WarehouseOrderProducts() {
   return (
     <div className="DirectorProduct mt-[150px] p-4">
       <SearchForm data={data?.data?.warehouses} name="" title="Omborlar ro'yxati" showDatePicker={false} onSearch={setFilteredData} />
+      {isLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <Spin size="large" />
+          </div>
+        ) : (
       <div className="grid grid-cols-2 gap-4">
         {filteredData?.map((product) => (
           <Link
@@ -33,6 +39,7 @@ export default function WarehouseOrderProducts() {
           </Link>
         ))}
       </div>
+    )}
     </div>
   );
 }

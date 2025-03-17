@@ -30,9 +30,30 @@ const SearchForm = ({ data, onSearch, name, title, showDatePicker = true }) => {
 
   const handleSearch = (value) => {
     setSearchTerm(value);
-    const filteredData = data.filter(item =>
-      item.name.toLowerCase().includes(value.toLowerCase())
-    );
+    
+    // Если поисковая строка пуста, возвращаем все данные
+    if (!value || value.trim() === '') {
+      onSearch(data?.products  || data); // Возвращаем все данные
+      return;
+    }
+    
+    // Иначе фильтруем данные
+    const dataToFilter = data?.products || data;
+    
+    if (!dataToFilter || !Array.isArray(dataToFilter)) {
+      console.warn('No data to filter or data is not an array');
+      return;
+    }
+    
+    const filteredData = dataToFilter.filter(item => {
+      // Проверяем наличие article и name, и ищем в обоих полях
+      const articleMatch = item.article && item.article.toLowerCase().includes(value.toLowerCase());
+      const nameMatch = item.name && item.name.toLowerCase().includes(value.toLowerCase());
+      // Также проверяем поле description, если оно есть
+      const descriptionMatch = item.description && item.description.toLowerCase().includes(value.toLowerCase());
+      return articleMatch || nameMatch || descriptionMatch;
+    });
+    
     onSearch(filteredData); // Передаем отфильтрованные данные в родительский компонент
   };
 
@@ -44,7 +65,7 @@ const SearchForm = ({ data, onSearch, name, title, showDatePicker = true }) => {
   const IconComponent = iconMap[title] || FaBox; // Если title не найден, используем значок по умолчанию
 
   return (
-    <div className="flex flex-col md:flex-row w-full justify-between gap-3 mb-4 p-4 bg-white/10 backdrop-blur-md rounded-lg border border-white/20 hover:bg-white/20 transition-all duration-300">
+    <div className="flex flex-col md:flex-row w-full justify-between gap-3 mb-4 p-4 bg-white/10 backdrop-blur-md rounded-lg hover:bg-white/20 transition-all duration-300">
       {/* Логотип и заголовок */}
       <div className="flex justify-center md:justify-start items-center">
         <IconComponent className="text-3xl text-white" />
@@ -71,6 +92,7 @@ const SearchForm = ({ data, onSearch, name, title, showDatePicker = true }) => {
           onChange={(e) => handleSearch(e.target.value)}
           enterButton
           className="custom-search max-w-md"
+          onSearch={handleSearch} // Добавляем обработчик для кнопки поиска при нажатии
         />
       </div>
     </div>

@@ -1,67 +1,87 @@
 import React, { useState, useEffect } from "react";
 import { Button, List, Image, InputNumber, message } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
-import bg from "@/assets/images/bg-login.jpg";
+import userStore from "@/store/useUser";
+import useApiMutation from "@/hooks/useApiMutation";
 
-const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess }) => {
+const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess, warehouseId }) => {
   const [selectedItems, setSelectedItems] = useState([]);
+  const { user } = userStore();
 
-  const dataSource = [
-    { key: '1', code: 'OB001', name: 'Обои "Синий океан"', price: 1000, stock: 10, photo: bg },
-    { key: '2', code: 'OB002', name: 'Обои "Зеленый лес"', price: 1200, stock: 5, photo: bg },
-    { key: '3', code: 'OB003', name: 'Обои "Красный закат"', price: 1100, stock: 8, photo: bg },
-    { key: '4', code: 'OB004', name: 'Обои "Желтый песок"', price: 900, stock: 15, photo: bg },
-    { key: '5', code: 'OB005', name: 'Обои "Фиолетой туман"', price: 1300, stock: 3, photo: bg },
-    { key: '6', code: 'OB006', name: 'Обои "Голубое небо"', price: 950, stock: 7, photo: bg },
-    { key: '7', code: 'OB007', name: 'Обои "Розовый рассвет"', price: 1050, stock: 12, photo: bg },
-    { key: '8', code: 'OB008', name: 'Обои "Серый камень"', price: 800, stock: 20, photo: bg },
-    { key: '9', code: 'OB009', name: 'Обои "Белый снег"', price: 1000, stock: 0, photo: bg },
-    { key: '10', code: 'OB010', name: 'Обои "Черная ночь"', price: 1400, stock: 6, photo: bg },
-  ];
+  // Используем useApiMutation для PATCH запроса
+  const { mutate, isLoading: isSending } = useApiMutation({
+    url: 'warehouse-products',
+    method: 'PATCH',
+    onSuccess: (data) => {
+      message.success('Продукты успешно отправлены!');
+      if (onSuccess) onSuccess();
+      onClose();
+    },
+    onError: (error) => {
+      message.error(`Ошибка: ${error.message || 'Не удалось отправить продукты'}`);
+      console.error('Error sending products:', error);
+    }
+  });
 
+  console.log(user.warehouse?.id)              // ГЛАВНАЯ АЙДИ СКЛАДА ОТПРАВИТЕЛЬ
+  console.log(selectedProducts)     //ТОВАРЫ
+  console.log(warehouseId)          // СКЛАД ПОКУПАТЕЛЬ
+  
+
+  // Преобразуем выбранные товары в нужный формат с уникальным ключом
   useEffect(() => {
-    const preselectedItems = dataSource
-      .filter((item) => selectedProducts.includes(item.key))
-      .map((item) => ({ ...item, quantity: item.stock })); // Инициализация quantity значением stock
-
-    setSelectedItems(preselectedItems);
+    if (selectedProducts) {
+      const preselectedItems = selectedProducts.map((item, index) => ({
+        ...item,
+        key: `${item.id}-${index}`,
+        quantity: item.quantity || 1,
+      }));
+      setSelectedItems(preselectedItems);
+    }
   }, [selectedProducts]);
 
+  // Удаляем товар из списка по уникальному ключу
   const handleRemove = (key) => {
     setSelectedItems((prev) => {
       const updatedItems = prev.filter((item) => item.key !== key);
       if (updatedItems.length === 0) {
-        onSuccess();
+        if (onSuccess) onSuccess(); // Закрываем, если все товары удалены
         onClose();
       }
       return updatedItems;
     });
   };
 
+  // Изменяем количество товара
   const handleQuantityChange = (key, value) => {
-    const item = selectedItems.find((item) => item.key === key);
-    let newValue = value;
-    if (!newValue || newValue < 1) newValue = 1;
-    // Если введённое значение больше stock, устанавливаем stock
-    if (newValue > item.stock) {
-      newValue = item.stock;
-      message.warning(`Максимальное количество: ${item.stock}`);
-    }
     setSelectedItems((prev) =>
       prev.map((item) =>
-        item.key === key ? { ...item, quantity: newValue } : item
+        item.key === key ? { ...item, quantity: value } : item
       )
     );
   };
 
-  const calculateTotalPrice = () => {
-    return selectedItems.reduce((total, item) => total + item.price * item.quantity, 0);
-  };
-
+  // Отправка данных
   const onSubmit = () => {
-    console.log("Отправленные товары:", selectedItems);
-    onSuccess();
-    onClose();
+    if (selectedItems.length === 0) {
+      message.warning('Нет выбранных товаров для отправки');
+      return;
+    }
+    
+    // Формируем данные для отправки на бэкенд
+    const requestData = {
+      fromWarehouseId: user.warehouse?.id, // ID склада-отправителя
+      toWarehouseId: warehouseId, // ID склада-получателя
+      products: selectedItems.map(item => ({
+        productId: item.id, // ID продукта
+        quantity: item.quantity // Количество
+      }))
+    };
+    
+    console.log('Отправляем данные:', requestData);
+    
+    // Отправляем данные на бэкенд
+    mutate(requestData);
   };
 
   return (
@@ -72,11 +92,12 @@ const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess }) => {
             dataSource={selectedItems}
             renderItem={(product) => (
               <List.Item
+                key={product.key}
                 style={{
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
-                  flexWrap: "wrap"
+                  cursor: "pointer",
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center" }}>
@@ -87,70 +108,73 @@ const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess }) => {
                     style={{ marginRight: "10px" }}
                   />
                   <div className="ml-2">
-                    <div className="text-white font-bold">{product.name}</div>
+                    <div className="text-white font-bold">{product.article}</div>
                     <div className="text-white">{product.code}</div>
-                    <div className="text-white">Narxi: {product.price} so'm.</div>
                   </div>
                 </div>
-
-                <InputNumber
-                  min={1}
-                  max={product.stock}
-                  value={product.quantity}
-                  onChange={(value) => handleQuantityChange(product.key, value)}
-                  style={{ width: 60, marginRight: 10 }}
-                  controls={true}
-                  step={1}
-                  parser={(value) => value.replace(/[^\d]/g, '')}
-                  formatter={(value) => `${value}`.replace(/[^\d]/g, '')}
-                  onKeyPress={(e) => {
-                    if (!/[0-9]/.test(e.key)) {
-                      e.preventDefault();
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  {/* ✅ Добавил InputNumber ВНУТРИ renderItem */}
+                  <InputNumber
+                    min={1}
+                    max={product.stock}
+                    value={product.quantity}
+                    onChange={(value) =>
+                      handleQuantityChange(product.key, value)
                     }
-                  }}
-                />
-
-                <Button
-                  type="text"
-                  size="small"
-                  icon={<CloseOutlined />}
-                  onClick={() => handleRemove(product.key)}
-                  style={{
-                    color: "#fff",
-                    backgroundColor: "#17212b",
-                    borderRadius: "4px",
-                    width: "28px",
-                    height: "28px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    transition: "background-color 0.2s ease",
-                    marginRight: "10px"
-                  }}
-                  className="hover:bg-red-600"
-                />
+                    style={{ width: 60, marginRight: 10 }}
+                    controls={true}
+                    step={1}
+                    parser={(value) => value.replace(/[^\d]/g, "")}
+                    formatter={(value) => `${value}`.replace(/[^\d]/g, "")}
+                    onKeyPress={(e) => {
+                      if (!/[0-9]/.test(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
+                  />
+                  <Button
+                    type="text"
+                    size="small"
+                    icon={<CloseOutlined />}
+                    onClick={() => handleRemove(product.key)}
+                    style={{
+                      color: "#fff",
+                      backgroundColor: "#17212b",
+                      borderRadius: "4px",
+                      width: "28px",
+                      height: "28px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      transition: "background-color 0.2s ease",
+                      marginRight: "10px",
+                    }}
+                    className="hover:bg-red-600"
+                  />
+                </div>
               </List.Item>
             )}
-            pagination={{ pageSize: 5 }}
+            pagination={{ pageSize: 3 }}
           />
         </div>
 
+        {/* ✅ Количество товаров */}
         <div className="text-center text-white mt-4">
           <span>
-            Tanlangan tovarlar soni: <strong>{selectedItems.length}</strong>
-          </span>
-          <br />
-          <span>
-            Jami: <strong>{calculateTotalPrice()} so'm.</strong>
+            Количество выбранных товаров:{" "}
+            <strong>{selectedItems.length}</strong>
           </span>
         </div>
 
+        {/* ✅ Кнопка отправки */}
         <Button
           type="primary"
           onClick={onSubmit}
+          loading={isSending}
+          disabled={isSending || selectedItems.length === 0}
           style={{ marginTop: 20, width: "100%" }}
         >
-          Yuborish
+          {isSending ? 'Отправка...' : 'Yuborish'}
         </Button>
       </div>
     </div>

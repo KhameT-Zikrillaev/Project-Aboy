@@ -5,25 +5,40 @@ import bgsklad from "../../../../assets/images/bg-sklad.png";
 import SearchForm from "@/components/SearchForm/SearchForm";
 import ImageModal from "@/components/modal/ImageModal";
 import useFetch from "@/hooks/useFetch";
-
+import useUserStore from "@/store/useUser";
 export default function Warehouse() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(8);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
+  const { user } = useUserStore();
+
+
 
   // Fetch data from API
-  const { data, isLoading } = useFetch("product", "product", {});
 
+  const id = user?.warehouse?.id;
+  const { data, isLoading, refetch } = useFetch(
+    id ? `warehouse-products/${id}` : null, // Если id нет, не создаем ключ запроса
+    id ? `warehouse-products/${id}` : null, // Если id нет, не делаем запрос
+    {},
+    {
+      enabled: !!id, // Запрос будет выполнен только если id существует
+    }
+  );
+  console.log(data)
   // Update filteredData when data changes
   useEffect(() => {
-    if (data?.data?.products) {
-      console.log("Data from API:", data.data.products);
-      setFilteredData(data.data.products);
+    if (data) {
+      console.log("Data from API:", data);
+      setFilteredData(data);
     }
   }, [data]);
 
-  // Update items per page based on screen size
+
+
+
+  // Адаптивность экран разрешение кароточек
   useEffect(() => {
     const updateItemsPerPage = () => {
       setItemsPerPage(window.innerWidth < 768 ? 4 : 8);
@@ -34,7 +49,7 @@ export default function Warehouse() {
     return () => window.removeEventListener("resize", updateItemsPerPage);
   }, []);
 
-  // Pagination logic
+  // Логика пагинации
   const currentData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
@@ -65,7 +80,7 @@ export default function Warehouse() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full px-4">
             {currentData.map((item) => (
               <Card
-                key={item.id}
+                key={item.product_id}
                 className="shadow-lg hover:shadow-xl transition-shadow rounded-lg"
                 style={{
                   background: "rgba(255, 255, 255, 0.1)",
@@ -86,11 +101,11 @@ export default function Warehouse() {
                     Part: <span className="text-red-500">{item.article}</span>
                   </Tag>
                   <h4 className="text-sm font-semibold text-white">
-                    {item.description || "No description"}
+                    {item.price +" $" || "No price"}
                   </h4>
                   <div className="flex justify-between">
                     <p className="text-gray-300 text-xs">
-                      Batch: {item.batch_number}
+                      Batch: {item.quantity}
                     </p>
                   </div>
                 </div>

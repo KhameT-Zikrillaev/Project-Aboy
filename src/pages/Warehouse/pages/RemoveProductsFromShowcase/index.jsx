@@ -1,27 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import SearchForm from "@/components/SearchForm/SearchForm";
+import { Spin } from "antd";
+import useFetch from "@/hooks/useFetch";
 
-const products = [
-  { id: 1, name: "Chilanzar", description: "Описание Chilanzar" },
-  { id: 2, name: "Yunsabad", description: "Описание Yunsabad" },
-  { id: 3, name: "Namangan", description: "Описание Namangan" },
-  { id: 4, name: "Samarqand", description: "Описание Samarqand" },
-  { id: 5, name: "Mirzo Ulug'bek", description: "Описание Mirzo Ulug'bek" },
-  { id: 6, name: "Navoiy", description: "Описание Navoiy" },
-];
 
 export default function WarehouseProducts() {
   const [visibleDistricts, setVisibleDistricts] = useState(12);
-  const [filteredData, setFilteredData] = useState(products);
+  const [filteredData, setFilteredData] = useState([]);
+  const { data, isLoading } = useFetch("shop", "shop", {});
+
+  
   const loadMoreDistricts = () => {
     setVisibleDistricts((prevVisibleDistricts) => prevVisibleDistricts + 12);
   };
+  useEffect(() => {
+    setFilteredData(data?.data?.shops)
+  }, [data])
+
+
+
+
   return (
     <div className="DirectorProduct mt-[150px] p-4">
-       <SearchForm data={products} name="" title="Sotuvchilar" showDatePicker={false} onSearch={setFilteredData} />
+       <SearchForm data={data?.data?.shops} name="" title="Sotuvchilar" showDatePicker={false} onSearch={setFilteredData} />
+
+       {isLoading ? (
+        <div className="flex justify-center items-center h-[300px]">
+          <Spin size="large" />
+        </div>
+       ) : (
       <div className="grid grid-cols-2 gap-4">
-        {filteredData.slice(0, visibleDistricts).map((product) => (
+        {filteredData?.slice(0, visibleDistricts).map((product) => (
           <Link
             key={product.id}
             to={`/warehouse/remove-from-showcase/${product.name}`}
@@ -32,7 +42,8 @@ export default function WarehouseProducts() {
           </Link>
         ))}
       </div>
-      {visibleDistricts < filteredData.length && (
+      )}
+      {visibleDistricts < filteredData?.length && (
         <div className="flex justify-center mt-4">
           <button
             onClick={loadMoreDistricts}
