@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from "react-router-dom";
-import { Card, Pagination, Tag, Button } from 'antd';
+import { Card, Pagination, Tag, Button, Checkbox } from 'antd';
 import 'antd/dist/reset.css';
 import bgsklad from '@/assets/images/bg-sklad.png';
 import SearchForm from '../../Product/modules/SearchForm';
 import bg from '@/assets/images/bg-login.jpg';
 import ModalComponent from "@/components/modal/Modal";
 import AddProduct from "../modules/AddProductVitrina/AddProductVitrina";
+import ImageModal from "@/components/modal/ImageModal";
 const products = [
   { id: 1, name: "Chilanzar", description: "Описание Chilanzar" },
   { id: 2, name: "Yunsabad", description: "Описание Yunsabad" },
+  { id: 3, name: "Namangan", description: "Описание Namangan" },
+  { id: 4, name: "Samarqand", description: "Описание Samarqand" },
+  { id: 5, name: "Mirzo Ulug'bek", description: "Описание Mirzo Ulug'bek" },
+  { id: 6, name: "Navoiy", description: "Описание Navoiy" },
 ];
 const dataSource = [
   { key: '1', code: 'OB001', name: 'Обои "Синий океан"', color: '#0000FF', price: '1000 руб', stock: 10, photo: bg },
@@ -39,6 +44,8 @@ export default function ViewDetaliesSendProducts() {
   const [itemsPerPage, setItemsPerPage] = useState(8);
   const [filteredData, setFilteredData] = useState(dataSource);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedProducts, setSelectedProducts] = useState([]);
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~modal
 const [isModalOpen, setIsModalOpen] = useState(false);
@@ -61,6 +68,14 @@ const onClose = () => {
     window.addEventListener('resize', updateItemsPerPage);
     return () => window.removeEventListener('resize', updateItemsPerPage);
   }, []);
+
+  const handleCheckboxChange = (item) => {
+    setSelectedProducts((prev) =>
+      prev.includes(item.key)
+        ? prev.filter((key) => key !== item.key)
+        : [...prev, item.key]
+    );
+  };
 
   const handleOrder = (item) => {
     alert(`Заказ на ${item.name} оформлен!`);
@@ -90,35 +105,41 @@ const onClose = () => {
           <Card
           key={item.key}
           className="shadow-lg hover:shadow-xl transition-shadow rounded-lg"
+          
           style={{ background: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255, 255, 255, 0.2)' }}
           cover={
             <div
-              className="h-28 bg-cover bg-center rounded-t-lg"
+            onClick={() => setSelectedImage(item.photo)}
+              className="h-44 bg-cover bg-center rounded-t-lg"
               style={{ backgroundImage: `url(${item.photo})` }}
             />
           }
           bodyStyle={{ padding: '12px', color: 'white' }}
         >
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 " 
+          // onClick={() => handleCheckboxChange(item.key)}
+          >
             <Tag color="blue">{item.code}</Tag>
             <h4 className="text-sm font-semibold text-white">{item.name}</h4>
             <Tag style={{ backgroundColor: item.color, color: '#fff' }}>{item.color}</Tag>
-            <div className='flex justify-between'> 
-              <p className="text-gray-300 text-xs">{item.price}</p>
-            </div>
-            <Button
-              type="primary"
-              onClick={() => showModal(item)}
-              style={{ backgroundColor: '#364153', borderColor: '#364153' }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#2b3445")}
-  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#364153")}
-            >
-              Yuborish
-            </Button>
+            <div className='mt-[15px]'> 
+              {/* <p className="text-gray-300 text-xs">{item.price}</p> */}
+            <Checkbox 
+                className="absolute bottom-0.5 items-cente"
+                style={{color: 'white'}}
+                checked={selectedProducts.includes(item.key)}
+                onChange={() => handleCheckboxChange(item)}
+                > 
+              Tanlash
+            </Checkbox>
+         </div>
+                
+            
           </div>
         </Card>
         ))}
       </div>
+      
 
       <div className="my-2   mb-12  md:mb-0 flex justify-center">
         <Pagination
@@ -130,14 +151,41 @@ const onClose = () => {
           className="text-white "
         />
       </div>
-    </div>
-    <ModalComponent
+
+      <div className="w-full flex justify-center items-center">
+
+          {/* <div className=" bg-gray-700 text-center items-center text-white rounded-lg shadow-lg px-[70px]">
+            <p className="">Tanlangan: {selectedProducts.length}</p>
+          </div> */}
+          <span className='bg-gray-700 py-[7px] px-[80px] text-white text-[25px]  rounded-lg shadow-lg'>
+            Tanlangan: {selectedProducts.length}
+          </span>
+        <Button
+              type="primary"
+              // onClick={() => showModal(item)}
+              style={{ backgroundColor: '#364153', borderColor: '#364153', padding: '20px 80px', fontSize: '25px', float:'right', margin:'10px', marginRight: '50px'}}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#2b3445")}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#364153")}
+              >
+              Yuborish
+        </Button>
+      </div>
+
+      <ImageModal
+          isOpen={!!selectedImage}
+          onClose={() => setSelectedImage(null)}
+          imageUrl={selectedImage}
+          />
+
+        </div>
+
+    {/* <ModalComponent
         isOpen={isModalOpen}
         onClose={onClose}
         title={"Ombordan olish"}
       >
        <AddProduct onClose={onClose} product={selectedProduct} />
-      </ModalComponent>
+      </ModalComponent> */}
   </div>
   );
 }

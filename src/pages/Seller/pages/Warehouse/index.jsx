@@ -192,8 +192,8 @@ export default function Warehouse() {
               }}
               cover={
                 <div
-                  onClick={() => setSelectedImage(item.photo)}
-                  className="h-28 bg-cover cursor-pointer bg-center rounded-t-lg"
+                onClick={() => setSelectedImage(item.photo)}
+                  className="h-28 bg-cover bg-center rounded-t-lg"
                   style={{ backgroundImage: `url(${item.photo})` }}
                 />
               }

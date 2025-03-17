@@ -35,6 +35,7 @@ import WarehouseOrderProducts from "../../pages/Warehouse/pages/OrderProducts";
 import WarehouseDetailProductsLists from "./../../pages/Warehouse/pages/OrderProducts/components/DetialOrderProducts";
 
 
+import WarehouseViewDetaliesTransferProducts from '@/pages/Warehouse/pages/TransferProductsToWarehouse/components/ViewDetaliesTransferProducts'
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Seller~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 import Seller from '@/pages/Seller';
 import SellerProduct from '@/pages/Seller/pages/Product';
@@ -59,11 +60,13 @@ export default function RouterConfig() {
         <Route index element={<Profile />} />{" "}
         {/* Этот компонент будет отображаться при переходе на /admin */}
         <Route path="admin-panel" element={<AdminAdminPanel />}>
-          <Route path="storage" element={<AdminStorege />} /> {/* /admin/admin-panel/statistics */}
-          <Route path="shop" element={<AdminShop />} /> {/* /admin/admin-panel/users */}
-          <Route path='products' element={<AdminProduct/>}/>
+          <Route path="storage" element={<AdminStorege />} />{" "}
+          {/* /admin/admin-panel/statistics */}
+          <Route path="shop" element={<AdminShop />} />{" "}
+          {/* /admin/admin-panel/users */}
+          <Route path="products" element={<AdminProduct />} />
           {/* <Route path='seller2' element={<AdminSeller2/>}/> */}
-          <Route path='users' element={<AdminUsers/>}/>
+          <Route path="users" element={<AdminUsers />} />
         </Route>
         <Route path="report" element={<AdminReport />} />
         <Route path="report/:name" element={<AdminReportDetails />} />
@@ -101,6 +104,11 @@ export default function RouterConfig() {
         />{" "}
         {/* /warehouse/transfer-to-warehouse */}
         <Route
+          path="transfer-to-warehouse/:name"
+          element={<WarehouseViewDetaliesTransferProducts />}
+        />{" "}
+        /warehouse/transfer-to-warehouse
+        <Route
           path="order-products"
           element={<WarehouseOrderProducts />}
         />{" "}
@@ -108,8 +116,7 @@ export default function RouterConfig() {
         <Route
           path="order-products/:name"
           element={<WarehouseDetailProductsLists />}
-        />{" "}
-        {/* /warehouse/order-products */}
+        />
         <Route path="cash-register" element={<WarehouseCashregister />} />{" "}
         {/* /warehouse/cash */}
         <Route path="shop" element={<WarehouseShop />} />
@@ -134,12 +141,18 @@ export default function RouterConfig() {
 
       {/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~DIRECTOR~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */}
       <Route path="/director" element={<Director />}>
-        <Route index element={<Profile />} /> {/* Этот компонент будет отображаться при переходе на /seller */}
-        <Route path="seller-list" element={<DirectorSeller/>} /> {/* /Director/product-list */}
-        <Route path="product-list" element={<DirectorProduct />} /> {/* /Director/product-list */}
-        <Route path="product-list/:name" element={<ProductDetails />} /> {/* Динамический маршрут */}
-        <Route path="report" element={<DirectorReport />} /> {/* /Director/report */}
-        <Route path="report/:name" element={<DirectorReportDetails />} /> {/* Динамический маршрут */}
+        <Route index element={<Profile />} />{" "}
+        {/* Этот компонент будет отображаться при переходе на /seller */}
+        <Route path="seller-list" element={<DirectorSeller />} />{" "}
+        {/* /Director/product-list */}
+        <Route path="product-list" element={<DirectorProduct />} />{" "}
+        {/* /Director/product-list */}
+        <Route path="product-list/:name" element={<ProductDetails />} />{" "}
+        {/* Динамический маршрут */}
+        <Route path="report" element={<DirectorReport />} />{" "}
+        {/* /Director/report */}
+        <Route path="report/:name" element={<DirectorReportDetails />} />{" "}
+        {/* Динамический маршрут */}
       </Route>
     </Routes>
   );

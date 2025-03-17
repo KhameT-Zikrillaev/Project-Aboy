@@ -4,6 +4,10 @@ import { Link } from "react-router-dom";
 const products = [
   { id: 1, name: "Chilanzar", description: "Описание Chilanzar" },
   { id: 2, name: "Yunsabad", description: "Описание Yunsabad" },
+  { id: 3, name: "Namangan", description: "Описание Namangan" },
+  { id: 4, name: "Samarqand", description: "Описание Samarqand" },
+  { id: 5, name: "Mirzo Ulug'bek", description: "Описание Mirzo Ulug'bek" },
+  { id: 6, name: "Navoiy", description: "Описание Navoiy" },
 ];
 
 export default function WarehouseProducts() {
