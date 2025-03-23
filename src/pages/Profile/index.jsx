@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar/Navbar";
 import Loading from "@/components/Loading/Loading";
@@ -40,7 +40,8 @@ export default function Home() {
     cards = SkladCards;
   } else if (location.pathname === "/seller") {
     userRole = "Sotuvchi";
-    cards = SellerCards;
+    // Если роль пользователя - user, удаляем последний элемент из SellerCards
+    cards = user?.role === "user" ? SellerCards.slice(0, -1) : SellerCards;
   } else if (location.pathname === "/director") {
     userRole = "Direktor";
     cards = DirectorCards;

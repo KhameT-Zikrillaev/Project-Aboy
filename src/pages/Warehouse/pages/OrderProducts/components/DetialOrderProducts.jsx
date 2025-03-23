@@ -33,8 +33,8 @@ export default function ViewDetaliesOrderProducts() {
 
 const id = user?.warehouse?.id;
 const { data, isLoading, refetch } = useFetch(
-  id ? `warehouse-products/${idWarehouse}` : null, // Если id нет, не создаем ключ запроса
-  id ? `warehouse-products/${idWarehouse}` : null, // Если id нет, не делаем запрос
+  id ? `warehouse-products/byWarehouse/${idWarehouse}` : null, // Если id нет, не создаем ключ запроса
+  id ? `warehouse-products/byWarehouse/${idWarehouse}` : null, // Если id нет, не делаем запрос
   {},
   {
     enabled: !! id, // Запрос будет выполнен только если id существует

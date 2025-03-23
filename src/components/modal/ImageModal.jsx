@@ -24,7 +24,6 @@ export default function ImageModal({ isOpen, onClose, imageUrl }) {
             alt="Modal"
              crossOrigin="anonymous"
             className=" md:max-w-xl md:max-h-[80vh] w-full h-full  rounded"
-            crossOrigin="anonymous"
           />
         </div>
       </div>

@@ -13,8 +13,8 @@ export default function ViewWareHoustProducts({ idwarehouse }) {
 
   // Исправляем параметры useFetch
   const { data, isLoading, refetch } = useFetch(
-    `warehouse-products-${idwarehouse}`, // Уникальный ключ для кеширования
-    `warehouse-products/${idwarehouse}`, // URL запроса
+    `warehouse-products/byWarehouse/${idwarehouse}`, // Уникальный ключ для кеширования
+    `warehouse-products/byWarehouse/${idwarehouse}`, // URL запроса
     {}, // Параметры запроса
     {
       enabled: !!idwarehouse, // Запрос будет выполнен только если id существует

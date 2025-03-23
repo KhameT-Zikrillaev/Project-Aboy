@@ -16,8 +16,8 @@ export default function Warehouse() {
   // Fetch data from API
   const id = user?.warehouse?.id;
   const { data, isLoading  } = useFetch(
-    id ? `warehouse-products/${id}` : null, 
-    id ? `warehouse-products/${id}` : null, 
+    id ? `warehouse-products/byWarehouse/${id}` : null, 
+    id ? `warehouse-products/byWarehouse/${id}` : null, 
     {},
     {
       enabled: !!id, 

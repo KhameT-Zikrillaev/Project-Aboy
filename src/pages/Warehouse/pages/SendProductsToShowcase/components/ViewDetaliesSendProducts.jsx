@@ -60,8 +60,8 @@ export default function ViewDetaliesSendProducts() {
 // ~~~~~~~~~~~~~~~~~~~~~~логика товаров из апи~~~~~~~~~~~~~~~~~~~~~~~~~~
 const id = user?.warehouse?.id;
 const { data: productsData, isLoading: productsLoading, refetch: refetchProducts } = useFetch(
-  id ? `warehouse-products/${id}` : null, // Если id нет, не создаем ключ запроса
-  id ? `warehouse-products/${id}` : null, // Если id нет, не делаем запрос
+  id ? `warehouse-products/byWarehouse/${id}` : null, // Если id нет, не создаем ключ запроса
+  id ? `warehouse-products/byWarehouse/${id}` : null, // Если id нет, не делаем запрос
   {},
   {
     enabled: !! id, // Запрос будет выполнен только если id существует

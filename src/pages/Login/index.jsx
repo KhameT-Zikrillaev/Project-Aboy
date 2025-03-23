@@ -47,6 +47,8 @@ export default function Login() {
             navigate("/warehouse");
           } else if (response?.data?.role === "seller") {
             navigate("/seller");
+          } else if (response?.data?.role === "user") {
+            navigate("/seller");
           } else if (response?.data?.role === "director") {
             navigate("/director");
           }

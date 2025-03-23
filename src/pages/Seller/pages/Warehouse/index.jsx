@@ -62,7 +62,7 @@ export default function Warehouse() {
     console.log("Search results:", results);
     setFilteredData(results);
   };
-
+  console.log(user?.role)
   return (
     <div
       className="min-h-screen bg-cover bg-center p-1 relative"
@@ -110,11 +110,12 @@ export default function Warehouse() {
                     Soni bor: {item?.quantity} dona.
                   </p>
                 </div>
-                <Button
-                  type="primary"
-                  onClick={() => showModal(item)}
-                  style={{ backgroundColor: "#364153", borderColor: "#364153" }}
-                  onMouseEnter={(e) =>
+                {user?.role === "seller" && (
+                  <Button
+                    type="primary"
+                    onClick={() => showModal(item)}
+                    style={{ backgroundColor: "#364153", borderColor: "#364153" }}
+                    onMouseEnter={(e) =>
                     (e.currentTarget.style.backgroundColor = "#2b3445")
                   }
                   onMouseLeave={(e) =>
@@ -123,6 +124,7 @@ export default function Warehouse() {
                 >
                   Buyurtma berish
                 </Button>
+                )}
               </div>
             </Card>))}
         </div>

@@ -23,14 +23,6 @@ export const SellerCards = [
         description: "Omborxona",
         link: "/seller/warehouse",
     },
-    // {
-    //     icon: React.createElement(FaMoneyBillAlt, {
-    //         className: "text-4xl text-white mb-4",
-    //     }),
-    //     title: "Kassa",
-    //     description: "Moliya operatsiyalari",
-    //     link: "/seller/cash-register",
-    // },
     {
         icon: React.createElement(FaChartLine, {
             className: "text-4xl text-white mb-4",
@@ -38,21 +30,5 @@ export const SellerCards = [
         title: "Hisobotlar",
         description: "Tarix va arxiv",
         link: "/seller/report",
-    },
-    // {
-    //     icon: React.createElement(FaWarehouse, {
-    //         className: "text-4xl text-white mb-4",
-    //     }),
-    //     title: "Operatsiyalar tarixi",
-    //     description: "Barcha tranzaksiyalarni ko'rish",
-    //     link: "/seller/transaction-history",
-    // },
-    // {
-    //     icon: React.createElement(FaArchive, {
-    //         className: "text-4xl text-white mb-4",
-    //     }),
-    //     title: "Hisobotlar",
-    //     description: "Analitika va statistika",
-    //     link: "/seller/report",
-    // }
+    }
 ];

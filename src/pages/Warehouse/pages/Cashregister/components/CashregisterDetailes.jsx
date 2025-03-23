@@ -19,7 +19,7 @@ export default function CashregisterDetailes() {
     const itemsPerPage = 10;
     const user = userStore();
     const todayDate = dayjs().format('YYYY-MM-DD');
-
+ console.log(user)
     // Отладочные сообщения
     console.log('shopId:', shopId);
     console.log('todayDate:', todayDate);

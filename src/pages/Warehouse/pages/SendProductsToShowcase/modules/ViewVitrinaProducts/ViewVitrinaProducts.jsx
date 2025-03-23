@@ -10,7 +10,7 @@ export default function ViewVitrinaProducts({ idwarehouse }) {
 
   // Исправляем параметры useFetch
   const { data, isLoading, refetch } = useFetch(
-    `Storefront-product-${idwarehouse}`, // Уникальный ключ для кеширования
+    `Storefront-product/${idwarehouse}`, // Уникальный ключ для кеширования
     `Storefront-product/${idwarehouse}`, // URL запроса
     {}, // Параметры запроса
     
