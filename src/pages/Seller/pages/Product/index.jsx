@@ -14,7 +14,7 @@ export default function Vitrina() {
   const { user } = useUserStore();
   // Fetch data from API
   const id = user?.shop?.id;
-  const base = "https://walldesign.limsa.uz/";
+
   const { data, isLoading  } = useFetch(
     id ? `Storefront-product/${id}` : null, 
     id ? `Storefront-product/${id}` : null, 

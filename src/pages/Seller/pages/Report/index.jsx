@@ -6,22 +6,29 @@ import SearchFormStartEnd from "@/components/SearchFormStartEnd/SearchFormStartE
 import useFetch from "@/hooks/useFetch";
 import useUserStore from "@/store/useUser";
 import ReportCard from "@/components/reportCardSeller";
+
 export default function Report() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(9);
   const [filteredData, setFilteredData] = useState([]);
-  const {user} = useUserStore()
-  const id = user?.shop?.id
-  const { data, isLoading } = useFetch(`shop-request/all-requests/byShop/${id}`, `shop-request/all-requests/byShop/${id}`, {});
+  const { user } = useUserStore();
+  const id = user?.shop?.id;
 
-  
+  const { data, isLoading } = useFetch(
+    id ? `shop-request/all-requests/byShop/${id}` : null,
+    id ? `shop-request/all-requests/byShop/${id}` : null,
+    {},
+    {
+      enabled: !!id, 
+    }
+  );
 
-   console.log(data)
   useEffect(() => {
     if (data && data.length > 0) {
       setFilteredData(data);
     }
   }, [data]);
+
   useEffect(() => {
     const updateItemsPerPage = () => {
       if (window.innerWidth < 768) {
@@ -43,49 +50,42 @@ export default function Report() {
   );
 
   const handleSearch = (searchTerm, startDate, endDate) => {
-    console.log("Search Term:", searchTerm);
-    console.log("Start Date:", startDate);
-    console.log("End Date:", endDate);
-  
     if (data && data.length > 0) {
-      if ((!searchTerm || searchTerm.trim() === '') && !startDate && !endDate) {
-        setFilteredData(data);
-        setCurrentPage(1);
-        return;
-      }
-      
       let filtered = [...data];
-      
-      if (searchTerm && searchTerm.trim() !== '') {
+
+      if (searchTerm && searchTerm.trim() !== "") {
         const searchTermLower = searchTerm.toLowerCase();
-        filtered = filtered.filter(item => {
-          const sourceWarehouseName = item.sourceWarehouse?.name?.toLowerCase() || '';
-          const destWarehouseName = item.destinationWarehouse?.name?.toLowerCase() || '';
-          
-          return sourceWarehouseName.includes(searchTermLower) || 
-                 destWarehouseName.includes(searchTermLower);
+        filtered = filtered.filter((item) => {
+          const sourceWarehouseName = item.sourceWarehouse?.name?.toLowerCase() || "";
+          const destWarehouseName = item.destinationWarehouse?.name?.toLowerCase() || "";
+
+          return (
+            sourceWarehouseName.includes(searchTermLower) ||
+            destWarehouseName.includes(searchTermLower)
+          );
         });
       }
-      
+
       if (startDate && endDate) {
         const start = new Date(startDate);
         start.setHours(0, 0, 0, 0);
-        
+
         const end = new Date(endDate);
         end.setHours(23, 59, 59, 999);
-        
-        filtered = filtered.filter(item => {
+
+        filtered = filtered.filter((item) => {
           if (!item.createdAt) return false;
-          
+
           const itemDate = new Date(item.createdAt);
           return itemDate >= start && itemDate <= end;
         });
       }
-      
+
       setFilteredData(filtered);
       setCurrentPage(1);
     }
   };
+
   return (
     <div
       className="min-h-screen bg-cover bg-center p-1 relative"
@@ -94,25 +94,22 @@ export default function Report() {
       <div className="absolute inset-0 bg-black/50 backdrop-blur-md z-0"></div>
 
       <div className="relative max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[110px]">
-  
-        <SearchFormStartEnd 
-          data={data} 
-          name="" 
-          title="Hisobotlar" 
-          showDatePicker={true} 
-          onSearch={handleSearch} 
+        <SearchFormStartEnd
+          data={data}
+          name=""
+          title="Hisobotlar"
+          showDatePicker={true}
+          onSearch={handleSearch}
           className="w-full mb-6"
         />
-        
+
         {isLoading ? (
           <div className="flex justify-center items-center h-64 w-full">
             <Spin size="large" />
           </div>
         ) : filteredData.length === 0 ? (
-          <Empty 
-            description={
-              <span className="text-white">Ma'lumot topilmadi</span>
-            } 
+          <Empty
+            description={<span className="text-white">Ma'lumot topilmadi</span>}
             className="my-12"
           />
         ) : (
