@@ -32,14 +32,14 @@ const Navbar = () => {
   const fetchRequests = useCallback(async () => {
     if (user?.role !== "staff") return;
     try {
-      const [warehouseRes, shopRes] = await Promise.all([
+      const [warehouseRes, shopRes, orderRes] = await Promise.all([
         api.get(`warehouse-requests/pending-requests/${user?.warehouse?.id}`),
         api.get(`shop-request/pending-requests/${user?.warehouse?.id}`),
+        api.get(`warehouse-requests/all-requests/${user?.warehouse?.id}`)
       ]);
-      const response = await api.get(`warehouse-requests/all-requests/${user?.warehouse?.id}`);
-      console.log(response);
       
       const combinedRequests = [
+        ...(orderRes?.data || []),
         ...(warehouseRes?.data || []),
         ...(shopRes?.data || []),
       ];
@@ -63,18 +63,13 @@ const Navbar = () => {
 
   return (
     <div className="w-full h-[105px] left-0 top-0 flex justify-between fixed z-10 items-center mb-6 md:mb-10 py-6 px-6 md:px-6 bg-[#17212b] rounded-lg shadow-xl">
-      {/* Логотип и кнопка "Назад" */}
       <div className="left-content flex items-center space-x-4">
-        {/* Кнопка "Назад" с иконкой */}
         <button
           onClick={handleGoBack}
           className="cursor-pointer hover:text-yellow-700 transition-all duration-300 ease-in-out"
         >
-          <FaArrowLeft className=" h-4 w-4 md:h-6 md:w-6 text-yellow-200 " />{" "}
-          {/* Иконка стрелки назад */}
+          <FaArrowLeft className=" h-4 w-4 md:h-6 md:w-6 text-yellow-200 " />
         </button>
-
-        {/* Логотип */}
         <div>
           <img
             className="glowing-image  max-w-[50px] ml-4 md:max-w-[100px] w-full"
@@ -83,8 +78,6 @@ const Navbar = () => {
           />
         </div>
       </div>
-
-      {/* Правая часть: Имя пользователя и кнопка выхода */}
       <div className="right-content flex items-center space-x-4">
         {(user?.role === "staff" || user?.role === "seller") && (
           <div

@@ -15,7 +15,6 @@ const PendingCardWarehouse = ({ item, fetchRequests }) => {
       return "Invalid date";
     }
   };
-  console.log(item);
 
   const changeStatusApproved = async () => {
     try {
@@ -24,50 +23,76 @@ const PendingCardWarehouse = ({ item, fetchRequests }) => {
         const price = item?.items[0]?.product?.price ?? 0;
         const productId = item?.items[0]?.product?.id;
         const shopId = item?.shop?.id;
-        const sellerId = item?.shop?.sellers[0]?.id
-        const response = await api.patch(`shop-request/change-status/${item?.id}`, { status: "approved" });
+        const sellerId = item?.shop?.sellers[0]?.id;
+        const response = await api.patch(
+          `shop-request/change-status/${item?.id}`,
+          { status: "approved" }
+        );
         const order = await api.post("order", {
-                    shop_id: shopId,
-                    warehouse_id: user?.warehouse?.id,
-                    seller_id: sellerId,
-                    total_amount: price * quantity,
-                    payment_method: "cash",
-                    items: [
-                      {
-                        productId: productId,
-                        orderId: item?.id,
-                        price: price,
-                        quantity: quantity,
-                        total: price * quantity
-                      }
-                    ]
-                  });
-        
-      }else{
+          shop_id: shopId,
+          warehouse_id: user?.warehouse?.id,
+          seller_id: sellerId,
+          total_amount: price * quantity,
+          payment_method: "cash",
+          items: [
+            {
+              productId: productId,
+              orderId: item?.id,
+              price: price,
+              quantity: quantity,
+              total: price * quantity,
+            },
+          ],
+        });
+      } else {
         const response = await api.patch(
           `warehouse-requests/change-status/${item?.id}`,
           {
             status: "approved",
           }
         );
+        
       }
       fetchRequests();
       toast.success("Mahsulot muvaffaqiyatli berildi");
     } catch (error) {
-      toast.error("Mahsulot berishda xatolik yuz berdi");
+      if(error?.response?.status === 404){
+        toast.error("Mahsulot yetarli emas");
+      }else{
+        toast.error("Mahsulot berishda xatolik yuz berdi");
+      }
     }
   };
 
+  const deleteRequest = async () => {
+    try {
+      if (item?.shop) {
+        const response = await api.delete(`shop-request/${item?.id}`);
+      } else {
+        const response = await api.delete(`warehouse-requests/remove-request/${item?.id}`);
+      }
+      fetchRequests();
+      toast.success("So'rov muvaffaqiyatli o'chirildi");
+    } catch (error) {
+      toast.error("So'rov o'chirishda xatolik yuz berdi");
+    }
+  }
   const changeStatusRejected = async () => {
     try {
-      if(item?.shop){
-        const response = await api.patch(`shop-request/change-status/${item?.id}`, {
-          status: "rejected",
-        });
-      }else{
-        const response = await api.patch(`warehouse-requests/change-status/${item?.id}`, {
-          status: "rejected",
-        });
+      if (item?.shop) {
+        const response = await api.patch(
+          `shop-request/change-status/${item?.id}`,
+          {
+            status: "rejected",
+          }
+        );
+      } else {
+        const response = await api.patch(
+          `warehouse-requests/change-status/${item?.id}`,
+          {
+            status: "rejected",
+          }
+        );
       }
       fetchRequests();
       toast.success("So'rov bekor qilindi");
@@ -90,17 +115,39 @@ const PendingCardWarehouse = ({ item, fetchRequests }) => {
         <div className="flex justify-between items-start">
           <div>
             <h3 className="text-lg font-semibold text-white mb-1 flex items-center">
-              <Tooltip title="So'rov yuboruvchi ombor">
-                <span>
-                  {item?.destinationWarehouse?.name ||
-                    item?.shop?.name ||
-                    "Noma'lum"}
-                </span>
-              </Tooltip>
-              <ArrowRightOutlined className="mx-2 text-yellow-400" />
-              <Tooltip title="Qabul qiluvchi ombor">
-                <span>{user?.warehouse?.name || "Noma'lum"}</span>
-              </Tooltip>
+              {item?.status === "rejected" || item?.status === "approved" ? (
+                <>
+                  <Tooltip title="So'rov yuboruvchi ombor">
+                    <span>
+                      {item?.sourceWarehouse?.name ||
+                        item?.shop?.name ||
+                        "Noma'lum"}
+                    </span>
+                  </Tooltip>
+                  <ArrowRightOutlined className="mx-2 text-yellow-400" />
+                  <Tooltip title="Qabul qiluvchi ombor">
+                    <span>
+                      {item?.status === "rejected"
+                        ? "Rad etildi"
+                        : "Qabul qilindi"}
+                    </span>
+                  </Tooltip>
+                </>
+              ) : (
+                <>
+                  <Tooltip title="So'rov yuboruvchi ombor">
+                    <span>
+                      {item?.destinationWarehouse?.name ||
+                        item?.shop?.name ||
+                        "Noma'lum"}
+                    </span>
+                  </Tooltip>
+                  <ArrowRightOutlined className="mx-2 text-yellow-400" />
+                  <Tooltip title="Qabul qiluvchi ombor">
+                    <span>{user?.warehouse?.name || "Noma'lum"}</span>
+                  </Tooltip>
+                </>
+              )}
             </h3>
           </div>
           <Tooltip title="So'rov yuborilgan sana">
@@ -111,9 +158,15 @@ const PendingCardWarehouse = ({ item, fetchRequests }) => {
         </div>
 
         <div className="bg-black/20 p-3 rounded-lg">
-          <h4 className="text-sm font-medium text-yellow-300 mb-2">
+          {
+            item?.status === "rejected" ? <h4 className="text-sm font-medium text-red-400 mb-2">
+            Bekor qilingan
+          </h4> : item?.status === "approved" ? <h4 className="text-sm font-medium text-green-400 mb-2">
+            Qabul qilingan
+          </h4> : <h4 className="text-sm font-medium text-yellow-300 mb-2">
             So'ralgan mahsulotlar
           </h4>
+          }
           {item?.items?.length > 0 ? (
             <div className="space-y-3">
               {item?.items?.map((product) => (
@@ -156,14 +209,29 @@ const PendingCardWarehouse = ({ item, fetchRequests }) => {
           )}
         </div>
 
-        <div className="flex justify-end gap-2 mt-3">
-          <Button type="primary" danger onClick={() => changeStatusRejected()}>
-            Rad etish
-          </Button>
-          <Button type="primary" onClick={() => changeStatusApproved()}>
-            Qabul qilish
-          </Button>
-        </div>
+        {item?.status === "rejected" || item?.status === "approved" ? (
+          <div className="flex justify-end gap-2 mt-3">
+            <Button type="primary" onClick={() => deleteRequest()}>
+                O'qidim
+              </Button>
+          </div>
+        ) : (
+          <>
+            {" "}
+            <div className="flex justify-end gap-2 mt-3">
+              <Button
+                type="primary"
+                danger
+                onClick={() => changeStatusRejected()}
+              >
+                Rad etish
+              </Button>
+              <Button type="primary" onClick={() => changeStatusApproved()}>
+                Qabul qilish
+              </Button>
+            </div>
+          </>
+        )}
       </div>
     </Card>
   );
