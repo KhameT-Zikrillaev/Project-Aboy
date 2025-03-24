@@ -1,181 +1,195 @@
 import React, { useState, useEffect } from "react";
-import { Button, List, Image, InputNumber, message } from "antd";
+import { useForm, Controller } from "react-hook-form";
+import { Input, Button, Form, message } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
-import userStore from "@/store/useUser";
-import useApiMutation from "@/hooks/useApiMutation";
 import { toast } from "react-toastify";
-const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess, warehouseId }) => {
-  const [selectedItems, setSelectedItems] = useState([]);
-  const { user } = userStore();
+import useApiMutation from "@/hooks/useApiMutation";
+import userStore from "@/store/useUser";
 
-  // Используем useApiMutation для PATCH запроса
+const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess, warehouseId }) => {
+  const { user } = userStore();
+  const [selectedItems, setSelectedItems] = useState([]);
+  const { handleSubmit, control, setValue, watch, formState: { errors } } = useForm();
+
   const { mutate, isLoading: isSending } = useApiMutation({
-    url: 'warehouse-products',
-    method: 'PATCH',
-    onSuccess: (data) => {
-      toast.success('Продукты успешно отправлены!');
+    url: "warehouse-products",
+    method: "PATCH",
+    onSuccess: () => {
+      toast.success("Продукты успешно отправлены!");
       if (onSuccess) onSuccess();
       onClose();
     },
     onError: (error) => {
-      toast.error(`Ошибка: ${error.message || 'Не удалось отправить продукты'}`);
-      console.error('Error sending products:', error);
-    }
+      toast.error(`Ошибка: ${error.message || "Не удалось отправить продукты"}`);
+    },
   });
 
-
-  // Преобразуем выбранные товары в нужный формат с уникальным ключом
+  // Загружаем данные и сохраняем начальное количество (initialQuantity)
   useEffect(() => {
     if (selectedProducts) {
-      const preselectedItems = selectedProducts?.map((item, index) => ({
+      const preselectedItems = selectedProducts.map((item) => ({
         ...item,
-        key: `${item?.id}-${index}`,
+        initialQuantity: item?.quantity || 0, // Сохраняем начальное количество
         quantity: item?.quantity || 1,
       }));
       setSelectedItems(preselectedItems);
+      preselectedItems.forEach((item) => {
+        setValue(`quantity-${item.id}`, item.quantity);
+      });
     }
-  }, [selectedProducts]);
+  }, [selectedProducts, setValue]);
 
-  // Удаляем товар из списка по уникальному ключу
-  const handleRemove = (key) => {
+  // Удаление товара из списка
+  const handleRemove = (id) => {
     setSelectedItems((prev) => {
-      const updatedItems = prev?.filter((item) => item?.key !== key);
-      if (updatedItems?.length === 0) {
-        if (onSuccess) onSuccess(); // Закрываем, если все товары удалены
-        onClose();
-      }
+      const updatedItems = prev.filter((item) => item.id !== id);
+      if (updatedItems.length === 0) onClose();
       return updatedItems;
     });
   };
 
-  // Изменяем количество товара
-  const handleQuantityChange = (key, value) => {
+  // Изменение количества
+  const handleQuantityChange = (id, value) => {
+    const newQuantity = parseInt(value) || 0;
     setSelectedItems((prev) =>
-      prev?.map((item) =>
-        item?.key === key ? { ...item, quantity: value } : item
+      prev.map((item) =>
+        item.id === id ? { ...item, quantity: newQuantity } : item
       )
     );
+    setValue(`quantity-${id}`, newQuantity); // Обновляем значение в Controller
   };
 
-  // Отправка данных
+  // Отправка формы
   const onSubmit = () => {
-    if (selectedItems?.length === 0) {
-      message.warning('Нет выбранных товаров для отправки');
+    if (selectedItems.length === 0) {
+      message.warning("Нет выбранных товаров для отправки");
       return;
     }
-    
-    // Формируем данные для отправки на бэкенд
+
     const requestData = {
-      fromWarehouseId: user.warehouse?.id, // ID склада-отправителя
-      toWarehouseId: warehouseId, // ID склада-получателя
-      products: selectedItems?.map(item => ({
-        productId: item?.id, // ID продукта
-        quantity: item?.quantity // Количество
-      }))
+      fromWarehouseId: user.warehouse?.id,
+      toWarehouseId: warehouseId,
+      products: selectedItems.map((item) => ({
+        productId: item?.id,
+        quantity: item?.quantity,
+      })),
     };
-    // Отправляем данные на бэкенд
+
     mutate(requestData);
   };
 
   return (
-    <div className="flex min-h-[400px] min-w-[400px] flex-col md:flex-row w-full justify-between gap-3 mb-4 p-4 bg-white/10 backdrop-blur-md rounded-lg border border-white/20 hover:bg-white/20 transition-all duration-300">
-      <div className="w-full">
-        <div style={{ maxHeight: 300, overflowY: "auto" }}>
-          <List
-            dataSource={selectedItems}
-            renderItem={(product) => (
-              <List.Item
-                key={product.key}
+    <div className="p-4 bg-[#1a202c] rounded-lg">
+      <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
+        {selectedItems.map((product) => (
+          <Form.Item key={product.id}>
+            {/* Картинка */}
+            <img
+              crossOrigin="anonymous"
+              className="h-48 w-full bg-cover cursor-pointer bg-center rounded-t-lg"
+              src={product?.image_url}
+              alt=""
+            />
+
+            {/* Артикул */}
+            <h3 className="text-gray-100 font-semibold">{product?.article}</h3>
+
+            {/* Номер партии */}
+            <p className="text-gray-100 font-semibold">
+              Part: <span className="text-red-500">{product?.batch_number}</span>
+            </p>
+
+            {/* Показываем начальное количество (initialQuantity) */}
+            <span className="text-gray-100 font-semibold">
+              {product?.initialQuantity} dona bor omborda
+            </span>
+
+            {/* Инпут для изменения количества */}
+            <div className="flex mt-2">
+              <Controller
+                name={`quantity-${product.id}`}
+                control={control}
+                rules={{
+                  required: "Введите количество",
+                  min: { value: 1, message: "Минимум 1" },
+                  max: {
+                    value: product.initialQuantity, // Устанавливаем лимит по начальному количеству
+                    message: `Максимум ${product.initialQuantity}`,
+                  },
+                }}
+                render={({ field }) => (
+                  <Input
+                    type="number"
+                    {...field}
+                    value={product.quantity}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      handleQuantityChange(product.id, value);
+                      field.onChange(value);
+                    }}
+                    max={product.initialQuantity}
+                    className="w-24"
+                  />
+                )}
+              />
+
+              {/* Кнопка удаления */}
+              <Button
+                type="text"
+                icon={<CloseOutlined />}
+                onClick={() => handleRemove(product.id)}
                 style={{
+                  color: "#fff",
+                  backgroundColor: "#17212b",
+                  borderRadius: "4px",
+                  width: "32px",
+                  height: "32px",
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "space-between",
-                  cursor: "pointer",
+                  justifyContent: "center",
+                  transition: "background-color 0.2s ease",
                 }}
-              >
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <Image
-                    src={product.image_url}
-                    width={50}
-                    height={50}
-                    style={{ marginRight: "10px" }}
-                    className="object-cover"
-                    crossOrigin="anonymous"
-                  />
-                  <div className="ml-2">
-                    <div className="text-white font-bold">{product?.article}</div>
-                    <div className="text-white">{product?.code}</div>
-                  </div>
-                </div>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  {/* ✅ Добавил InputNumber ВНУТРИ renderItem */}
-                  <InputNumber
-                    min={1}
-                    max={product?.stock}
-                    value={product?.quantity}
-                    onChange={(value) =>
-                      handleQuantityChange(product.key, value)
-                    }
-                    style={{ width: 60, marginRight: 10 }}
-                    controls={true}
-                    step={1}
-                    parser={(value) => value.replace(/[^\d]/g, "")}
-                    formatter={(value) => `${value}`.replace(/[^\d]/g, "")}
-                    onKeyPress={(e) => {
-                      if (!/[0-9]/.test(e.key)) {
-                        e.preventDefault();
-                      }
-                    }}
-                  />
-                  <Button
-                    type="text"
-                    size="small"
-                    icon={<CloseOutlined />}
-                    onClick={() => handleRemove(product?.key)}
-                    style={{
-                      color: "#fff",
-                      backgroundColor: "#17212b",
-                      borderRadius: "4px",
-                      width: "28px",
-                      height: "28px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      transition: "background-color 0.2s ease",
-                      marginRight: "10px",
-                    }}
-                    className="hover:bg-red-600"
-                  />
-                </div>
-              </List.Item>
+                className="hover:bg-red-600"
+              />
+            </div>
+
+            {/* Ошибка валидации */}
+            {errors[`quantity-${product.id}`] && (
+              <span className="text-red-400">
+                {errors[`quantity-${product.id}`]?.message}
+              </span>
             )}
-            pagination={{ 
-              pageSize: 3,
-              className: "custom-pagination",
-              hideOnSinglePage: true // Скрыть пагинацию, если все элементы помещаются на одной странице
+          </Form.Item>
+        ))}
+
+        {/* Кнопка отправки */}
+        <Form.Item>
+          <Button
+            type="primary"
+            htmlType="submit"
+            loading={isSending}
+            disabled={isSending || selectedItems.length === 0}
+            style={{
+              backgroundColor: "#364153",
+              color: "#f3f4f6",
+              fontWeight: "500",
+              padding: "15px 20px",
+              borderRadius: "8px",
+              fontSize: "18px",
+              width: "100%",
+              transition: "background-color 0.3s ease",
             }}
-          />
-        </div>
-
-        {/* ✅ Количество товаров */}
-        <div className="text-center text-white mt-4">
-          <span>
-              Tanlangan tovarlar soni:{" "}
-            <strong>{selectedItems.length}</strong>
-          </span>
-        </div>
-
-        {/* ✅ Кнопка отправки */}
-        <Button
-          type="primary"
-          onClick={onSubmit}
-          loading={isSending}
-          disabled={isSending || selectedItems?.length === 0}
-          style={{ marginTop: 20, width: "100%" }}
-        >
-          {isSending ? 'Отправка...' : 'Yuborish'}
-        </Button>
-      </div>
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.backgroundColor = "#2b3445")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.backgroundColor = "#364153")
+            }
+          >
+            {isSending ? "Отправка..." : "Yuborish"}
+          </Button>
+        </Form.Item>
+      </Form>
     </div>
   );
 };

@@ -8,12 +8,12 @@ import { AdminCards } from "./data/AdminCards.js"; // Импортируем д�
 import { SkladCards } from "./data/WarehouseCards.js"; // Импортируем данные
 import { SellerCards } from "./data/SellerCards.js";
 import { DirectorCards } from "./data/DirectorCards.js";
-// import  useUserStore  from "@/store/useUser";
+import  useUserStore  from "@/store/useUser";
 // import useRequest from "./components/useRequest.jsx";
 // import useRequestShop from "./components/useRequestShop.jsx";
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
-  // const {user} = useUserStore();
+  const {user} = useUserStore();
   const location = useLocation();
 
   useEffect(() => {
@@ -53,7 +53,7 @@ export default function Home() {
 
   return (
     <div
-      className="min-h-screen relative bg-cover bg-center p-2"
+      className="min-h-screen relative bg-cover bg-center p-1"
       style={{ backgroundImage: `url(${bgsklad})` }}
     >
       {isLoading && <Loading />}
@@ -65,7 +65,7 @@ export default function Home() {
       {/* Основной контент */}
       <div className="relative z-0 flex flex-col items-center justify-center mt-[120px]">
         {/* Блок с пользователем */}
-        <div className="flex items-center justify-center gap-3 mb-2 p-4 bg-white/10 backdrop-blur-md rounded-lg border border-white/10 hover:bg-white/20 transition-all duration-300">
+        <div className="flex items-center justify-center gap-3 mb-2 p-2 bg-white/10 backdrop-blur-md rounded-lg border border-white/10 hover:bg-white/20 transition-all duration-300">
           <AiOutlineUser className="text-3xl text-white" />
           <span className="text-xl font-semibold text-white">{userRole}</span>
         </div>
@@ -83,7 +83,7 @@ export default function Home() {
               <Link
                 key={index}
                 to={card.link}
-                className="flex flex-col items-center justify-center p-8 bg-black/50 md:bg-white/10 backdrop-blur-md rounded-lg border border-white/10 hover:bg-white/20 transition-all duration-300 hover:scale-105"
+                className="flex flex-col items-center justify-center p-6 bg-black/50 md:bg-white/10 backdrop-blur-md rounded-lg border border-white/10 hover:bg-white/20 transition-all duration-300 hover:scale-105"
               >
                 {card.icon}
                 <span className="text-xl text-center font-semibold text-white">{card.title}</span>
