@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { DatePicker } from 'antd'; 
-import { FaBox } from "react-icons/fa";
+import { FaWarehouse, FaChartLine,FaListAlt, FaBox,FaUserTie} from "react-icons/fa";
 import { CloseCircleOutlined } from '@ant-design/icons'; 
 import dayjs from 'dayjs';
 
@@ -12,14 +12,17 @@ const SearchFormStartEnd = ({ onSearch, title, showDatePicker = true }) => {
   const handleDateRangeChange = (dates) => {
     setDateRange(dates);
     if (typeof onSearch === 'function') {
-      onSearch(dates[0] ? dayjs(dates[0]).format('YYYY-MM-DD') : null, dates[1] ? dayjs(dates[1]).format('YYYY-MM-DD') : null);
+      // Передаем обе даты в формате 'YYYY-MM-DD'
+      const startDate = dates && dates[0] ? dayjs(dates[0]).format('YYYY-MM-DD') : null;
+      const endDate = dates && dates[1] ? dayjs(dates[1]).format('YYYY-MM-DD') : null;
+      onSearch(null, startDate, endDate); // Передаем searchTerm как null, если он не используется
     }
   };
 
   const handleClear = () => {
     setDateRange([null, null]);   
     if (typeof onSearch === 'function') {
-      onSearch(null, null);
+      onSearch(null, null, null); // Очищаем фильтрацию
     }
   };
 
@@ -28,7 +31,7 @@ const SearchFormStartEnd = ({ onSearch, title, showDatePicker = true }) => {
   return (
     <div className="flex flex-col md:flex-row w-full justify-between gap-3 mb-4 p-4 bg-white/10 backdrop-blur-md rounded-lg hover:bg-white/20 transition-all duration-300">
       <div className="flex justify-center md:justify-start items-center">
-        <FaBox className="text-3xl text-white" />
+        <FaChartLine className="text-3xl text-white" />
         <span className="text-xl font-semibold ml-2 text-white">{title}</span>
       </div>
       <div className="flex flex-col md:flex-row gap-3 items-center">
