@@ -19,7 +19,7 @@ export default function Warehouse() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const {user} = useUserStore()
 
-  const {data, isLoading} = useFetch(`warehouse-products/${user?.shop?.warehouse_id}`, `warehouse-products/${user?.shop?.warehouse_id}`, );
+  const {data, isLoading, refetch} = useFetch(`warehouse-products/byWarehouse/${user?.shop?.warehouse_id}`, `warehouse-products/byWarehouse/${user?.shop?.warehouse_id}`, );
 
 
   useEffect(() => {

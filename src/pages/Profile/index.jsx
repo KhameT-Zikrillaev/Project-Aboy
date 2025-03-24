@@ -8,12 +8,12 @@ import { AdminCards } from "./data/AdminCards.js"; // Импортируем д�
 import { SkladCards } from "./data/WarehouseCards.js"; // Импортируем данные
 import { SellerCards } from "./data/SellerCards.js";
 import { DirectorCards } from "./data/DirectorCards.js";
-// import  useUserStore  from "@/store/useUser";
+import  useUserStore  from "@/store/useUser";
 // import useRequest from "./components/useRequest.jsx";
 // import useRequestShop from "./components/useRequestShop.jsx";
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
-  // const {user} = useUserStore();
+  const {user} = useUserStore();
   const location = useLocation();
 
   useEffect(() => {
