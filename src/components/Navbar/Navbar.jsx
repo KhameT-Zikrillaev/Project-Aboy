@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom"; // Импортируем Link, useNavigate и useLocation из react-router-dom
 import { FaArrowLeft } from "react-icons/fa"; // Импортируем иконку стрелки назад
 import logo from "@/assets/images/logo.png"; // Укажите правильный путь к вашему логотипу
 import useUserStore from "@/store/useUser";
 import { TbBellRinging2Filled } from "react-icons/tb";
-import { Badge } from "antd";
+import { Badge, Spin } from "antd";
 import api from "@/services/api";
 import PendingCardWarehouse from "../requestCards/PendingCardWarehouse";
 const Navbar = () => {
@@ -13,6 +13,7 @@ const Navbar = () => {
   const { user, isLoggedIn } = useUserStore();
   const [openNotification, setOpenNotification] = useState(false);
   const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(false);
   const handleGoBack = () => {
     // Переход на родительский маршрут вместо истории браузера
     const pathParts = location.pathname.split("/");
@@ -29,35 +30,31 @@ const Navbar = () => {
     }
   };
 
-  useEffect(() => {
+  const fetchRequests = useCallback(async () => {
     if (user?.role !== "staff") return;
+    setLoading(true);
+    try {
+      const [warehouseRes, shopRes] = await Promise.all([
+        api.get(`warehouse-requests/pending-requests/${user?.warehouse?.id}`),
+        api.get(`shop-request/pending-requests/${user?.warehouse?.id}`),
+      ]);
+      const combinedRequests = [
+        ...(warehouseRes?.data || []),
+        ...(shopRes?.data || []),
+      ];
+      setRequests(combinedRequests);
+    } catch (error) {
+      console.error("Xatolik yuz berdi", error);
+    }finally{
+      setLoading(false);
+    }
+  }, [user?.role, user?.warehouse?.id, user?.id]);
 
-    const fetchData = async () => {
-      try {
-        const response = await api.get(
-          `warehouse-requests/pending-requests/${user?.warehouse?.id}`
-        );
-        console.log(response?.data);
-        
-        if (Array.isArray(response.data) && response.data.length > 0) {
-          setRequests(response.data);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchData();
-    const intervalId = setInterval(fetchData, 60000);
-
+  useEffect(() => {
+    fetchRequests();
+    const intervalId = setInterval(fetchRequests, 60000);
     return () => clearInterval(intervalId);
-  }, [user?.role, user?.warehouse?.id]);
-
-  
-  
-
-  console.log(requests);
-  
+  }, [fetchRequests]);
 
   const handleOutsideClick = (e) => {
     if (openNotification) {
@@ -91,14 +88,17 @@ const Navbar = () => {
       {/* Правая часть: Имя пользователя и кнопка выхода */}
       <div className="right-content flex items-center space-x-4">
         {(user?.role === "staff" || user?.role === "seller") && (
-          <div className="text-gray-100 text-[30px] mr-5 cursor-pointer" onClick={(e) => {
-            e.stopPropagation(); 
-            setOpenNotification(!openNotification);
-          }}>
-        <Badge count={99} size="small">
-          <TbBellRinging2Filled className="text-gray-100 text-[30px]"/>
-        </Badge> 
-      </div>
+          <div
+            className="text-gray-100 text-[30px] mr-5 cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              setOpenNotification(!openNotification);
+            }}
+          >
+            <Badge count={requests?.length} size="small">
+              <TbBellRinging2Filled className="text-gray-100 text-[30px]" />
+            </Badge>
+          </div>
         )}
         <div className="text-right">
           <h2 className="text-sm md:text-lg font-semibold text-white">
@@ -134,12 +134,17 @@ const Navbar = () => {
           onClick={handleOutsideClick}
         ></div>
       )}
-      <div className={`p-2 absolute h-screen w-[350px] z-[100000000] flex flex-col gap-2 top-0 ${openNotification ? 'right-0' : '-right-full'} bg-[#17212b] overflow-y-auto transition-all duration-300 ease-in-out`}>
+      <div
+        className={`p-2 absolute h-screen w-[400px] z-[100000000]  top-0 ${
+          openNotification ? "right-0" : "-right-full"
+        } bg-[#17212b] transition-all duration-300 ease-in-out overflow-y-scroll`}
+      >
+        <div className="flex flex-col gap-2">
         {
-          requests?.map((request) => (
-            <PendingCardWarehouse key={request.id} item={request}/>
-          ))
-        }
+         requests?.length === 0 ? <p className="text-gray-100 text-center mt-10">Xabarlar mavjud emas</p> : requests?.map((request) => (
+          <PendingCardWarehouse fetchRequests={fetchRequests} key={request.id} item={request} />
+        ))}
+        </div>
       </div>
     </div>
   );
