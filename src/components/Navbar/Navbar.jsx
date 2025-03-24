@@ -13,7 +13,7 @@ const Navbar = () => {
   const { user, isLoggedIn } = useUserStore();
   const [openNotification, setOpenNotification] = useState(false);
   const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [requestsAnswer, setRequestsAnswer] = useState([]);
   const handleGoBack = () => {
     // Переход на родительский маршрут вместо истории браузера
     const pathParts = location.pathname.split("/");
@@ -25,19 +25,20 @@ const Navbar = () => {
       const parentPath = pathParts.join("/");
       navigate(parentPath);
     } else {
-      // Если мы на верхнем уровне, просто идем назад по истории
       navigate(-1);
     }
   };
 
   const fetchRequests = useCallback(async () => {
     if (user?.role !== "staff") return;
-    setLoading(true);
     try {
       const [warehouseRes, shopRes] = await Promise.all([
         api.get(`warehouse-requests/pending-requests/${user?.warehouse?.id}`),
         api.get(`shop-request/pending-requests/${user?.warehouse?.id}`),
       ]);
+      const response = await api.get(`warehouse-requests/all-requests/${user?.warehouse?.id}`);
+      console.log(response);
+      
       const combinedRequests = [
         ...(warehouseRes?.data || []),
         ...(shopRes?.data || []),
@@ -45,8 +46,6 @@ const Navbar = () => {
       setRequests(combinedRequests);
     } catch (error) {
       console.error("Xatolik yuz berdi", error);
-    }finally{
-      setLoading(false);
     }
   }, [user?.role, user?.warehouse?.id, user?.id]);
 
