@@ -15,23 +15,23 @@ const PendingCardWarehouse = ({ item, fetchRequests }) => {
       const endpoint = item?.shop ? `shop-request/change-status/${item?.id}` : `warehouse-requests/change-status/${item?.id}`;
       await api.patch(endpoint, { status });
       
-      // if (status === "approved" && item?.shop) {
-      //   const { quantity = 0, product } = item?.items[0] || {};
-      //   await api.post("order", {
-      //     shop_id: item.shop.id,
-      //     warehouse_id: user?.warehouse?.id,
-      //     seller_id: item.shop.sellers[0]?.id,
-      //     total_amount: product?.price * quantity,
-      //     payment_method: "cash",
-      //     items: [{
-      //       productId: product?.id,
-      //       orderId: item?.id,
-      //       price: product?.price,
-      //       quantity,
-      //       total: product?.price * quantity,
-      //     }],
-      //   });
-      // }
+      if (status === "approved" && item?.shop) {
+        const { quantity = 0, product } = item?.items[0] || {};
+        await api.post("order", {
+          shop_id: item.shop.id,
+          warehouse_id: user?.warehouse?.id,
+          seller_id: item.shop.sellers[0]?.id,
+          total_amount: product?.price * quantity,
+          payment_method: "cash",
+          items: [{
+            productId: product?.id,
+            orderId: item?.id,
+            price: product?.price,
+            quantity,
+            total: product?.price * quantity,
+          }],
+        });
+      }
 
       fetchRequests();
       toast.success(status === "approved" ? "Mahsulot muvaffaqiyatli berildi" : "So'rov bekor qilindi");
