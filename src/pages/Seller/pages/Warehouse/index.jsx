@@ -63,9 +63,6 @@ export default function Warehouse() {
     setFilteredData(results);
   };
 
-  console.log(true == true);
-  
-  
   return (
     <div
       className="min-h-screen bg-cover bg-center p-1 relative"
