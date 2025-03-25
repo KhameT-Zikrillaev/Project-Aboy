@@ -12,12 +12,8 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
     handleSubmit,
     control,
     formState: { errors },
-    // setValue,
     reset,
-    watch,
   } = useForm();
-  // const imageFile = watch("image");
-  // const [previewImage, setPreviewImage] = useState(null);
 
   useEffect(() => {
     if (productSingleData) {

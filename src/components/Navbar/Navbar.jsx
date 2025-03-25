@@ -1,26 +1,20 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom"; // Импортируем Link, useNavigate и useLocation из react-router-dom
-import { FaArrowLeft } from "react-icons/fa"; // Импортируем иконку стрелки назад
-import logo from "@/assets/images/logo.png"; // Укажите правильный путь к вашему логотипу
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { FaArrowLeft } from "react-icons/fa"; 
+import logo from "@/assets/images/logo.png"; 
 import useUserStore from "@/store/useUser";
 import { TbBellRinging2Filled } from "react-icons/tb";
-import { Badge, Spin } from "antd";
-import api from "@/services/api";
+import { Badge } from "antd";
 import PendingCardWarehouse from "../requestCards/PendingCardWarehouse";
+import useFetch from "@/hooks/useFetch";  
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, isLoggedIn } = useUserStore();
+  const { user } = useUserStore();
   const [openNotification, setOpenNotification] = useState(false);
-  const [requests, setRequests] = useState([]);
-  const [requestsAnswer, setRequestsAnswer] = useState([]);
   const handleGoBack = () => {
-    // Переход на родительский маршрут вместо истории браузера
     const pathParts = location.pathname.split("/");
-
-    // Если мы находимся на глубине больше 2 уровней, вернемся на родительский маршрут
     if (pathParts.length > 2) {
-      // Удаляем последний сегмент пути
       pathParts.pop();
       const parentPath = pathParts.join("/");
       navigate(parentPath);
@@ -29,31 +23,54 @@ const Navbar = () => {
     }
   };
 
-  const fetchRequests = useCallback(async () => {
-    if (user?.role !== "staff") return;
-    try {
-      const [warehouseRes, shopRes, orderRes] = await Promise.all([
-        api.get(`warehouse-requests/pending-requests/${user?.warehouse?.id}`),
-        api.get(`shop-request/pending-requests/${user?.warehouse?.id}`),
-        api.get(`warehouse-requests/all-requests/${user?.warehouse?.id}`)
-      ]);
-      
-      const combinedRequests = [
-        ...(orderRes?.data || []),
-        ...(warehouseRes?.data || []),
-        ...(shopRes?.data || []),
-      ];
-      setRequests(combinedRequests);
-    } catch (error) {
-      console.error("Xatolik yuz berdi", error);
-    }
-  }, [user?.role, user?.warehouse?.id, user?.id]);
+  const { data: warehouseRequests, refetch: refetchWarehouseRequests } = useFetch(
+    "warehouse-requests",
+    `warehouse-requests/pending-requests/${user?.warehouse?.id}`,
+    {},
+    { enabled: user?.role === "staff" }
+  );
 
-  useEffect(() => {
-    fetchRequests();
-    const intervalId = setInterval(fetchRequests, 60000);
-    return () => clearInterval(intervalId);
-  }, [fetchRequests]);
+  const { data: shopRequests, refetch: refetchShopRequests } = useFetch(
+    "shop-requests",
+    `shop-request/pending-requests/${user?.warehouse?.id}`,
+    {},
+    { enabled: user?.role === "staff" }
+  );
+
+  const { data: orderRequests, refetch: refetchOrderRequests } = useFetch(
+    "order-requests",
+    `warehouse-requests/all-requests/${user?.warehouse?.id}`,
+    {},
+    { enabled: user?.role === "staff" }
+  );
+
+  const { data: sellerRequests, refetch: refetchSellerRequests } = useFetch(
+    "seller-requests",
+    `shop-request/all-requests/byShop/${user?.shop?.id}`,
+    {},
+    { enabled: user?.role === "seller" }
+  );
+
+  const requests = user?.role === "staff"
+    ? [...(warehouseRequests || []), ...(shopRequests || []), ...(orderRequests || [])]
+    : user?.role === "seller"
+    ? [...(sellerRequests || [])]
+    : [];
+
+    const fetchRequests = () => {
+      if (user?.role === "staff") {
+        refetchWarehouseRequests();
+        refetchShopRequests();
+        refetchOrderRequests();
+      } else if (user?.role === "seller") {
+        refetchSellerRequests();
+      }
+    };
+
+    useEffect(() => {
+      const intervalId = setInterval(fetchRequests, 60000);
+      return () => clearInterval(intervalId);
+    }, [refetchWarehouseRequests, refetchShopRequests, refetchOrderRequests, refetchSellerRequests]);
 
   const handleOutsideClick = (e) => {
     if (openNotification) {
@@ -132,10 +149,13 @@ const Navbar = () => {
         } bg-[#17212b] transition-all duration-300 ease-in-out overflow-y-scroll`}
       >
         <div className="flex flex-col gap-2">
-        {
-         requests?.length === 0 ? <p className="text-gray-100 text-center mt-10">Xabarlar mavjud emas</p> : requests?.map((request) => (
-          <PendingCardWarehouse fetchRequests={fetchRequests} key={request.id} item={request} />
-        ))}
+        {requests?.length === 0 ? (
+            <p className="text-gray-100 text-center mt-10">Xabarlar mavjud emas</p>
+          ) : (
+            requests?.map((request) => (
+              <PendingCardWarehouse fetchRequests={fetchRequests} key={request.id} item={request} />
+            ))
+          )}
         </div>
       </div>
     </div>

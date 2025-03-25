@@ -8,96 +8,46 @@ import { toast } from "react-toastify";
 
 const PendingCardWarehouse = ({ item, fetchRequests }) => {
   const { user } = useUserStore();
-  const formatDate = (dateString) => {
-    try {
-      return format(new Date(dateString), "dd.MM.yyyy HH:mm");
-    } catch (error) {
-      return "Invalid date";
-    }
-  };
+  const formatDate = (date) => (date ? format(new Date(date), "dd.MM.yyyy HH:mm") : "Noma'lum sana");
 
-  const changeStatusApproved = async () => {
+  const updateStatus = async (status) => {
     try {
-      if (item?.shop) {
-        const quantity = item?.items[0]?.quantity ?? 0;
-        const price = item?.items[0]?.product?.price ?? 0;
-        const productId = item?.items[0]?.product?.id;
-        const shopId = item?.shop?.id;
-        const sellerId = item?.shop?.sellers[0]?.id;
-        const response = await api.patch(
-          `shop-request/change-status/${item?.id}`,
-          { status: "approved" }
-        );
-        const order = await api.post("order", {
-          shop_id: shopId,
+      const endpoint = item?.shop ? `shop-request/change-status/${item?.id}` : `warehouse-requests/change-status/${item?.id}`;
+      await api.patch(endpoint, { status });
+      
+      if (status === "approved" && item?.shop) {
+        const { quantity = 0, product } = item?.items[0] || {};
+        await api.post("order", {
+          shop_id: item.shop.id,
           warehouse_id: user?.warehouse?.id,
-          seller_id: sellerId,
-          total_amount: price * quantity,
+          seller_id: item.shop.sellers[0]?.id,
+          total_amount: product?.price * quantity,
           payment_method: "cash",
-          items: [
-            {
-              productId: productId,
-              orderId: item?.id,
-              price: price,
-              quantity: quantity,
-              total: price * quantity,
-            },
-          ],
+          items: [{
+            productId: product?.id,
+            orderId: item?.id,
+            price: product?.price,
+            quantity,
+            total: product?.price * quantity,
+          }],
         });
-      } else {
-        const response = await api.patch(
-          `warehouse-requests/change-status/${item?.id}`,
-          {
-            status: "approved",
-          }
-        );
-        
       }
+
       fetchRequests();
-      toast.success("Mahsulot muvaffaqiyatli berildi");
+      toast.success(status === "approved" ? "Mahsulot muvaffaqiyatli berildi" : "So'rov bekor qilindi");
     } catch (error) {
-      if(error?.response?.status === 404){
-        toast.error("Mahsulot yetarli emas");
-      }else{
-        toast.error("Mahsulot berishda xatolik yuz berdi");
-      }
+      toast.error(error?.response?.status === 404 ? "Mahsulot yetarli emas" : "Xatolik yuz berdi");
     }
   };
 
   const deleteRequest = async () => {
     try {
-      if (item?.shop) {
-        const response = await api.delete(`shop-request/${item?.id}`);
-      } else {
-        const response = await api.delete(`warehouse-requests/remove-request/${item?.id}`);
-      }
+      const endpoint = item?.shop ? `shop-request/remove-request/${item?.id}` : `warehouse-requests/remove-request/${item?.id}`;
+      await api.delete(endpoint);
       fetchRequests();
       toast.success("So'rov muvaffaqiyatli o'chirildi");
-    } catch (error) {
+    } catch {
       toast.error("So'rov o'chirishda xatolik yuz berdi");
-    }
-  }
-  const changeStatusRejected = async () => {
-    try {
-      if (item?.shop) {
-        const response = await api.patch(
-          `shop-request/change-status/${item?.id}`,
-          {
-            status: "rejected",
-          }
-        );
-      } else {
-        const response = await api.patch(
-          `warehouse-requests/change-status/${item?.id}`,
-          {
-            status: "rejected",
-          }
-        );
-      }
-      fetchRequests();
-      toast.success("So'rov bekor qilindi");
-    } catch (error) {
-      toast.error("So'rovni bekor qilishda xatolik yuz berdi");
     }
   };
 
@@ -209,9 +159,9 @@ const PendingCardWarehouse = ({ item, fetchRequests }) => {
           )}
         </div>
 
-        {item?.status === "rejected" || item?.status === "approved" ? (
+        {item?.status !== "pending" ? (
           <div className="flex justify-end gap-2 mt-3">
-            <Button type="primary" onClick={() => deleteRequest()}>
+            <Button type="primary"  onClick={deleteRequest}>
                 O'qidim
               </Button>
           </div>
@@ -222,11 +172,11 @@ const PendingCardWarehouse = ({ item, fetchRequests }) => {
               <Button
                 type="primary"
                 danger
-                onClick={() => changeStatusRejected()}
+                onClick={() => updateStatus("rejected")}
               >
                 Rad etish
               </Button>
-              <Button type="primary" onClick={() => changeStatusApproved()}>
+              <Button type="primary" onClick={() => updateStatus("approved")}>
                 Qabul qilish
               </Button>
             </div>

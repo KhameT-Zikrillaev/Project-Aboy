@@ -31,7 +31,7 @@ const Product = () => {
   const [imageUrl, setImageUrl] = useState(null);
   const [warehouseId, setWarehouseId] = useState(null);
 
-  const {data: warehouseData} = useFetch("warehouse", "warehouse", {});
+  const {data: warehouseData} = useFetch("warehouse", "warehouse");
 
   const { data, isLoading, refetch } = useFetch("warehouse-products/all-products", "warehouse-products/all-products", {
     warehouseId: warehouseId || null,

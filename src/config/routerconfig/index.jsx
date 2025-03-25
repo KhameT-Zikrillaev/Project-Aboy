@@ -23,7 +23,7 @@ const WarehouseSendProductsToShopView = lazy(() => import("@/pages/Warehouse/pag
 const WarehouseRemoveProductsFromShowcase = lazy(() => import("@/pages/Warehouse/pages/RemoveProductsFromShowcase"));
 const WarehouseTransferProductsToWarehouse = lazy(() => import("@/pages/Warehouse/pages/TransferProductsToWarehouse"));
 const WarehouseShop = lazy(() => import("@/pages/Warehouse/pages/Shop"));
-const WarehouseReturnProducts = lazy(() => import("@/pages/Warehouse/pages/Shop/pages/ReturnProducts"));
+const WarehouseShopReturnProduct = lazy(() => import("@/pages/Warehouse/pages/Shop/pages/ReturnProducts/ReturnProducts"));
 const WarehouseCashregister = lazy (() => import("@/pages/Warehouse/pages/Cashregister")) ;
 const WarehouseReportDetailes = lazy (() => import("@/pages/Warehouse/pages/ReportSellerSend/components/ReportDetailes")) ;
 const WarehouseViewDetailesSingleShop = lazy (() => import("@/pages/Warehouse/pages/ReportSellerSend/components/ReportDetailesSingle")) ;
@@ -88,9 +88,8 @@ const getRoutesByRole = (role) => {
           <Route path="report-seller-send" element={<WarehouseReportSellerSend />}/>
           <Route path="report-seller-send/:name" element={<WarehouseReportDetailes />}/>
           <Route path="report-seller-send/:name/:date" element={<WarehouseViewDetailesSingleShop />}/>
-          <Route path="shop">
-            <Route path="return-products" element={<WarehouseReturnProducts />} />
-          </Route>
+          <Route path="shop" element={<WarehouseShop />} />
+          <Route path="shop/:id" element={<WarehouseShopReturnProduct />} />
         </Route>
       );
 

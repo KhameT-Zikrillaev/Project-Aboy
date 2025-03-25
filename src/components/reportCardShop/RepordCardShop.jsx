@@ -1,11 +1,9 @@
 import React from 'react';
-import { Card, Tooltip, Badge } from 'antd';
-import { ArrowRightOutlined } from '@ant-design/icons';
+import { Card,} from 'antd';
 import { format } from 'date-fns';
 import useUserStore from '@/store/useUser';
 
 const RepordCardShop = ({ item }) => {
-  const { user } = useUserStore();
   const formatDate = (dateString) => {
     try {
       return format(new Date(dateString), 'dd.MM.yyyy HH:mm');
