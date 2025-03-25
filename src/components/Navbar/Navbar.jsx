@@ -50,11 +50,12 @@ const Navbar = () => {
     {},
     { enabled: user?.role === "seller" }
   );
+  
 
   const requests = user?.role === "staff"
-    ? [...(warehouseRequests || []), ...(shopRequests || []), ...(orderRequests || [])]
+    ? [...(warehouseRequests?.data || []), ...(shopRequests?.data || []), ...(orderRequests?.data || [])]
     : user?.role === "seller"
-    ? [...(sellerRequests || [])]
+    ? [...(sellerRequests?.data || [])]
     : [];
 
     const fetchRequests = () => {
@@ -153,7 +154,7 @@ const Navbar = () => {
             <p className="text-gray-100 text-center mt-10">Xabarlar mavjud emas</p>
           ) : (
             requests?.map((request) => (
-              <PendingCardWarehouse fetchRequests={fetchRequests} key={request.id} item={request} />
+              <PendingCardWarehouse fetchRequests={fetchRequests} key={request?.id} item={request} />
             ))
           )}
         </div>

@@ -25,7 +25,7 @@ export default function ReturnProducts() {
   const { data, isLoading, refetch } = useFetch(
     `order/shop/${id}`,
     `order/shop/${id}`,
-    { page, limit, date: dates ? format(new Date(dates), "yyyy.dd.MM") : null },
+    { page, limit, date: dates ? format(new Date(dates), "yyyy-MM-dd") : null },
 
   );
 
@@ -40,8 +40,6 @@ export default function ReturnProducts() {
       return "Invalid date";
     }
   };
-
-  console.log(format(new Date(dates), "yyyy.dd.MM"));
 
   const showModal = (product) => {
     setSelectedProduct(product); // Устанавливаем выбранный товар

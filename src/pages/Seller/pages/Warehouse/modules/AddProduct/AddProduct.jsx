@@ -54,7 +54,6 @@ const AddProduct = ({ onClose, product }) => {
   
     mutate(requestBody); // Отправляем запрос на бекенд
   
-    console.log("Forma ma'lumotlari:", data);
   };
   
 
