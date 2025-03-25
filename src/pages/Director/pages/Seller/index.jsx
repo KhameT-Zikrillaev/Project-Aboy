@@ -8,27 +8,42 @@ import useApiMutation from "@/hooks/useApiMutation";
 const { TextArea } = Input;
 
 export default function Seller() {
-  const [visibleShops, setVisibleShops] = useState(12);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(12);
   const [expandedCard, setExpandedCard] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [comment, setComment] = useState("");
-  const [errors, setErrors] = useState({ date: false, comment: false });
-  const [filteredData, setFilteredData] = useState([]); // Исходные данные
-  const [filteredBySearch, setFilteredBySearch] = useState([]); // Отфильтрованные данные
+  const [price, setPrice] = useState("");
+  const [errors, setErrors] = useState({ date: false, comment: false, price: false });
+  const [filteredData, setFilteredData] = useState([]);
+  const [searchParams, setSearchParams] = useState({});
 
-  const { data, isLoading, refetch } = useFetch('shop', 'shop', {});
-  const shops = data?.data?.shops || [];
-
-  // Инициализация данных при загрузке
-  useEffect(() => {
-    if (shops.length > 0) {
-      setFilteredData(shops);
-      setFilteredBySearch(shops); // Изначально отображаем все магазины
+  // Запрос пользователей с пагинацией и фильтрацией
+  const { data: usersData, isLoading: usersLoading, refetch } = useFetch(
+    'users', 
+    'users', 
+    {
+      page: currentPage,
+      limit: pageSize,
+      role: 'seller',
+      name: searchParams.name || '' // Передаем только имя
     }
-  }, [shops]);
+  );
+   console.log(usersData);
+  const users = usersData?.data?.users || [];
+  const totalUsers = usersData?.data?.total || 0;
+  const totalPages = Math.ceil(totalUsers / pageSize);
 
-  const loadMoreShops = () => {
-    setVisibleShops((prevVisibleShops) => prevVisibleShops + 12);
+  useEffect(() => {
+    if (users.length > 0) {
+      setFilteredData(users);
+    }
+  }, [users]);
+
+  const loadMoreUsers = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(prev => prev + 1);
+    }
   };
 
   const toggleExpand = (id) => {
@@ -40,13 +55,14 @@ export default function Seller() {
   };
 
   const { mutate, isLoading: isSending } = useApiMutation({
-    url: 'Storefront-product',
-    method: 'PATCH',
+    url: 'debtors',
+    method: 'POST',
     onSuccess: () => {
       message.success('Данные успешно отправлены!');
       setExpandedCard(null);
       setSelectedDate(null);
       setComment("");
+      setPrice("");
     },
     onError: (error) => {
       message.error(`Ошибка: ${error.message || 'Не удалось отправить данные'}`);
@@ -63,70 +79,73 @@ export default function Seller() {
     setErrors((prev) => ({ ...prev, comment: false }));
   };
 
-  const handleMark = (shopId) => {
-    let hasError = false;
-    const newErrors = { date: false, comment: false };
+  const handlePriceChange = (e) => {
+    setPrice(e.target.value);
+    setErrors((prev) => ({ ...prev, price: false }));
+  };
 
-    if (!selectedDate) {
-      newErrors.date = true;
-      hasError = true;
-    }
-    if (!comment.trim()) {
-      newErrors.comment = true;
-      hasError = true;
-    }
-
-    setErrors(newErrors);
-
-    if (hasError) {
+  const handleMark = (userId) => {
+    // Валидация
+    if (!selectedDate || !comment.trim() || !price || isNaN(Number(price))) {
+      setErrors({
+        date: !selectedDate,
+        comment: !comment.trim(),
+        price: !price || isNaN(Number(price))
+      });
       return;
     }
-
+  
+    // Формируем payload ТОЧНО как в примере API
     const payload = {
-      shopID: shopId,
-      description: comment,
-      date: selectedDate.format("YYYY-MM-DD")
+      sellerId: userId,
+      debts: [{
+        deadline: selectedDate.toISOString(), // просто используйте toISOString() без замены
+        price: Number(price),
+        comment: comment
+      }]
     };
-
+  
+    console.log("Отправляемые данные:", JSON.stringify(payload, null, 2));
     mutate(payload);
   };
-
-  // Обработчик поиска
-  const handleSearch = (searchResults) => {
-    setFilteredBySearch(searchResults);
+  const handleSearch = (searchParams) => {
+    setSearchParams({ name: searchParams.name });
+    setCurrentPage(1);
+    refetch(); // Важно вызвать повторный запрос после изменения параметров
   };
 
-  if (isLoading) {
+  if (usersLoading && currentPage === 1) {
     return <div>Загрузка...</div>;
   }
 
   return (
     <div className="DirectorSeller pt-[150px] p-4">
-      {/* Передаем исходные данные и функцию для обработки поиска */}
       <SearchForm
-        data={filteredData}
+        data={users}
         onSearch={handleSearch}
         name=""
         title="Sotuvchilar"
-        showDatePicker={false} // Отключаем DatePicker
+        showDatePicker={false}
+        searchFields={['name', 'phone']}
+        searchByNameOnly={true}
       />
 
       <div className="grid grid-cols-2 gap-4">
-        {filteredBySearch.slice(0, visibleShops).map((shop) => (
+        {filteredData.map((user) => (
           <div
-            key={shop.id}
+            key={user.id}
             className="block bg-gray-800 text-white p-4 rounded-lg transition"
           >
             <div className="flex flex-col sm:flex-row justify-between items-center">
               <div>
-                <h4 className="text-lg font-semibold">{shop.name}</h4>
-                <p className="text-sm text-gray-300">{shop.warehouseName}</p>
+                <h4 className="text-lg font-semibold">{user.name}</h4>
+                <p className="text-sm text-gray-300">{user.phone}</p>
               </div>
               <button
-                onClick={() => toggleExpand(shop.id)}
+                onClick={() => toggleExpand(user.id)}
                 className="flex border-gray-300 p-3 bg-gray-700 hover:bg-gray-600 rounded-xl items-center cursor-pointer gap-2 text-white hover:text-gray-300 transition"
               >
-                {expandedCard === shop.id ? (
+                {expandedCard === user.id ? (
                   "×"
                 ) : (
                   <>
@@ -136,7 +155,7 @@ export default function Seller() {
                 )}
               </button>
             </div>
-            {expandedCard === shop.id && (
+            {expandedCard === user.id && (
               <div className="mt-4">
                 <DatePicker
                   onChange={handleDateChange}
@@ -149,6 +168,22 @@ export default function Seller() {
                     Пожалуйста, выберите дату!
                   </p>
                 )}
+                
+                <Input
+                  type="number"
+                  placeholder="Цена"
+                  value={price}
+                  onChange={handlePriceChange}
+                  className="mb-2 bg-gray-800 text-white"
+                  style={{ backgroundColor: "#1F2937", color: "white" }}
+                  required
+                />
+                {errors.price && (
+                  <p className="text-red-500 text-sm mb-2">
+                    Пожалуйста, введите корректную цену!
+                  </p>
+                )}
+                
                 <TextArea
                   rows={2}
                   placeholder="Комментарий"
@@ -166,7 +201,7 @@ export default function Seller() {
                 <Button
                   type="primary"
                   className="w-full"
-                  onClick={() => handleMark(shop.id)}
+                  onClick={() => handleMark(user.shop.id)}
                   style={{
                     backgroundColor: "#364153",
                     borderColor: "#364153",
@@ -186,10 +221,10 @@ export default function Seller() {
           </div>
         ))}
       </div>
-      {visibleShops < filteredBySearch.length && (
+      {currentPage < totalPages && (
         <div className="flex justify-center mt-4">
           <button
-            onClick={loadMoreShops}
+            onClick={loadMoreUsers}
             className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
           >
             Yana

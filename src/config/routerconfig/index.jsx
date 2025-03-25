@@ -103,6 +103,15 @@ const getRoutesByRole = (role) => {
         </Route>
       );
 
+      case "user":
+        return (
+          <Route path="/seller" element={<Seller />}>
+            <Route index element={<Profile />} />
+            <Route path="product-list" element={<SellerProduct />} />
+            <Route path="warehouse" element={<SellerWarehouse />} />
+          </Route>
+        );
+  
     case "director":
       return (
         <Route path="/director" element={<Director />}>
