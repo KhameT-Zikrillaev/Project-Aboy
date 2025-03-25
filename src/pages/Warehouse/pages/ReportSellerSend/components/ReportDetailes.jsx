@@ -10,7 +10,7 @@ const ReportDetailes = () => {
   const [selectedDates, setSelectedDates] = useState({ from: null, to: null });
   const [page, setPage] = useState(1);
   const limit = 10;
-
+  
   const { name } = useParams();
   const shopId = sessionStorage.getItem("shopId"); 
 
@@ -25,7 +25,10 @@ const ReportDetailes = () => {
     { enabled: isFetchEnabled }
   );
 
+
+
   const handleDateSearch = (from, to) => {
+    
     setSelectedDates({ from, to });
     setPage(1);
   };

@@ -15,7 +15,7 @@ const SearchFormStartEnd = ({ onSearch, title, showDatePicker = true }) => {
       // Передаем обе даты в формате 'YYYY-MM-DD'
       const startDate = dates && dates[0] ? dayjs(dates[0]).format('YYYY-MM-DD') : null;
       const endDate = dates && dates[1] ? dayjs(dates[1]).format('YYYY-MM-DD') : null;
-      onSearch(null, startDate, endDate); // Передаем searchTerm как null, если он не используется
+      onSearch(startDate, endDate); // Передаем searchTerm как null, если он не используется
     }
   };
 

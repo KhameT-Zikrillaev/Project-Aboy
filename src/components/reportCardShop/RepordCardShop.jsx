@@ -1,9 +1,11 @@
 import React from 'react';
-import { Card,} from 'antd';
+import { Card, Tooltip,} from 'antd';
 import { format } from 'date-fns';
 import useUserStore from '@/store/useUser';
+import { ArrowRightOutlined } from '@ant-design/icons';
 
 const RepordCardShop = ({ item }) => {
+  const { user } = useUserStore();
   const formatDate = (dateString) => {
     try {
       return format(new Date(dateString), 'dd.MM.yyyy HH:mm');
@@ -22,7 +24,7 @@ const RepordCardShop = ({ item }) => {
       }}
       bodyStyle={{ padding: "16px", color: "white" }}
     >
-      {/* <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2">
         <div className="flex justify-between items-start">
           <div>
             <h3 className="text-lg font-semibold text-white mb-1 flex items-center">
@@ -67,7 +69,7 @@ const RepordCardShop = ({ item }) => {
             <p className="text-sm text-gray-400">Mahsulotlar mavjud emas</p>
           )}
         </div>
-      </div> */}
+      </div>
     </Card>
   );
 };

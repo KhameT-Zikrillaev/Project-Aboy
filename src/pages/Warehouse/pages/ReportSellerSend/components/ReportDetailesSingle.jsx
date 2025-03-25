@@ -11,9 +11,6 @@ const ReportDetailesSingle = () => {
       const limit = 10;
 
     const { data, isLoading } = useFetch(`cash-register/date/${date}/shop/${shopId}`, `cash-register/date/${date}/shop/${shopId}`)
-
-    console.log(data?.data);
-    
     
   return (
     <div className='mt-[120px]'>
@@ -23,7 +20,7 @@ const ReportDetailesSingle = () => {
             <Spin size="large" />
           </div>
         ) : data?.data?.transactions?.length ? (
-          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-6">
             {data?.data?.transactions?.map((report) => (
                 <RepordCardShop key={report.id} item={report}></RepordCardShop>
             ))}
