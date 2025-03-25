@@ -52,7 +52,19 @@ body {
     padding: 3px 10px!important; /* Input paddingi */
     font-size: 18px;
   }
- 
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~` input va textaria~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+  .ant-input,
+  .ant-input-textarea {
+    background-color: #1f2937 !important;
+    color: white !important;
+  }
+  
+  .ant-input::placeholder,
+  .ant-input-textarea::placeholder {
+    color: #9ca3af !important; /* Цвет placeholder */
+    opacity: 1; /* Для уверенности, что placeholder не будет прозрачным */
+  }
+   
   .custom-search .ant-input::placeholder {
     color: #a0aec0 !important; /* Placeholder rangi */
   }
