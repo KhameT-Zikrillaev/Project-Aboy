@@ -15,12 +15,12 @@ const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess, warehouseId
     url: "warehouse-products",
     method: "PATCH",
     onSuccess: () => {
-      toast.success("Продукты успешно отправлены!");
+      toast.success("Mahsulot muvaffaqiyatli o'tkazildi");
       if (onSuccess) onSuccess();
       onClose();
     },
     onError: (error) => {
-      toast.error(`Ошибка: ${error.message || "Не удалось отправить продукты"}`);
+      toast.error(`Mahsulot o'tkazishda xatolik yuz berdi!`);
     },
   });
 
