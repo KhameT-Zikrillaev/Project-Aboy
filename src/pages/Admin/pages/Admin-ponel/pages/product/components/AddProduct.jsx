@@ -119,7 +119,7 @@ const AddProduct = ({ onClose, refetch }) => {
           />
         </Form.Item>
         <Form.Item
-          label={<span className="text-gray-100 font-semibold">Narxi</span>}
+          label={<span className="text-gray-100 font-semibold">Narxi ($)</span>}
           validateStatus={errors.price ? "error" : ""}
           help={errors.price?.message}
         >

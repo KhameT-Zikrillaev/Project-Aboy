@@ -23,20 +23,16 @@ export default function Vitrina() {
       enabled: !!id, 
     }
   );
- console.log(data)
+ console.log(data?.data)
   // Отладочный вывод структуры данных
-  useEffect(() => {
-    console.log('Data structure:', data);
-    console.log('Is data array?', Array.isArray(data));
-  }, [data]);
 
   
   // Update filteredData when data changes
   useEffect(() => {
-    if (data) {
-      setFilteredData(data);
+    if (data?.data) {
+      setFilteredData(data?.data);
     }
-  }, [data]);
+  }, [data?.data]);
 
   // Адаптивность экран разрешение кароточек
   useEffect(() => {
@@ -70,7 +66,7 @@ export default function Vitrina() {
 
       <div className="relative z-0 max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[120px]">
         <SearchForm
-          data={data}
+          data={data?.data}
           name=""
           title="Vitrina"
           showDatePicker={false}

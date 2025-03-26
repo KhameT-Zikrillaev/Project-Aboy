@@ -29,8 +29,11 @@ const AddUser = ({ onClose, refetch }) => {
           toast.success("Foydalanuvchi muvaffaqiyatli qo'shildi!");
         },
         onError: (error) => {
-          console.log(error);
-          
+          if(error?.response?.data?.message == "Bu shop'ning seller'i mavjud!"){
+            toast.error("Bu magazinda sotuvchi biriktirilgan");
+          }else{
+            toast.error("Foydalanuvchi qo'shishda xatolik yuz berdi");
+          }
         },
       });
 

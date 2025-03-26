@@ -47,7 +47,20 @@ const EditSeller = ({ onClose, sellerSingleData, refetch }) => {
   });
 
   const onSubmit = (data) => {
-    mutate(data);
+    const changedValues = Object.keys(data).reduce((acc, key) => {
+          if (data[key] !== sellerSingleData[key]) {
+            acc[key] = data[key];
+          }
+          return acc;
+        }, {});
+    
+        // Agar hech qanday o'zgarish bo'lmasa, zapros yubormaslik
+        if (Object.keys(changedValues).length === 0) {
+          toast.info("Hech qanday o'zgarish qilinmadi");
+          return;
+        }
+    
+    mutate(changedValues);
   };
 
   return (

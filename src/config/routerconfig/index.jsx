@@ -41,6 +41,7 @@ const Seller = lazy(() => import("@/pages/Seller"));
 const SellerProduct = lazy(() => import("@/pages/Seller/pages/Product"));
 const SellerWarehouse = lazy(() => import("@/pages/Seller/pages/Warehouse"));
 const SellerReport = lazy(() => import("@/pages/Seller/pages/Report"));
+const SellerReportDetails = lazy(() => import("@/pages/Seller/pages/Report/components/SingleReportShop")) ;
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Director~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 const Director = lazy(() => import("@/pages/Director"));
@@ -100,6 +101,7 @@ const getRoutesByRole = (role) => {
           <Route path="product-list" element={<SellerProduct />} />
           <Route path="warehouse" element={<SellerWarehouse />} />
           <Route path="report" element={<SellerReport />} />
+          <Route path="report/:date" element={<SellerReportDetails />}></Route>
         </Route>
       );
 

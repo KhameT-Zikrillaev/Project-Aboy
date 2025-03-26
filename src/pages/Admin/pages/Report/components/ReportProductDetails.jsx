@@ -6,7 +6,6 @@ import SearchForm from "@/components/SearchForm/SearchForm";
 import useFetch from "@/hooks/useFetch";
 import { format } from 'date-fns';
 import { ArrowRightOutlined } from '@ant-design/icons';
-import useUserStore from "@/store/useUser";
 import { useLocation } from "react-router-dom";
 
 export default function ReportWarehouseSend() {
@@ -16,14 +15,11 @@ export default function ReportWarehouseSend() {
   const warehouseId = useLocation().state.warehouseId;
   const { data, isLoading  } = useFetch(`warehouse-transfers/${warehouseId}`, `warehouse-transfers/${warehouseId}`, {});
 
-  console.log(data);
-  
-  
   useEffect(() => {
-    if (data && data.length > 0) {
-      setFilteredData(data);
+    if (data?.data && data?.data?.length > 0) {
+      setFilteredData(data?.data);
     }
-  }, [data]);
+  }, [data?.data]);
 
 
   useEffect(() => {
@@ -47,15 +43,15 @@ export default function ReportWarehouseSend() {
   );
 
   const handleSearch = (searchTerm, date) => {
-    if (data && data.length > 0) {
+    if (data && data?.data > 0) {
       // Если нет поискового запроса и даты, показываем все данные
       if ((!searchTerm || searchTerm.trim() === '') && !date) {
-        setFilteredData(data);
+        setFilteredData(data?.data);
         setCurrentPage(1);
         return;
       }
       
-      let filtered = [...data];
+      let filtered = [...data?.data];
       
       // Фильтрация по поисковому запросу, если он есть
       if (searchTerm && searchTerm.trim() !== '') {
@@ -121,10 +117,10 @@ export default function ReportWarehouseSend() {
       <div className="relative z-10 max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[110px]">
   
         <SearchForm 
-          data={data} 
+          data={data?.data} 
           name="" 
           title="Hisobotlar omborlar" 
-          showDatePicker={true} 
+          showDatePicker={false} 
           onSearch={handleSearch} 
           className="w-full mb-6"
         />

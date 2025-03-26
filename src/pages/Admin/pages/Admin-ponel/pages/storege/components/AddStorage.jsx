@@ -68,7 +68,7 @@ const AddStorage = ({ onClose, refetch }) => {
 
         <Form.Item
           label={
-            <span className="text-gray-100 font-semibold">Narx farqi</span>
+            <span className="text-gray-100 font-semibold">Narx farqi ($)</span>
           }
           validateStatus={errors.priceDifference ? "error" : ""}
           help={errors.priceDifference?.message}

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import SearchFormStartEnd from "@/components/SearchFormStartEnd/SearchFormStartEnd";
 import { Pagination, Spin } from "antd";
 import useFetch from "@/hooks/useFetch";
@@ -25,10 +25,7 @@ const ReportDetailes = () => {
     { enabled: isFetchEnabled }
   );
 
-
-
   const handleDateSearch = (from, to) => {
-    
     setSelectedDates({ from, to });
     setPage(1);
   };
@@ -51,7 +48,7 @@ const ReportDetailes = () => {
       ) : data?.data[0].length ? (
         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {data?.data[0].map((report, index) => (
-            <Link key={index} to={`/warehouse/report-seller-send/${name}/${report.date}`}>
+            <Link key={index} to={`/warehouse/report-seller-send/${name}/${report?.date}`}>
               <WarehouseSendShopReportCard  report={report} />
             </Link>
           ))}

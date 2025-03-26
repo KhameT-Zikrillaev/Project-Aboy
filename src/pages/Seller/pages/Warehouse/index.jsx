@@ -29,10 +29,10 @@ export default function Warehouse() {
   );
 
   useEffect(() => {
-    if (data?.products) {
-      setFilteredData(data.products);
+    if (data?.data?.products) {
+      setFilteredData(data?.data?.products);
     }
-  }, [data]);
+  }, [data?.data?.products]);
 
   const showModal = (product) => {
     setSelectedProduct(product);
@@ -71,7 +71,7 @@ export default function Warehouse() {
       <div className="absolute inset-0 bg-black/50 backdrop-blur-md z-0"></div>
       <div className="relative z-0 max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[120px]">
         <SearchForm
-          data={data?.products}
+          data={data?.data?.products}
           name=""
           title="Omborxona"
           showDatePicker={false}
@@ -152,11 +152,11 @@ export default function Warehouse() {
             >
               <AddProduct onClose={onClose} product={selectedProduct} />
             </ModalComponent>
-            {filteredData.length > 0 && (
+            {filteredData?.length > 0 && (
               <div className="my-2 mb-12 md:mb-0 flex justify-center">
                 <Pagination
                   current={currentPage}
-                  total={filteredData.length}
+                  total={filteredData?.length}
                   pageSize={itemsPerPage}
                   onChange={(page) => setCurrentPage(page)}
                   showSizeChanger={false}

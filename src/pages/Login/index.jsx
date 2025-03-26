@@ -30,8 +30,6 @@ export default function Login() {
     url: "auth/login",
     method: "POST",
     onSuccess: async (data) => {
-      console.log(data);
-      
       if (data?.data?.accessToken) {
         localStorage.setItem("tokenWall", data?.data?.accessToken); // Сохраняем токен
         try {

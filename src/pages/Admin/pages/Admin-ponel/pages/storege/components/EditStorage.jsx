@@ -9,7 +9,7 @@ const EditStorage = ({ onClose, storageSingleData, refetch }) => {
     handleSubmit,
     control,
     formState: { errors },
-    reset,
+    reset
   } = useForm();
 
   // storageSingleData bor bo‘lsa, formani shu ma’lumotlar bilan to‘ldiramiz
@@ -33,7 +33,6 @@ const EditStorage = ({ onClose, storageSingleData, refetch }) => {
       toast.success("Ombor muvaffaqiyatli yangilandi!");
     },
     onError: (error) => {
-
       if (
         error?.response?.data?.message ===
         "Warehouse with this name already exists"
@@ -48,7 +47,21 @@ const EditStorage = ({ onClose, storageSingleData, refetch }) => {
   });
 
   const onSubmit = (data) => {
-    mutate(data);
+    // Faqat o'zgargan qiymatlarni olish
+    const changedValues = Object.keys(data).reduce((acc, key) => {
+      if (data[key] !== storageSingleData[key]) {
+        acc[key] = data[key];
+      }
+      return acc;
+    }, {});
+
+    // Agar hech qanday o'zgarish bo'lmasa, zapros yubormaslik
+    if (Object.keys(changedValues).length === 0) {
+      toast.info("Hech qanday o'zgarish qilinmadi");
+      return;
+    }
+
+    mutate(changedValues);
   };
 
   return (
@@ -56,9 +69,7 @@ const EditStorage = ({ onClose, storageSingleData, refetch }) => {
       <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
         {/* Ombor nomi */}
         <Form.Item
-          label={
-            <span className="text-gray-100 font-semibold">Ombor nomi</span>
-          }
+          label={<span className="text-gray-100 font-semibold">Ombor nomi</span>}
           validateStatus={errors.name ? "error" : ""}
           help={errors.name?.message}
         >
@@ -67,19 +78,13 @@ const EditStorage = ({ onClose, storageSingleData, refetch }) => {
             control={control}
             rules={{ required: "Ombor nomi majburiy" }}
             render={({ field }) => (
-              <Input
-                placeholder="Ombor nomini kiriting"
-                className="custom-input"
-                {...field}
-              />
+              <Input placeholder="Ombor nomini kiriting" className="custom-input" {...field} />
             )}
           />
         </Form.Item>
 
         <Form.Item
-          label={
-            <span className="text-gray-100 font-semibold">Narx farqi</span>
-          }
+          label={<span className="text-gray-100 font-semibold">Narx farqi ($)</span>}
           validateStatus={errors.priceDifference ? "error" : ""}
           help={errors.priceDifference?.message}
         >
@@ -88,22 +93,14 @@ const EditStorage = ({ onClose, storageSingleData, refetch }) => {
             control={control}
             rules={{ required: "Narx farqi majburiy" }}
             render={({ field }) => (
-              <Input
-                placeholder="Narx farqini kiriting"
-                className="custom-input"
-                {...field}
-              />
+              <Input placeholder="Narx farqini kiriting" className="custom-input" {...field} />
             )}
           />
         </Form.Item>
 
         <div className="flex justify-between">
-          {/* Ruxsat berish Switch */}
-          <Form.Item
-            label={
-              <span className="text-gray-100 font-semibold">Asosiy ombor</span>
-            }
-          >
+          {/* Asosiy ombor Switch */}
+          <Form.Item label={<span className="text-gray-100 font-semibold">Asosiy ombor</span>}>
             <Controller
               name="isMain"
               control={control}
@@ -114,11 +111,7 @@ const EditStorage = ({ onClose, storageSingleData, refetch }) => {
           </Form.Item>
 
           {/* Ruxsat berish Switch */}
-          <Form.Item
-            label={
-              <span className="text-gray-100 font-semibold">Ruxsat berish</span>
-            }
-          >
+          <Form.Item label={<span className="text-gray-100 font-semibold">Ruxsat berish</span>}>
             <Controller
               name="isTrusted"
               control={control}

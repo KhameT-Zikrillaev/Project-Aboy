@@ -266,7 +266,7 @@ const Product = () => {
      
         <Table
           columns={columns}
-          dataSource={data?.data}
+          dataSource={data?.data?.data}
           pagination={false}
           className="custom-table"
           rowClassName={() => "custom-row"}
