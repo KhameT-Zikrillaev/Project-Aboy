@@ -101,7 +101,7 @@ export default function Warehouse() {
                   <img
                     onClick={() => setSelectedImage(item?.image_url)}
                     crossOrigin="anonymous"
-                    className="h-48 w-full bg-cover cursor-pointer bg-center rounded-t-lg"
+                    className="h-48 w-full bg-cover object-cover cursor-pointer bg-center rounded-t-lg"
                     src={item?.image_url}
                     alt=""
                   />

@@ -86,7 +86,7 @@ export default function ViewWareHoustProducts({ idwarehouse }) {
             className="shadow-lg hover:shadow-xl transition-shadow rounded-lg"
             style={{ background: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255, 255, 255, 0.2)' }}
             cover={
-              <img  onClick={() => setSelectedImage(item?.image_url)} crossOrigin='anonymous' className="h-28 w-full bg-cover cursor-pointer bg-center rounded-t-lg"  src={item?.image_url} alt=""/>
+              <img  onClick={() => setSelectedImage(item?.image_url)} crossOrigin='anonymous' className="h-28 w-full bg-cover object-cover cursor-pointer bg-center rounded-t-lg"  src={item?.image_url} alt=""/>
             }
             bodyStyle={{ padding: '12px', color: 'white' }}
           >

@@ -9,7 +9,7 @@ import userStore from "@/store/useUser";
 const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess, warehouseId }) => {
   const { user } = userStore();
   const [selectedItems, setSelectedItems] = useState([]);
-  const { handleSubmit, control, setValue, watch, formState: { errors } } = useForm();
+  const { handleSubmit, control, setValue,  formState: { errors } } = useForm();
 
   const { mutate, isLoading: isSending } = useApiMutation({
     url: "warehouse-products",
@@ -19,7 +19,7 @@ const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess, warehouseId
       if (onSuccess) onSuccess();
       onClose();
     },
-    onError: (error) => {
+    onError: () => {
       toast.error(`Mahsulot o'tkazishda xatolik yuz berdi!`);
     },
   });
