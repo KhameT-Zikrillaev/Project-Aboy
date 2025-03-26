@@ -38,13 +38,6 @@ export default function Vitrina() {
     }
   }, [data]);
 
-
-
-
-
-
-
-
   // Адаптивность экран разрешение кароточек
   useEffect(() => {
     const updateItemsPerPage = () => {

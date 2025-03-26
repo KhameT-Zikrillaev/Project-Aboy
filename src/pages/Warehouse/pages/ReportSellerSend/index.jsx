@@ -50,7 +50,7 @@ export default function ReportSellerSend() {
             ))
           : (
             <div className="col-span-2 text-center text-gray-500">
-              Нет данных для отображения
+              Hech narsa yo'q
             </div>
           )}
         </div>

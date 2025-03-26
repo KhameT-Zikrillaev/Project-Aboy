@@ -37,21 +37,21 @@ export default function Seller() {
     url: "debtors",
     method: "POST",
     onSuccess: () => {
-      message.success("Данные успешно отправлены!");
+      message.success("Tovar muvaffaqiyatli qo'shildi!");
       resetForm();
       refetchDebtors();
     },
-    onError: (error) => message.error(`Ошибка: ${error.message || "Не удалось отправить данные"}`)
+    onError: (error) => message.error(`Xatolik: ${error.message || "Tovar qo'shishda xatolik"}`)
   });
 
   const { mutate: deleteMutate, isLoading: isDeleting } = useApiMutation({
     url: "debtors",
     method: "DELETE",
     onSuccess: () => {
-      message.success("Долг успешно удален!");
+      message.success("Qarz muvaffaqiyatli o'chirildi!");
       refetchDebtors();
     },
-    onError: (error) => message.error(`Ошибка: ${error.message || "Не удалось удалить"}`)
+    onError: (error) => message.error(`Xatolik: ${error.message || "Qarz o'chirishda xatolik"}`)
   });
 
   // ✅ Упрощение обработки формы
@@ -103,7 +103,7 @@ export default function Seller() {
       />
 
       {users.length === 0 && !usersLoading && (
-        <div className="text-center text-gray-400">Пользователь не найден</div>
+        <div className="text-center text-gray-400">Sotuvchilar topilmadi</div>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

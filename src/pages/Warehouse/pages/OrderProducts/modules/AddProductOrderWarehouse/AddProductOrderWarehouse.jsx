@@ -64,7 +64,7 @@ const AddProductOrderWarehouse = ({ onClose, selectedProducts, onSuccess, idWare
     }
 
     if (selectedItems.length === 0) {
-      message.warning("Нет выбранных товаров для отправки");
+      message.warning("Mijozga yetkazib bera olmayan mahsulotlar tanlanmagan");
       return;
     }
 

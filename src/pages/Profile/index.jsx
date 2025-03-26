@@ -23,8 +23,6 @@ export default function Home() {
 
     return () => clearTimeout(timer);
   }, []);
-
-
   // useRequest(user?.role, user?.warehouse?.id);
   // useRequestShop(user, user?.warehouse?.id);
 
@@ -96,7 +94,7 @@ export default function Home() {
         {/* Если карточек нет (например, для других маршрутов) */}
         {cards.length === 0 && (
           <div className="text-center">
-            <p className="text-white">Нет доступных карточек для этого маршрута.</p>
+            <p className="text-white">Bu bo'lim uchun ma'lumotlar mavjud emas.</p>
           </div>
         )}
       </div>

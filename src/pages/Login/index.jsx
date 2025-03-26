@@ -54,14 +54,14 @@ export default function Login() {
           }
         } catch (error) {
           console.error("User data error:", error);
-          setError("Ошибка при загрузке данных пользователя");
+          setError("Ma'lumotlarni yuklashda xatolik yuz berdi");
         } finally {
           setLoadingUser(false);
         }
       }
     },
     onError: (error) => {
-      setError("Неверный логин или пароль");
+      setError("Login parol xato!");
       console.error("Login error:", error);
     },
   });
@@ -72,7 +72,7 @@ export default function Login() {
 
     // Проверка на пустые поля
     if (!username || !password) {
-      setError("Пожалуйста, заполните все поля");
+      setError("Iltimos hammasini to'ldiring!");
       return;
     }
 
@@ -113,7 +113,7 @@ export default function Login() {
           <img
             className="w-[300px] glowing-image-banner md:w-[500px]"
             src={logo}
-            alt="Логотип"
+            alt="Logotip"
           />
         </div>
       </div>
@@ -129,7 +129,7 @@ export default function Login() {
           <div className="absolute inset-4 border-2 border-white/10 rounded-xl pointer-events-none"></div>
 
           <h2 className="text-3xl font-bold mb-8 text-center text-white bg-clip-text">
-            Вход
+            Kirish
           </h2>
 
           {/* Поле для логина */}
@@ -138,12 +138,12 @@ export default function Login() {
               className="block text-white/80 text-sm font-bold mb-2"
               htmlFor="username"
             >
-              Логин
+              Login
             </label>
             <input
               type="text"
               id="username"
-              placeholder="Введите логин"
+              placeholder="Loginni kiriting!"
               value={username}
               style={{ color: "white" }}
               onChange={(e) => setUsername(e.target.value)}
@@ -157,12 +157,12 @@ export default function Login() {
               className="block text-white/80 text-sm font-bold mb-2"
               htmlFor="password"
             >
-              Пароль
+              Parol
             </label>
             <input
               type={showPassword ? "text" : "password"} // Переключаем тип поля
               id="password"
-              placeholder="Введите пароль"
+              placeholder="Parolni kiriting"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               style={{ color: "white" }}
@@ -192,7 +192,7 @@ export default function Login() {
             type="submit"
             className="w-full cursor-pointer py-3 px-6 rounded-xl bg-yellow-400 text-gray-900 font-bold hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:ring-offset-2 focus:ring-offset-yellow-100 transition-all duration-300 border-2 border-yellow-500/30 hover:border-yellow-500/50 shadow-lg hover:shadow-xl active:scale-95"
           >
-            {isMutating || loadingUser ? "Загрузка..." : "Войти"}
+            {isMutating || loadingUser ? "Qidiruv..." : "Kirish"}
           </button>
         </form>
       </div>
