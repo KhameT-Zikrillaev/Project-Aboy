@@ -94,7 +94,7 @@ export default function ViewWareHoustProducts({ idwarehouse }) {
               <h3 className="text-lg font-semibold text-white">{item?.article || item?.name || 'Без названия'}</h3>
               <Tag color="blue">Part: <span className="text-red-500">{item?.batch_number || 'N/A'}</span></Tag>
               <h4 className="text-sm font-semibold text-white">{(item?.price || 0) + " $"}</h4>
-              <h5 className="text-sm font-semibold text-white">Soni: {item?.quantity || 0}</h5>
+              <h5 className="text-sm font-semibold text-white">Rulon soni: {item?.quantity || 0} ta</h5>
             </div>
           </Card>
         ))}
