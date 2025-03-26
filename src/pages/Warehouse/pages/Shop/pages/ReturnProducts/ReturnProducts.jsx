@@ -26,7 +26,6 @@ export default function ReturnProducts() {
     `order/shop/${id}`,
     `order/shop/${id}`,
     { page, limit, date: dates ? format(new Date(dates), "yyyy-MM-dd") : null },
-
   );
 
   const handleDateChange = (dates) => {
@@ -99,7 +98,7 @@ export default function ReturnProducts() {
           <div className="flex justify-center md:justify-start items-center">
             <FaArchive className="text-3xl text-white" />
             <span className="text-xl font-semibold ml-2 text-white">
-              Qaytarilgan mahsulotlar
+              Sotilgan mahsulotlar
             </span>
           </div>
 

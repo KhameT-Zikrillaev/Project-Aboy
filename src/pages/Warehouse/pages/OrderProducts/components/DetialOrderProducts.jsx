@@ -34,9 +34,9 @@ export default function ViewDetaliesOrderProducts() {
   );
 
   useEffect(() => {
-    if (data) {
-      if (data?.products && Array.isArray(data.products)) {
-        setFilteredData(data.products.map(item => ({
+    if (data?.data?.products) {
+      if (data?.data?.products && Array.isArray(data?.data?.products)) {
+        setFilteredData(data?.data?.products?.map(item => ({
           ...item,
           key: item.id
         })));
@@ -52,8 +52,8 @@ export default function ViewDetaliesOrderProducts() {
     if (Array.isArray(results)) {
       setFilteredData(results);
     } else if (results === null || results === undefined) {
-      if (data?.products && Array.isArray(data.products)) {
-        setFilteredData(data.products.map(item => ({
+      if (data?.data?.products && Array.isArray(data?.data?.products)) {
+        setFilteredData(data?.data?.products?.map(item => ({
           ...item,
           key: item.id
         })));
@@ -85,7 +85,7 @@ export default function ViewDetaliesOrderProducts() {
     return () => window.removeEventListener('resize', updateItemsPerPage);
   }, []);
 
-  const currentData = Array.isArray(filteredData) ? filteredData.slice(
+  const currentData = Array.isArray(filteredData) ? filteredData?.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   ) : [];
@@ -95,7 +95,7 @@ export default function ViewDetaliesOrderProducts() {
       <div className="absolute inset-0 bg-black/50 backdrop-blur-md z-0"></div>
       <div className="relative z-0 max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[120px]">
         <SearchForm 
-          data={data?.products} 
+          data={data?.data?.products} 
           onSearch={handleSearchResults} 
           name={name +" " +'omboriga'} 
           title="zakaz berish" 
@@ -147,7 +147,7 @@ export default function ViewDetaliesOrderProducts() {
               pageSize={itemsPerPage}
               onChange={(page) => setCurrentPage(page)}
               showSizeChanger={false}
-              className="custom-pagination text-white"
+              className="custom-pagination"
             />
           </div>
         )}

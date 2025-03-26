@@ -8,53 +8,41 @@ export default function ViewVitrinaProducts({ idwarehouse }) {
   const [pageSize, setPageSize] = useState(2);
   const [selectedImage, setSelectedImage] = useState(null);
 
-  // Исправляем параметры useFetch
   const { data, isLoading, refetch } = useFetch(
     `Storefront-product/${idwarehouse}`, // Уникальный ключ для кеширования
     `Storefront-product/${idwarehouse}`, // URL запроса
     {}, // Параметры запроса
-    
     {
       enabled: !!idwarehouse, // Запрос будет выполнен только если id существует
       staleTime: 0, // Данные всегда считаются устаревшими
       cacheTime: 0, // Не кешируем данные
     }
   );
-  // Вызываем refetch при изменении idwarehouse
+
   useEffect(() => {
     if (idwarehouse) {
-      // Очищаем данные при изменении idwarehouse
       setFilteredData([]);
       setCurrentPage(1);
-      // Запрашиваем новые данные
       refetch();
     }
   }, [idwarehouse, refetch]);
 
-  // Обновляем filteredData при изменении data
   useEffect(() => {
-    if (data) {
-      setFilteredData(data);
-    } else if (data) {
-      // Альтернативная структура данных
-      setFilteredData(data);
-    } else {
-      // Если данных нет, устанавливаем пустой массив
+    if (data?.data) {
+      setFilteredData(data?.data);
+    }else {
       setFilteredData([]);
     }
   }, [data]);
 
-  // Расчет пагинации
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = startIndex + pageSize;
   const currentData = filteredData?.slice(startIndex, endIndex);
 
-  // Обработчик изменения страницы
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
-  // Если данные загружаются, показываем спиннер
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -63,7 +51,6 @@ export default function ViewVitrinaProducts({ idwarehouse }) {
     );
   }
 
-  // Если данных нет, показываем компонент Empty
   if (!filteredData || filteredData?.length === 0) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -72,7 +59,6 @@ export default function ViewVitrinaProducts({ idwarehouse }) {
     );
   }
 
-  // Отображаем данные в виде списка карточек
   return (
     <div className="p-4 w-full">
       <div className="grid grid-cols-1 sm:grid-cols-2  gap-2 w-full px-4">
@@ -105,6 +91,7 @@ export default function ViewVitrinaProducts({ idwarehouse }) {
             total={filteredData.length}
             onChange={handlePageChange}
             showSizeChanger={false}
+            className="custom-pagination"
           />
         </div>
       )}

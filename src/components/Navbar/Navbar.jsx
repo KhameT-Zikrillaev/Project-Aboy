@@ -49,8 +49,7 @@ const Navbar = () => {
     `shop-request/all-requests/byShop/${user?.shop?.id}`,
     {},
     { enabled: user?.role === "seller" }
-  );
-  
+  ); 
 
   const requests = user?.role === "staff"
     ? [...(warehouseRequests?.data || []), ...(shopRequests?.data || []), ...(orderRequests?.data || [])]

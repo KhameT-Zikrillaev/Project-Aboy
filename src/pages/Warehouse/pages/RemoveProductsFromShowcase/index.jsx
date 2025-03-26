@@ -17,7 +17,7 @@ export default function WarehouseProducts() {
   const warehouseId = user?.warehouse?.id;
 
 
-  const { data, isLoading, refetch } = useFetch(
+  const { data, isLoading } = useFetch(
     warehouseId ? `warehouse/${warehouseId}` : null, 
     warehouseId ? `warehouse/${warehouseId}` : null, 
     {},
@@ -28,7 +28,6 @@ export default function WarehouseProducts() {
 
   useEffect(() => {
     if (data) {
-      console.log("Data from API:", data);
       setFilteredData(data?.data?.shops || []);
       setFilteredBySearch(data?.data?.shops || []);
     }
@@ -37,7 +36,6 @@ export default function WarehouseProducts() {
   const handleSearch = (searchResults) => {
     setFilteredBySearch(searchResults);
   };
-
 
   return (
     <div className="DirectorProduct mt-[150px] p-4">

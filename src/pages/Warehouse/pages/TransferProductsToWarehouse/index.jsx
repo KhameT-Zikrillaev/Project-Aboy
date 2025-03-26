@@ -8,41 +8,25 @@ import useUserStore from "@/store/useUser";
 export default function WarehouseTransferProducts() {
   const [visibleDistricts, setVisibleDistricts] = useState(12);
   const { user } = useUserStore();
-  const { data, isLoading, refetch } = useFetch('warehouse', 'warehouse', {});
+  const { data, isLoading  } = useFetch('warehouse', 'warehouse', {});
   const [filteredData, setFilteredData] = useState([]);
   const [filteredBySearch, setFilteredBySearch] = useState([]);
+
   const loadMoreDistricts = () => {
     setVisibleDistricts((prevVisibleDistricts) => prevVisibleDistricts + 12);
   };
-
-  // Фильтрация складов при загрузке данных
+  
   useEffect(() => {
-    if (data?.data?.warehouses && user?.name) {
-      // Приводим имя пользователя к нижнему регистру для сравнения
-      const userName = user.name.toLowerCase();
-      
-      const filtered = data?.data?.warehouses?.filter(warehouse => {
-        // Приводим имя склада к нижнему регистру для сравнения
-        const warehouseName = warehouse?.name?.toLowerCase().trim();
-        
-        // Проверяем, содержится ли имя пользователя в имени склада
-        const isUserWarehouse = userName.includes(warehouseName);
-        
-        // console.log(`Склад: ${warehouse?.name}, Совпадение: ${isUserWarehouse}`);
-        
-        return !isUserWarehouse; // Возвращаем true, если имя пользователя НЕ содержится в имени склада
-      });
-      
-      console.log("Фильтрованные склады:", filtered);
+    if (data?.data?.warehouses && user?.warehouse?.id) {
+      const filtered = data?.data?.warehouses?.filter(warehouse => warehouse?.id != user?.warehouse?.id);
       setFilteredData(filtered);
-      setFilteredBySearch(filtered); // Изначально устанавливаем то же самое данные для поиска
+      setFilteredBySearch(filtered); 
     } else {
       setFilteredData(data?.data?.warehouses || []);
       setFilteredBySearch(data?.data?.warehouses || []);
     }
   }, [data, user?.name]);
 
-  // Обработчик поиска, который работает с уже отфильтрованными данными
   const handleSearch = (searchResults) => {
     setFilteredBySearch(searchResults);
   };

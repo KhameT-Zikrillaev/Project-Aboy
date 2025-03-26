@@ -11,7 +11,7 @@ import CashCard from '@/components/cashCard';
 import dayjs from 'dayjs';
 
 export default function CashregisterDetailes() {
-    const { name } = useParams();
+    // const { name } = useParams();
     const [selectedImage, setSelectedImage] = React.useState(null);
     const [currentPage, setCurrentPage] = React.useState(1);
     const location = useLocation();
@@ -19,10 +19,6 @@ export default function CashregisterDetailes() {
     const itemsPerPage = 10;
     const user = userStore();
     const todayDate = dayjs().format('YYYY-MM-DD');
- console.log(user)
-    // Отладочные сообщения
-    console.log('shopId:', shopId);
-    console.log('todayDate:', todayDate);
 
     const { data: cashRegisterData, isLoading: isCashRegisterLoading, error: cashRegisterError, refetch: refetchCashRegister } = useFetch(
         shopId ? `cash-transaction/shop/${shopId}/date/${todayDate}/status` : null,
@@ -34,9 +30,6 @@ export default function CashregisterDetailes() {
     );
 
     // Отладочные сообщения
-    console.log('cashRegisterData:', cashRegisterData);
-    console.log('isCashRegisterLoading:', isCashRegisterLoading);
-    console.log('cashRegisterError:', cashRegisterError);
 
     const filteredData = cashRegisterData?.data?.isActive ? cashRegisterData.data.transactions : [];
     const currentData = Array.isArray(filteredData) ? filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage) : [];
@@ -50,7 +43,6 @@ export default function CashregisterDetailes() {
         },
         onError: (error) => {
             toast.error(`Ошибка: ${error.message || 'Не удалось закрыть кассу'}`);
-            console.error('Ошибка при закрытии кассы:', error);
         }
     });
 

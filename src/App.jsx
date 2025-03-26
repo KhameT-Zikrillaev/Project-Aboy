@@ -20,7 +20,7 @@ function App() {
       const response = await api.get("auth/profile");
 
       if (response?.status === 200) {
-        setUser(response?.data);
+        setUser(response?.data?.data);
       } else {
         localStorage.removeItem("tokenWall");
         navigate("/");

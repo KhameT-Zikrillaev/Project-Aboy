@@ -25,7 +25,7 @@ export default function ViewDetaliesRemoveProducts() {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [warehouseId, setWarehouseId] = useState(""); // Для хранения ID склада
-  const { user } = useUserStore();
+  // const { user } = useUserStore();
 // ~~~~~~~~~~~~~~~~~~~~~~логика товаров из апи~~~~~~~~~~~~~~~~~~~~~~~~~~
 // const id = user?.warehouse?.id;
 const { data: productsData, isLoading: productsLoading, refetch: refetchProducts } = useFetch(
@@ -36,15 +36,15 @@ const { data: productsData, isLoading: productsLoading, refetch: refetchProducts
     enabled: !! shopId, // Запрос будет выполнен только если id существует
   }
 );
+
 //~~~~~~~~~~~~~~~~~~~~ логика шопах из апи~~~~~~~~~~~~~~~~~~~~~~~~~~
-const userWarehouseId = user?.warehouse?.id;
+// const userWarehouseId = user?.warehouse?.id;
 // Update filteredData when products data changes
 useEffect(() => {
-  if (productsData) {
-    console.log("Products Data from API:", productsData);
+  if (productsData?.data) {
     // Проверяем, что productsData является массивом
-    if (Array.isArray(productsData)) {
-      setFilteredData(productsData.map(item => ({
+    if (Array.isArray(productsData?.data)) {
+      setFilteredData(productsData?.data.map(item => ({
         ...item,
         key: item.id // используем id как key
       })));

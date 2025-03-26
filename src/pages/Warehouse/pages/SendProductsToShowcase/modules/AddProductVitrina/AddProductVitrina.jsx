@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Button, List, Image, message } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
-import userStore from "@/store/useUser";
+// import userStore from "@/store/useUser";
 import useApiMutation from "@/hooks/useApiMutation";
 import { toast } from "react-toastify";
 
 const AddProductVitrina = ({ onClose, selectedProducts, onSuccess, warehouseId, warehouseName, shopId }) => {
   const [selectedItems, setSelectedItems] = useState([]);
-  const { user } = userStore();
+  // const { user } = userStore();
 
   // Используем useApiMutation для POST запроса
   const { mutate, isLoading: isSending } = useApiMutation({
@@ -20,7 +20,6 @@ const AddProductVitrina = ({ onClose, selectedProducts, onSuccess, warehouseId, 
     },
     onError: (error) => {
       message.error(`Error: ${error.message || 'Failed to send products'}`);
-      console.error('Error sending products to storefront:', error);
     }
   });
   
@@ -54,11 +53,9 @@ const AddProductVitrina = ({ onClose, selectedProducts, onSuccess, warehouseId, 
       message.warning('Tanlangan tovar yoq');
       return;
     }
-    
     // Проверяем наличие ID магазина
     if (!shopId) {
       message.error('ID магазина (shopId) не указан. Невозможно отправить товары.');
-      console.error('shopId is undefined or empty', { shopId, warehouseId, warehouseName });
       return;
     }
     
@@ -67,7 +64,6 @@ const AddProductVitrina = ({ onClose, selectedProducts, onSuccess, warehouseId, 
       productIds: selectedItems?.map(item => item.id), // Массив ID продуктов
       shopId: shopId // Используем shopId вместо warehouseId
     }; 
-    console.log('Отправляем данные:', requestData);
     // Отправляем данные на бэкенд
     mutate(requestData);
   };

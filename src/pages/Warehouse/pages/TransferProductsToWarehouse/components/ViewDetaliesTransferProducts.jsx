@@ -36,9 +36,9 @@ export default function ViewDetaliesTransferProducts() {
   );
 
   useEffect(() => {
-    if (data) {
-      if (data?.products && Array.isArray(data.products)) {
-        setFilteredData(data.products.map(item => ({
+    if (data?.data?.products) {
+      if (data?.data?.products && Array.isArray(data?.data?.products)) {
+        setFilteredData(data?.data?.products?.map(item => ({
           ...item,
           key: item.id
         })));
@@ -54,8 +54,8 @@ export default function ViewDetaliesTransferProducts() {
     if (Array.isArray(results)) {
       setFilteredData(results);
     } else if (results === null || results === undefined) {
-      if (data?.products && Array.isArray(data.products)) {
-        setFilteredData(data.products.map(item => ({
+      if (data?.data?.products && Array.isArray(data?.data?.products)) {
+        setFilteredData(data?.data?.products?.map(item => ({
           ...item,
           key: item.id
         })));
@@ -125,7 +125,7 @@ export default function ViewDetaliesTransferProducts() {
                   cover={<div />}
                   bodyStyle={{ padding: '12px', color: 'white' }}
                 >
-                  <img onClick={() => setSelectedImage(item?.image_url)} className="h-48 w-full bg-cover cursor-pointer bg-center rounded-t-lg" crossOrigin='anonymous' src={item?.image_url} alt="" />
+                  <img onClick={() => setSelectedImage(item?.image_url)} className="h-48 w-full bg-cover object-cover cursor-pointer bg-center rounded-t-lg" crossOrigin='anonymous' src={item?.image_url} alt="" />
                   <div className="flex flex-col gap-2">
                     <h3 className="text-lg font-semibold text-white">{item?.article}</h3>
                     <Tag color="blue">Part: <span className="text-red-500">{item?.batch_number}</span></Tag>
@@ -156,7 +156,7 @@ export default function ViewDetaliesTransferProducts() {
               pageSize={itemsPerPage}
               onChange={(page) => setCurrentPage(page)}
               showSizeChanger={false}
-              className="custom-pagination text-white"
+              className="custom-pagination "
             />
           </div>
         )}

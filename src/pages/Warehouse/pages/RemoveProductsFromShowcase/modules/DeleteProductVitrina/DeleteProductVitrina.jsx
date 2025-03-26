@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Button, List, Image, message } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
-import userStore from "@/store/useUser";
-import useApiMutation from "@/hooks/useApiMutation";
 import { toast } from "react-toastify";
 import api from '@/services/api'; // Импортируем API на прямую
 
 const DeleteProductVitrina = ({ onClose, selectedProducts, onSuccess, warehouseName, shopId }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [isLoading, setIsLoading] = useState(false); // Добавляем состояние загрузки
-  const { user } = userStore();
 
   // Преобразуем выбранные товары в нужный формат с уникальным ключом
   useEffect(() => {
@@ -45,7 +42,6 @@ const DeleteProductVitrina = ({ onClose, selectedProducts, onSuccess, warehouseN
     // Проверяем наличие ID магазина
     if (!shopId) {
       message.error('ID магазина (shopId) не указан. Невозможно отправить товары.');
-      console.error('shopId is undefined or empty', { shopId, warehouseName });
       return;
     }
     
@@ -53,9 +49,6 @@ const DeleteProductVitrina = ({ onClose, selectedProducts, onSuccess, warehouseN
     const requestData = {
       productIds: selectedItems?.map(item => item.id) // Массив ID продуктов
     };
-    
-    console.log('URL запроса:', `Storefront-product/${shopId}`);
-    console.log('Отправляем данные:', requestData);
     
     try {
       setIsLoading(true); // Начинаем загрузку
@@ -67,14 +60,12 @@ const DeleteProductVitrina = ({ onClose, selectedProducts, onSuccess, warehouseN
         data: requestData
       });
       
-      console.log('Ответ от сервера:', response);
       
       // Успешное завершение
       toast.success('Tovar muvaffaqiyatli o`chirildi');
       if (onSuccess) onSuccess();
       onClose();
     } catch (error) {
-      console.error('Error deleting products:', error);
       message.error(`Error: ${error.message || 'Failed to delete products'}`);
     } finally {
       setIsLoading(false); // Завершаем загрузку

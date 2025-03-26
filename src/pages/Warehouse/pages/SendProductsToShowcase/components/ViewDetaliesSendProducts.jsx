@@ -27,32 +27,26 @@ export default function ViewDetaliesSendProducts() {
   const [warehouseId, setWarehouseId] = useState(""); // Для хранения ID склада
   const { user } = useUserStore();
   const [isWareHouseOpen, setIsWareHouseOpen] = useState(false);
-   console.log(shopId)
   ///// ~~~~~~~~~~~~~~~ вот ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   // Запрос на получение списка складов
   const { data: warehousesData, isLoading: warehousesLoading } = useFetch('warehouse', 'warehouse', {});
-
+  
   // Находим ID склада по имени
   useEffect(() => {
     if (warehousesData?.data?.warehouses && name) {
-      const foundWarehouse = warehousesData.data.warehouses.find(warehouse => warehouse.name === name);
+      const foundWarehouse = warehousesData?.data?.warehouses?.find(warehouse => warehouse?.name === name);
       if (foundWarehouse) {
-        setWarehouseId(foundWarehouse.id);
-
+        setWarehouseId(foundWarehouse?.id);
       } else {
         // Если не нашли склад по имени, используем ID склада пользователя
         if (user?.warehouse?.id) {
-          setWarehouseId(user.warehouse.id);
-   
-        } else {
-   
+          setWarehouseId(user?.warehouse?.id);
         }
       }
     } else if (user?.warehouse?.id) {
       // Если нет данных о складах или имени, используем ID склада пользователя
-      setWarehouseId(user.warehouse.id);
-  
+      setWarehouseId(user?.warehouse?.id);
     }
   }, [warehousesData, name, user]);
 
@@ -67,16 +61,15 @@ const { data: productsData, isLoading: productsLoading, refetch: refetchProducts
     enabled: !! id, // Запрос будет выполнен только если id существует
   }
 );
-console.log(warehousesData)
+
 //~~~~~~~~~~~~~~~~~~~~ логика шопах из апи~~~~~~~~~~~~~~~~~~~~~~~~~~
-const userWarehouseId = user?.warehouse?.id;
+// const userWarehouseId = user?.warehouse?.id;
 
 useEffect(() => {
-  if (productsData) {
-    console.log("Data from API:", productsData);
+  if (productsData?.data) {
     // Проверяем, что data?.products является массивом
-    if (productsData?.products && Array.isArray(productsData.products)) {
-      setFilteredData(productsData.products.map(item => ({
+    if (productsData?.data?.products && Array.isArray(productsData?.data?.products)) {
+      setFilteredData(productsData?.data?.products.map(item => ({
         ...item,
         key: item.id // используем id как key
       })));
@@ -91,14 +84,13 @@ useEffect(() => {
 
   // Обработчик результатов поиска
   const handleSearchResults = (results) => {
-    console.log('Search results:', results);
     // Проверяем, что results является массивом
     if (Array.isArray(results)) {
       setFilteredData(results);
     } else if (results === null || results === undefined) {
       // Если результаты поиска равны null или undefined, сбрасываем filteredData
-      if (productsData?.products && Array.isArray(productsData.products)) {
-        setFilteredData(productsData.products.map(item => ({
+      if (productsData?.data?.products && Array.isArray(productsData?.data?.products)) {
+        setFilteredData(productsData?.data?.products.map(item => ({
           ...item,
           key: item.id
         })));
@@ -106,7 +98,6 @@ useEffect(() => {
         setFilteredData([]);
       }
     } else {
-      console.warn('Search results are not an array:', results);
       setFilteredData([]);
     }
   };

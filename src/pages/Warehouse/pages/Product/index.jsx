@@ -34,7 +34,7 @@ export default function Warehouse() {
   // Update filteredData when data changes
   useEffect(() => {
     if (data) {
-      setFilteredData(data?.products);
+      setFilteredData(data?.data?.products);
     }
   }, [data]);
 
@@ -58,7 +58,6 @@ export default function Warehouse() {
 
   // Функция для обработки результатов поиска
   const handleSearchResults = (results) => {
-    console.log('Search results:', results);
     setFilteredData(results);
   };
 
@@ -71,7 +70,7 @@ export default function Warehouse() {
 
       <div className="relative z-0 max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[120px]">
         <SearchForm
-          data={data?.products}
+          data={data?.data?.products}
           name=""
           title="Tovarlar"
           showDatePicker={false}

@@ -30,39 +30,39 @@ export default function Login() {
     url: "auth/login",
     method: "POST",
     onSuccess: async (data) => {
-      if (data?.accessToken) {
-        localStorage.setItem("tokenWall", data.accessToken); // Сохраняем токен
+      console.log(data);
+      
+      if (data?.data?.accessToken) {
+        localStorage.setItem("tokenWall", data?.data?.accessToken); // Сохраняем токен
         try {
           setLoadingUser(true); // Показываем загрузку
           const response = await api.get("auth/profile", {
-            headers: { Authorization: `Bearer ${data.accessToken}` },
+            headers: { Authorization: `Bearer ${data?.data?.accessToken}` },
           });
 
-          setUser(response?.data); // Сохраняем данные пользователя
+          setUser(response?.data?.data); // Сохраняем данные пользователя
 
           // Перенаправление в зависимости от роли
-          if (response?.data?.role === "admin") {
+          if (response?.data?.data?.role === "admin") {
             navigate("/admin");
-          } else if (response?.data?.role === "staff") {
+          } else if (response?.data?.data?.role === "staff") {
             navigate("/warehouse");
-          } else if (response?.data?.role === "seller") {
+          } else if (response?.data?.data?.role === "seller") {
             navigate("/seller");
-          } else if (response?.data?.role === "user") {
+          } else if (response?.data?.data?.role === "user") {
             navigate("/seller");
-          } else if (response?.data?.role === "director") {
+          } else if (response?.data?.data?.role === "director") {
             navigate("/director");
           }
         } catch (error) {
-          console.error("User data error:", error);
           setError("Ошибка при загрузке данных пользователя");
         } finally {
           setLoadingUser(false);
         }
       }
     },
-    onError: (error) => {
+    onError: () => {
       setError("Неверный логин или пароль");
-      console.error("Login error:", error);
     },
   });
 

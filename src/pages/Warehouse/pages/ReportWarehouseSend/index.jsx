@@ -15,10 +15,11 @@ export default function ReportWarehouseSend() {
   const { data, isLoading } = useFetch(`warehouse-transfers/${user?.warehouse?.id}`, `warehouse-transfers/${user?.warehouse?.id}`, {});
   
   useEffect(() => {
-    if (data && data.length > 0) {
-      setFilteredData(data);
+    if (data && data?.data?.length > 0) {
+      setFilteredData(data?.data);
     }
   }, [data]);
+  
   useEffect(() => {
     const updateItemsPerPage = () => {
       if (window.innerWidth < 768) {
@@ -27,7 +28,6 @@ export default function ReportWarehouseSend() {
         setItemsPerPage(9); // For desktop
       }
     };
-
     updateItemsPerPage(); // Call immediately when component mounts
     window.addEventListener("resize", updateItemsPerPage);
 
@@ -40,14 +40,14 @@ export default function ReportWarehouseSend() {
   );
 
   const handleSearch = (searchTerm, date) => {
-    if (data && data.length > 0) {
+    if (data?.data && data?.data > 0) {
       if ((!searchTerm || searchTerm.trim() === '') && !date) {
-        setFilteredData(data);
+        setFilteredData(data?.data);
         setCurrentPage(1);
         return;
       }
       
-      let filtered = [...data];
+      let filtered = [...data?.data];
       
       if (searchTerm && searchTerm.trim() !== '') {
         const searchTermLower = searchTerm.toLowerCase();
@@ -90,10 +90,10 @@ export default function ReportWarehouseSend() {
       <div className="relative max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[110px]">
   
         <SearchForm 
-          data={data} 
+          data={data?.data} 
           name="" 
           title="Hisobotlar omborlar" 
-          showDatePicker={true} 
+          showDatePicker={false} 
           onSearch={handleSearch} 
           className="w-full mb-6"
         />
@@ -112,7 +112,7 @@ export default function ReportWarehouseSend() {
         ) : (
           <div className="grid grid-cols-1 mb-4 sm:grid-cols-2 lg:grid-cols-3 gap-2 w-full px-4">
             {currentData.map((item) => (
-              <ReportCard key={item.id} item={item} />
+              <ReportCard key={item?.id} item={item} />
             ))}
           </div>
         )}

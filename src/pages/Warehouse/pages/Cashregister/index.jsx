@@ -10,8 +10,6 @@ export default function CashRegister() {
   const [filteredData, setFilteredData] = useState([]);
   const { user } = useUserStore();
   const warehouseId = user?.warehouse?.id;
-  console.log(user)
-  console.log(warehouseId);
   const loadMoreDistricts = () => {
     setVisibleDistricts((prevVisibleDistricts) => prevVisibleDistricts + 12);
   };
@@ -25,7 +23,6 @@ export default function CashRegister() {
     }
   );
 
- console.log(shops?.data?.shops)
   useEffect(() => {
     if (shops?.data?.shops && Array.isArray(shops?.data?.shops)) {
       setFilteredData(shops?.data?.shops);
@@ -44,7 +41,6 @@ export default function CashRegister() {
         setFilteredData([]);
       }
     } else {
-      console.warn('Search results are not an array:', results);
       setFilteredData([]);
     }
   };

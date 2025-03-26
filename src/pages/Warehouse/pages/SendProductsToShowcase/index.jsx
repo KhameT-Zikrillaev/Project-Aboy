@@ -17,11 +17,11 @@ export default function WarehouseProducts() {
   const warehouseId = user?.warehouse?.id;
 
   const { data, isLoading, refetch } = useFetch(
-    warehouseId ? `warehouse/${warehouseId}` : null, 
-    warehouseId ? `warehouse/${warehouseId}` : null, 
+    warehouseId ? `warehouse/${warehouseId}` : null,
+    warehouseId ? `warehouse/${warehouseId}` : null,
     {},
     {
-      enabled: !! warehouseId, 
+      enabled: !!warehouseId,
     }
   );
 
@@ -32,32 +32,39 @@ export default function WarehouseProducts() {
       setFilteredBySearch(data?.data?.shops || []);
     }
   }, [data]);
-  
+
   const handleSearch = (searchResults) => {
     setFilteredBySearch(searchResults);
   };
 
   return (
     <div className="DirectorProduct mt-[150px] p-4">
-       <SearchForm data={filteredData} name="" title="Sotuvchilar" showDatePicker={false} onSearch={handleSearch}  />
-       {isLoading ? (
-  <div className="flex justify-center items-center h-[300px]">
-    <Spin size="large" />
-  </div> ) : (
-      <div className="grid grid-cols-2 gap-4">
-        {filteredBySearch?.slice(0, visibleDistricts)?.map((product) => (
-          <Link
-            key={product?.id}
-            state={{ shopId: product?.id }}
-            to={`/warehouse/send-to-showcase/${product?.name}`}
-            className="block bg-gray-800 text-white p-4 rounded-lg hover:bg-gray-700 transition"
-          >
-            <h4>{product?.name}</h4>
-            <p>{product?.description}</p>
-          </Link>
-        ))}
-      </div>
-    )}
+      <SearchForm
+        data={filteredData}
+        name=""
+        title="Sotuvchilar"
+        showDatePicker={false}
+        onSearch={handleSearch}
+      />
+      {isLoading ? (
+        <div className="flex justify-center items-center h-[300px]">
+          <Spin size="large" />
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-4">
+          {filteredBySearch?.slice(0, visibleDistricts)?.map((product) => (
+            <Link
+              key={product?.id}
+              state={{ shopId: product?.id }}
+              to={`/warehouse/send-to-showcase/${product?.name}`}
+              className="block bg-gray-800 text-white p-4 rounded-lg hover:bg-gray-700 transition"
+            >
+              <h4>{product?.name}</h4>
+              <p>{product?.description}</p>
+            </Link>
+          ))}
+        </div>
+      )}
       {visibleDistricts < filteredBySearch?.length && (
         <div className="flex justify-center mt-4">
           <button
