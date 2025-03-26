@@ -29,14 +29,14 @@ export default function ProductDetalies() {
   // Отладочный вывод структуры данных
   useEffect(() => {
     console.log('Data structure:', data);
-    console.log('Is data?.products array?', Array.isArray(data?.products));
+    console.log('Is data?.products array?', Array.isArray(data?.data?.products));
   }, [data]);
 
   
   // Update filteredData when data changes
   useEffect(() => {
     if (data) {
-      setFilteredData(data?.products);
+      setFilteredData(data?.data?.products);
     }
   }, [data]);
 
@@ -73,7 +73,7 @@ export default function ProductDetalies() {
 
       <div className="relative z-0 max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[120px]">
         <SearchForm
-          data={data?.products}
+          data={data?.data?.products}
           name=""
           title="Tovarlar"
           showDatePicker={false}
@@ -120,7 +120,7 @@ export default function ProductDetalies() {
                   </h4>
                   <div className="flex justify-between">
                     <p className="text-gray-300 text-xs">
-                      Batch: {item?.quantity}
+                      Soni: {item?.quantity}
                     </p>
                   </div>
                 </div>
