@@ -7,6 +7,7 @@ import Loading from "@/components/Loading/Loading";
 import useApiMutation from "@/hooks/useApiMutation";
 import api from "@/services/api";
 import useUserStore from "@/store/useUser";
+import Cookies from "js-cookie";
 
 export default function Login() {
   const { setUser } = useUserStore();
@@ -31,7 +32,7 @@ export default function Login() {
     method: "POST",
     onSuccess: async (data) => {
       if (data?.data?.accessToken) {
-        localStorage.setItem("tokenWall", data?.data?.accessToken); // Сохраняем токен
+        Cookies.set("authToken", data?.data?.accessToken, { expires: 1 }); // Сохраняем токен
         try {
           setLoadingUser(true); // Показываем загрузку
           const response = await api.get("auth/profile", {

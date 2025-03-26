@@ -7,11 +7,12 @@ import useUserStore from "@/store/useUser";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "@/components/Loading/Loading";
+import Cookies from "js-cookie";
 
 function App() {
   const { setUser } = useUserStore();
   const navigate = useNavigate();
-  const token = localStorage.getItem("tokenWall");
+  const token = Cookies.get("authToken");
   const [isLoading, setIsLoading] = useState(false);
 
   const getUser = async () => {
