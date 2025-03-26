@@ -41,7 +41,10 @@ const SearchForm = ({
   const [date, setDate] = useState(null);
 
   // Поиск
-  const handleSearch = (value) => {
+  const handleSearch = (value, event) => {
+    if (event) {
+      event.preventDefault(); // Предотвращаем стандартное поведение
+    }
     setSearchTerm(value);
 
     if (typeof onSearch === 'function') {

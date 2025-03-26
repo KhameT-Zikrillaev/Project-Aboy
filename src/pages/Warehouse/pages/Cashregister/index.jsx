@@ -74,7 +74,7 @@ export default function CashRegister() {
             ))
           : (
             <div className="col-span-2 text-center text-gray-500">
-              Нет данных для отображения
+              Ma'lumotlar topilmadi
             </div>
           )}
         </div>

@@ -75,7 +75,7 @@ export default function ViewVitrinaProducts({ idwarehouse }) {
             <img  onClick={() => setSelectedImage(item?.image_url)} className="h-28 w-full bg-cover cursor-pointer bg-center rounded-t-lg" crossOrigin='anonymous' src={item?.image_url} alt=""/>
             <div className="flex flex-col gap-2">
               <h3 className="text-lg font-semibold text-white">{item?.article || item?.name || 'Без названия'}</h3>
-              <Tag color="blue">Код: <span className="text-red-500">{item?.batch_number || 'N/A'}</span></Tag>
+              <Tag color="blue">Part: <span className="text-red-500">{item?.batch_number || 'N/A'}</span></Tag>
               <h4 className="text-sm font-semibold text-white">{(item?.price || 0) + " $"}</h4>
             </div>
           </Card>

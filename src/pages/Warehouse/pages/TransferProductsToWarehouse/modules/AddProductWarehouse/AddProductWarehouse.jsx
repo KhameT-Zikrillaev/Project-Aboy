@@ -62,7 +62,7 @@ const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess, warehouseId
   // Отправка формы
   const onSubmit = () => {
     if (selectedItems.length === 0) {
-      message.warning("Нет выбранных товаров для отправки");
+      message.warning("Hech narsa tanlanmagan");
       return;
     }
 
@@ -110,11 +110,11 @@ const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess, warehouseId
                 name={`quantity-${product.id}`}
                 control={control}
                 rules={{
-                  required: "Введите количество",
-                  min: { value: 1, message: "Минимум 1" },
+                  required: "Son kiriting",
+                  min: { value: 1, message: "Min 1" },
                   max: {
                     value: product.initialQuantity, // Устанавливаем лимит по начальному количеству
-                    message: `Максимум ${product.initialQuantity}`,
+                    message: `Max ${product.initialQuantity}`,
                   },
                 }}
                 render={({ field }) => (
@@ -186,7 +186,7 @@ const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess, warehouseId
               (e.currentTarget.style.backgroundColor = "#364153")
             }
           >
-            {isSending ? "Отправка..." : "Yuborish"}
+            {isSending ? "Yuborish..." : "Yuborish"}
           </Button>
         </Form.Item>
       </Form>

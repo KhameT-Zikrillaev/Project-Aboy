@@ -92,9 +92,9 @@ export default function ViewWareHoustProducts({ idwarehouse }) {
           >
             <div className="flex flex-col gap-2">
               <h3 className="text-lg font-semibold text-white">{item?.article || item?.name || 'Без названия'}</h3>
-              <Tag color="blue">Код: <span className="text-red-500">{item?.code || 'N/A'}</span></Tag>
+              <Tag color="blue">Part: <span className="text-red-500">{item?.batch_number || 'N/A'}</span></Tag>
               <h4 className="text-sm font-semibold text-white">{(item?.price || 0) + " $"}</h4>
-              <h5 className="text-sm font-semibold text-white">Количество: {item?.quantity || 0}</h5>
+              <h5 className="text-sm font-semibold text-white">Soni: {item?.quantity || 0}</h5>
             </div>
           </Card>
         ))}

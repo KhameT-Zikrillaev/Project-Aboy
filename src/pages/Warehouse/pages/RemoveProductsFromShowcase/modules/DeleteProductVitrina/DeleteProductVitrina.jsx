@@ -35,7 +35,7 @@ const DeleteProductVitrina = ({ onClose, selectedProducts, onSuccess, warehouseN
   // Отправка данных - используем прямой API
   const onSubmit = async () => {
     if (selectedItems?.length === 0) {
-      message.warning('Нет выбранных товаров для отправки');
+      message.warning('Mijozga yetkazib bera olmayan mahsulotlar tanlanmagan');
       return;
     }
     
