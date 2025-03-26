@@ -12,7 +12,6 @@ const EditStorage = ({ onClose, storageSingleData, refetch }) => {
     reset
   } = useForm();
 
-  // storageSingleData bor bo‘lsa, formani shu ma’lumotlar bilan to‘ldiramiz
   useEffect(() => {
     if (storageSingleData) {
       reset({
