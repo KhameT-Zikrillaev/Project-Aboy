@@ -26,7 +26,7 @@ export default function Seller() {
   const totalPages = Math.ceil((usersData?.data?.total || 0) / 12);
 
   // Карта долгов
-  const debtsMap = debtorsData?.reduce((acc, debtor) => {
+  const debtsMap = debtorsData?.data?.reduce((acc, debtor) => {
     if (debtor.seller_id && debtor.debts?.length) {
       acc[debtor.seller_id] = debtor.debts;
     }
