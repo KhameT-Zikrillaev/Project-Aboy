@@ -139,14 +139,14 @@ const PendingCardWarehouse = ({ item, fetchRequests }) => {
                   </div>
                   <div className="flex justify-between text-xs text-gray-300 mt-1">
                     <span>
-                      Narx: {product?.product?.price?.toLocaleString()} so'm
+                      Narx: {product?.product?.price?.toLocaleString()} $
                     </span>
                     <span>
                       Jami:{" "}
                       {(
                         product?.product?.price * product?.quantity
                       )?.toLocaleString()}{" "}
-                      so'm
+                      $
                     </span>
                   </div>
                 </div>

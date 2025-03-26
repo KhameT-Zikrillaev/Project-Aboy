@@ -169,7 +169,7 @@ useEffect(() => {
     <div className="min-h-screen bg-cover bg-center p-1 relative" style={{ backgroundImage: `url(${bgsklad})` }}>
       <div className="absolute inset-0 bg-black/50 backdrop-blur-md z-0"></div>
       <div className="relative z-0 max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[120px]">
-        <SearchForm data={productsData} onSearch={handleSearchResults} name={name +'iga'} title="Omboridigi mahsulotlarni vitringa yuborish" showDatePicker={false} />
+        <SearchForm data={productsData?.data?.products} onSearch={handleSearchResults} name={name +'iga'} title="Omboridigi mahsulotlarni vitringa yuborish" showDatePicker={false} />
         <div className='w-full flex justify-between'>
 
 

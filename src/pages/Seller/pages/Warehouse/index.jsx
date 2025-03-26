@@ -114,7 +114,7 @@ export default function Warehouse() {
                     </Tag>
                     <div className="flex justify-between">
                       <p className="text-gray-300 text-xs">
-                        Narxi: {item?.price} so'm
+                        Narxi: {item?.price} $
                       </p>
                       <p className="text-gray-300 text-xs">
                         Soni bor: {item?.quantity} dona.

@@ -146,7 +146,7 @@ export default function Seller() {
                   <h4 className="text-lg font-semibold">{user.name}</h4>
                   <p className="text-sm text-gray-300">{user.phone}</p>
                   {userDebts.length > 0 && (
-                    <Tag>Hamma qarzi: <span className="text-red-500">{totalDebt}</span> so'm</Tag>
+                    <Tag>Hamma qarzi: <span className="text-red-500">{totalDebt}</span> $</Tag>
                   )}
                 </div>
                 <button
@@ -167,7 +167,7 @@ export default function Seller() {
                         <div className="w-full p-2 gap-2 flex flex-col text-white justify-between">
                           <div className="flex rounded-lg justify-between border border-b-1  border-white/20 p-1 items-center">
                           <span >
-                            {debt.price} so'm
+                            {debt.price} $
                           </span>
                           <span >
                             {formatDate(debt.deadline)}

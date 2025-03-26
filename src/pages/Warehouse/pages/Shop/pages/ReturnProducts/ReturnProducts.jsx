@@ -170,7 +170,7 @@ export default function ReturnProducts() {
                         <p className="text-gray-300 text-xs">
                           Narxi:{" "}
                           {Math.floor(item?.items[0]?.price).toLocaleString()}{" "}
-                          so'm
+                          $
                         </p>
                         <p className="text-gray-300 text-xs">
                           Soni: {Math.floor(item?.items[0]?.quantity)} dona
@@ -178,7 +178,7 @@ export default function ReturnProducts() {
                         <p className="text-gray-300 text-xs">
                           Jami narxi:{" "}
                           {Math.floor(item?.items[0]?.total).toLocaleString()}{" "}
-                          so'm
+                          $
                         </p>
                         <div className="flex items-center justify-between">
                           <p className="text-gray-300 text-xs">

@@ -28,15 +28,15 @@ const WarehouseSendShopReportCard = ({ report }) => {
           <div className="space-y-3">
             <div className="flex justify-between text-sm font-medium">
               <span>Umumiy tushum:</span>
-              <span>{report?.totalIncome?.toLocaleString()} so'm</span>
+              <span>{report?.totalIncome?.toLocaleString()} $</span>
             </div>
             <div className="flex justify-between text-sm font-medium text-red-400">
               <span>Qaytarilgan summa:</span>
-              <span>{report?.totalRefund?.toLocaleString()} so'm</span>
+              <span>{report?.totalRefund?.toLocaleString()} $</span>
             </div>
             <div className="flex justify-between text-sm font-medium text-green-400">
               <span>Sof foyda:</span>
-              <span>{report?.netTotal?.toLocaleString()} so'm</span>
+              <span>{report?.netTotal?.toLocaleString()} $</span>
             </div>
           </div>
         </div>

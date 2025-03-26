@@ -77,7 +77,7 @@ const EditReturnProduct = ({ onClose, product, refetch }) => {
             </p>
             <p className="text-gray-100 font-semibold">
               {" "}
-              Narxi: <span className="text-red-500">{Math.floor(product?.items[0]?.price).toLocaleString()} so'm</span>
+              Narxi: <span className="text-red-500">{Math.floor(product?.items[0]?.price).toLocaleString()} $</span>
             </p>
             <p className="text-gray-100 font-semibold">
               {" "}
@@ -85,7 +85,7 @@ const EditReturnProduct = ({ onClose, product, refetch }) => {
             </p>
             <p className="text-gray-100 font-semibold">
               {" "}
-              Jami narxi: <span className="text-red-500">{Math.floor(product?.items[0]?.total).toLocaleString()} so'm</span>
+              Jami narxi: <span className="text-red-500">{Math.floor(product?.items[0]?.total).toLocaleString()} $</span>
             </p>
           </Form.Item>
         )}

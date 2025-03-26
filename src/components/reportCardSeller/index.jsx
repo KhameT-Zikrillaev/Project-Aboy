@@ -81,7 +81,7 @@ const ReportCard = ({ item }) => {
                     <span>Partiya: {product?.product?.batch_number || 'Noma\'lum'}</span>
                     <Tooltip title="Narx">
                       <span className="text-yellow-400">
-                        {product?.product?.price?.toLocaleString()} so'm
+                        {product?.product?.price?.toLocaleString()} $
                       </span>
                     </Tooltip>
                   </div>
@@ -94,7 +94,7 @@ const ReportCard = ({ item }) => {
               <div className="pt-2 border-t border-gray-600">
                 <div className="flex justify-between text-sm font-medium text-yellow-300">
                   <span>Umumiy summa:</span>
-                  <span>{calculateTotalAmount(item?.items).toLocaleString()} so'm</span>
+                  <span>{calculateTotalAmount(item?.items).toLocaleString()} $</span>
                 </div>
               </div>
             </div>

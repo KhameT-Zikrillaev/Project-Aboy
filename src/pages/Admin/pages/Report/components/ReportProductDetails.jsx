@@ -186,7 +186,7 @@ export default function ReportWarehouseSend() {
                               <span>Partiya: {product.product?.batch_number || 'Noma\'lum'}</span>
                               <Tooltip title="Narx o'zgarishi">
                                 <span className={`${product.new_price > product.orginal_price ? 'text-green-400' : 'text-red-400'}`}>
-                                  {product.orginal_price?.toLocaleString()} → {product.new_price?.toLocaleString()} so'm
+                                  {product.orginal_price?.toLocaleString()} → {product.new_price?.toLocaleString()} $
                                 </span>
                               </Tooltip>
                             </div>
