@@ -32,7 +32,6 @@ export default function ProductDetalies() {
     console.log('Is data?.products array?', Array.isArray(data?.data?.products));
   }, [data]);
 
-  
   // Update filteredData when data changes
   useEffect(() => {
     if (data) {
@@ -137,7 +136,6 @@ export default function ProductDetalies() {
           onClose={() => setSelectedImage(null)}
           imageUrl={selectedImage}
         />
-
         {/* Pagination */}
         {filteredData?.length > 0 && !isLoading && (
           <div className="my-4 flex justify-center">

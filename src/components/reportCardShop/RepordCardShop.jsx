@@ -59,8 +59,8 @@ const RepordCardShop = ({ item }) => {
                     
                   </div>
                   <div className="flex justify-between text-xs text-gray-300 mt-1">
-                    <span>Narx: {product?.price?.toLocaleString()} so'm</span>
-                    <span>Jami: {product?.total?.toLocaleString()} so'm</span>
+                    <span>Narx: {product?.price?.toLocaleString()} $</span>
+                    <span>Jami: {product?.total?.toLocaleString()} $</span>
                   </div>
                 </div>
               ))}

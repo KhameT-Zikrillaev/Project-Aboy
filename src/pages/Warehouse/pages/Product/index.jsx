@@ -117,7 +117,7 @@ export default function Warehouse() {
                   </h4>
                   <div className="flex justify-between">
                     <p className="text-gray-300 text-xs">
-                      Batch: {item?.quantity}
+                      Rulon soni: {item?.quantity} ta
                     </p>
                   </div>
                 </div>

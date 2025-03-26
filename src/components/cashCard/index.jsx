@@ -15,7 +15,7 @@ const CashCard = ({ transaction }) => {
   // Форматирование суммы
   const formatAmount = (amount) => {
     if (!amount) return '0 so\'m';
-    return `${parseFloat(amount).toLocaleString('ru-RU')} so'm`;
+    return `${parseFloat(amount).toLocaleString('ru-RU')} $`;
   };
 
   // Получение информации о товарах

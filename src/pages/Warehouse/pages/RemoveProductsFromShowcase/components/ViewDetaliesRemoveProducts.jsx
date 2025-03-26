@@ -141,7 +141,7 @@ useEffect(() => {
       <div className="absolute inset-0 bg-black/50 backdrop-blur-md z-0"></div>
       <div className="relative z-0 max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[120px]">
         <SearchForm 
-          data={productsData} 
+          data={productsData?.data} 
           onSearch={handleSearchResults} 
           name={name +''} 
           title="vitrinasini o'chirish" 
