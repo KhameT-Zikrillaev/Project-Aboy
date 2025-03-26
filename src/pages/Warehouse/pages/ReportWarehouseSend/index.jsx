@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Pagination, Spin, Empty } from "antd";
 import "antd/dist/reset.css";
 import bgsklad from "@/assets/images/bg-sklad.png";
-import SearchForm from "@/components/SearchForm/SearchForm";
+import SearchFormStartEnd from "@/components/SearchFormStartEnd/SearchFormStartEnd";
 import useFetch from "@/hooks/useFetch";
 import useUserStore from "@/store/useUser";
 import ReportCard from "@/components/reportCard";
@@ -39,9 +39,9 @@ export default function ReportWarehouseSend() {
     currentPage * itemsPerPage
   );
 
-  const handleSearch = (searchTerm, date) => {
-    if (data?.data && data?.data > 0) {
-      if ((!searchTerm || searchTerm.trim() === '') && !date) {
+  const handleSearch = (startDate, endDate) => {
+    if (data?.data && data?.data.length > 0) {
+      if (!startDate && !endDate) {
         setFilteredData(data?.data);
         setCurrentPage(1);
         return;
@@ -49,29 +49,18 @@ export default function ReportWarehouseSend() {
       
       let filtered = [...data?.data];
       
-      if (searchTerm && searchTerm.trim() !== '') {
-        const searchTermLower = searchTerm.toLowerCase();
-        filtered = filtered.filter(item => {
-          const sourceWarehouseName = item.sourceWarehouse?.name?.toLowerCase() || '';
-          const destWarehouseName = item.destinationWarehouse?.name?.toLowerCase() || '';
-          
-          return sourceWarehouseName.includes(searchTermLower) || 
-                 destWarehouseName.includes(searchTermLower);
-        });
-      }
-      
-      if (date) {
-        const selectedDate = new Date(date);
-        selectedDate.setHours(0, 0, 0, 0);
+      if (startDate && endDate) {
+        const start = new Date(startDate);
+        start.setHours(0, 0, 0, 0);
         
-        const endOfDay = new Date(date);
-        endOfDay.setHours(23, 59, 59, 999);
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
         
         filtered = filtered.filter(item => {
           if (!item.createdAt) return false;
           
           const itemDate = new Date(item.createdAt);
-          return itemDate >= selectedDate && itemDate <= endOfDay;
+          return itemDate >= start && itemDate <= end;
         });
       }
       
@@ -89,11 +78,11 @@ export default function ReportWarehouseSend() {
 
       <div className="relative max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[110px]">
   
-        <SearchForm 
+        <SearchFormStartEnd
           data={data?.data} 
           name="" 
           title="Hisobotlar omborlar" 
-          showDatePicker={false} 
+          showDatePicker={true} 
           onSearch={handleSearch} 
           className="w-full mb-6"
         />

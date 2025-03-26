@@ -66,7 +66,7 @@ const WarehouseCard = ({ item }) => {
                 <div key={index} className="border-b border-gray-600 pb-2 last:border-0 last:pb-0">
                   <div className="flex justify-between">
                     <span className="text-sm font-medium">{product?.product?.article || 'Noma\'lum'}</span>
-                    <span className="text-sm">{product?.quantity} dona</span>
+                    <span className="text-sm">Rulon soni: {product?.quantity} ta</span>
                   </div>
                   <div className="flex justify-between text-xs text-gray-300 mt-1">
                     <span>Partiya: {product?.product?.batch_number || 'Noma\'lum'}</span>
