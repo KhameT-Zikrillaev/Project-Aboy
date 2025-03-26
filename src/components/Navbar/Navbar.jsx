@@ -77,7 +77,12 @@ const Navbar = () => {
       setOpenNotification(false);
     }
   };
-
+  const roleTranslations = {
+    director: "Direktor",
+    seller: "Sotuvchi",
+    staff: "Omborchi",
+    admin: "Admin"
+  };
   return (
     <div className="w-full h-[105px] left-0 top-0 flex justify-between fixed z-10 items-center mb-6 md:mb-10 py-6 px-6 md:px-6 bg-[#17212b] rounded-lg shadow-xl">
       <div className="left-content flex items-center space-x-4">
@@ -109,12 +114,14 @@ const Navbar = () => {
             </Badge>
           </div>
         )}
-        <div className="text-right">
-          <h2 className="text-sm md:text-lg font-semibold text-white">
-            {user?.name} <br />{" "}
-            <span className="text-blue-600">{user?.role}</span>
-          </h2>
-        </div>
+      <div className="text-right">
+  <h2 className="text-sm md:text-lg font-semibold text-white">
+    {user?.name} <br />{" "}
+    <span className="text-blue-600">
+      {roleTranslations[user?.role] || user?.role}
+    </span>
+  </h2>
+</div>
         <Link
           to="/"
           onClick={() => {
