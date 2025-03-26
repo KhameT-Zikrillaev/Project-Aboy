@@ -117,7 +117,7 @@ export default function Warehouse() {
                         Narxi: {item?.price} $
                       </p>
                       <p className="text-gray-300 text-xs">
-                        Soni bor: {item?.quantity} dona.
+                        Rulon soni: {item?.quantity} ta
                       </p>
                     </div>
                     {user?.role === "seller" && (
