@@ -1,42 +1,53 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import SearchForm from "@/components/SearchForm/SearchForm";
 import useFetch from "@/hooks/useFetch";
 import { Spin } from "antd";
 import useUserStore from "@/store/useUser";
 
-export default function Report() {
+export default function ReportDetaliesSellers() {
   const [visibleDistricts, setVisibleDistricts] = useState(12);
   const { user } = useUserStore();
-  const { data, isLoading, refetch } = useFetch('warehouse', 'warehouse', {});
+
   const [filteredData, setFilteredData] = useState([]);
   const [filteredBySearch, setFilteredBySearch] = useState([]);
   const loadMoreDistricts = () => {
     setVisibleDistricts((prevVisibleDistricts) => prevVisibleDistricts + 12);
   };
+ const id = useParams()
+  console.log(id?.name)
+  const { data, isLoading,refetch} = useFetch(
+    id?.name? `warehouse/${id?.name}` : null,
+    `warehouse/${id?.name}`,
+    {},
+    { enabled: !!id?.name}
+  );
 
   // Фильтрация складов при загрузке данных
+
   useEffect(() => {
-    if (data?.data?.warehouses && user?.name) {
+    if (data?.data?.shops && user?.name) {
       // Приводим имя пользователя к нижнему регистру для сравнения
       const userName = user.name.toLowerCase();
       
-      const filtered = data?.data?.warehouses?.filter(warehouse => {
+      const filtered = data?.data?.shops?.filter(shop => {
         // Приводим имя склада к нижнему регистру для сравнения
-        const warehouseName = warehouse?.name?.toLowerCase().trim();
+        const shopName = shop?.name?.toLowerCase().trim();
         
         // Проверяем, содержится ли имя пользователя в имени склада
-        const isUserWarehouse = userName.includes(warehouseName);
+        const isUserShop = userName.includes(shopName);
         
+        // console.log(`Склад: ${warehouse?.name}, Совпадение: ${isUserWarehouse}`);
         
-        return !isUserWarehouse; // Возвращаем true, если имя пользователя НЕ содержится в имени склада
+        return !isUserShop; // Возвращаем true, если имя пользователя НЕ содержится в имени склада
       });
       
+      console.log("Фильтрованные склады:", filtered);
       setFilteredData(filtered);
       setFilteredBySearch(filtered); // Изначально устанавливаем то же самое данные для поиска
     } else {
-      setFilteredData(data?.data?.warehouses || []);
-      setFilteredBySearch(data?.data?.warehouses || []);
+      setFilteredData(data?.data?.shops || []);
+      setFilteredBySearch(data?.data?.shops || []);
     }
   }, [data, user?.name]);
 
@@ -46,12 +57,12 @@ export default function Report() {
   };
 
   return (
-    <div className="DirectorProduct mt-[150px] p-4">
+    <div className="DirectorSeller mt-[150px] p-4">
       {/* Передаем отфильтрованные данные в компонент поиска */}
       <SearchForm 
         data={filteredData} 
         name="" 
-        title="Omborlar" 
+        title="Sotuvchilar" 
         showDatePicker={false} 
         onSearch={handleSearch} 
       />
@@ -65,8 +76,8 @@ export default function Report() {
           {filteredBySearch?.slice(0, visibleDistricts)?.map((product) => (
             <Link
               key={product?.id}
-              state={{ warehouseId: product?.id }} 
-              to={`/director/report/${product?.id}`}
+              state={{ shopId: product?.id }}
+              to={`/director/report/${id?.name}/${product?.name}`}
               className="block bg-gray-800 text-white p-4 rounded-lg hover:bg-gray-700 transition"
             >
               <h4>{product?.name}</h4>
