@@ -31,7 +31,6 @@ export default function ReportSellerSend() {
 
   useEffect(() => {
     if (data) {
-      console.log("Data from API:", data);
       setFilteredData(data?.data?.shops || []);
       setFilteredBySearch(data?.data?.shops || []);
     }

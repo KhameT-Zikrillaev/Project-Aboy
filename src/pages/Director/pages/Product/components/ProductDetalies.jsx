@@ -16,7 +16,6 @@ export default function ProductDetalies() {
   const location = useLocation();
   const warehouseId = location.state?.warehouseId;
   // Fetch data from API
-  console.log(warehouseId)
   const { data, isLoading, refetch } = useFetch(
     warehouseId ? `warehouse-products/byWarehouse/${warehouseId}` : null, 
     warehouseId ? `warehouse-products/byWarehouse/${warehouseId}` : null, 
@@ -27,10 +26,6 @@ export default function ProductDetalies() {
   );
 
   // Отладочный вывод структуры данных
-  useEffect(() => {
-    console.log('Data structure:', data);
-    console.log('Is data?.products array?', Array.isArray(data?.data?.products));
-  }, [data]);
 
   // Update filteredData when data changes
   useEffect(() => {
@@ -59,7 +54,6 @@ export default function ProductDetalies() {
 
   // Функция для обработки результатов поиска
   const handleSearchResults = (results) => {
-    console.log('Search results:', results);
     setFilteredData(results);
   };
 

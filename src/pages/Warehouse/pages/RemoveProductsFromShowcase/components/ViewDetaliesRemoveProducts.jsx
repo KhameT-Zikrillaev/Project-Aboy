@@ -110,7 +110,6 @@ useEffect(() => {
 
   // Обработчик результатов поиска
   const handleSearchResults = (results) => {
-    console.log('Search results:', results);
     // Проверяем, что результаты поиска являются массивом
     if (Array.isArray(results)) {
       setFilteredData(results);

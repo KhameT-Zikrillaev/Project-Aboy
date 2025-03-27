@@ -28,12 +28,10 @@ export default function Report() {
         // Проверяем, содержится ли имя пользователя в имени склада
         const isUserWarehouse = userName.includes(warehouseName);
         
-        // console.log(`Склад: ${warehouse?.name}, Совпадение: ${isUserWarehouse}`);
         
         return !isUserWarehouse; // Возвращаем true, если имя пользователя НЕ содержится в имени склада
       });
       
-      console.log("Фильтрованные склады:", filtered);
       setFilteredData(filtered);
       setFilteredBySearch(filtered); // Изначально устанавливаем то же самое данные для поиска
     } else {

@@ -39,9 +39,8 @@ const EditUser = ({ onClose, storageSingleData,refetch }) => {
       reset()
       toast.success("Foydalanuvchi muvaffaqiyatli yangilandi!");
     },
-    onError: (error) => {
-      console.log(error);
-      
+    onError: () => {
+      toast.error("Foydalanuvchi yangilashda xatolik yuz berdi!");
     },
   });
 

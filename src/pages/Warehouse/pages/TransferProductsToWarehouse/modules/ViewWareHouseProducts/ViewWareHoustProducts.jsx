@@ -9,7 +9,6 @@ export default function ViewWareHoustProducts({ idwarehouse }) {
   const [selectedImage, setSelectedImage] = useState(null);
 
   // Проверяем, что idwarehouse передается корректно
-  console.log("idwarehouse:", idwarehouse);
 
   // Исправляем параметры useFetch
   const { data, isLoading, refetch } = useFetch(

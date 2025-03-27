@@ -23,7 +23,6 @@ export default function Vitrina() {
       enabled: !!id, 
     }
   );
- console.log(data?.data)
   // Отладочный вывод структуры данных
 
   
@@ -53,7 +52,6 @@ export default function Vitrina() {
 
   // Функция для обработки результатов поиска
   const handleSearchResults = (results) => {
-    console.log('Search results:', results);
     setFilteredData(results);
   };
 

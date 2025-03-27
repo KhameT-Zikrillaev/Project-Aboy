@@ -25,10 +25,7 @@ export default function Warehouse() {
   );
 
   // Отладочный вывод структуры данных
-  // useEffect(() => {
-  //   console.log('Data structure:', data);
-  //   console.log('Is data?.products array?', Array.isArray(data?.products));
-  // }, [data]);
+
 
   
   // Update filteredData when data changes

@@ -22,9 +22,7 @@ export default function Seller() {
   );
 
   const { data: debtorsData, refetch: refetchDebtors } = useFetch("debtors", "debtors", {});
-   console.log(debtorsData)
   const users = usersData?.data?.users || [];
-  const totalPages = Math.ceil((usersData?.data?.total || 0) / 12);
 
   const debtsMap = debtorsData?.data?.reduce((acc, debtor) => {
     if (debtor.seller_id && debtor.debts?.length) {

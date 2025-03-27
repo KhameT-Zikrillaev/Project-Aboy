@@ -13,17 +13,14 @@ export default function ReportDetalies() {
   const [filteredData, setFilteredData] = useState([]);
   const location = useLocation();
   const warehouseId = location.state?.warehouseId;
-  const {user} = useUserStore()
-  console.log(warehouseId);
   
-  const { data, isLoading, refetch } = useFetch(`warehouse-transfers/${warehouseId}`, `warehouse-transfers/${warehouseId}`, {});
+  const { data, isLoading } = useFetch(`warehouse-transfers/${warehouseId}`, `warehouse-transfers/${warehouseId}`, {});
   
   useEffect(() => {
     if (data?.data && data?.data?.length > 0) {
       setFilteredData(data?.data);
     }
   }, [data]);
- console.log(data)
   useEffect(() => {
     const updateItemsPerPage = () => {
       if (window.innerWidth < 768) {

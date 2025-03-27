@@ -13,7 +13,6 @@ const Navbar = () => {
   const location = useLocation();
   const { user } = useUserStore();
   const [openNotification, setOpenNotification] = useState(false);
-  
   const handleGoBack = () => {
     const pathParts = location.pathname.split("/");
     if (pathParts.length > 2) {

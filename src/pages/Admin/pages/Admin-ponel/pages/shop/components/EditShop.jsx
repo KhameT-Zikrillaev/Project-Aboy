@@ -35,7 +35,6 @@ const EditSeller = ({ onClose, sellerSingleData, refetch }) => {
       toast.success("Magazin muvaffaqiyatli yangilandi!");
     },
     onError: (error) => {
-      console.log(error);
       if(
         error?.response?.data?.message === "Shop with this name already exists"
       ){

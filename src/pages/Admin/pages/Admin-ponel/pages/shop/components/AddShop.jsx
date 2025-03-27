@@ -27,7 +27,6 @@ const AddSeller = ({ onClose, refetch }) => {
       toast.success("Magazin muvaffaqiyatli qo‘shildi!");
     },
     onError: (error) => {
-      console.log(error);
       if (
         error?.response?.data?.message === "Shop with this name already exists"
       ) {
