@@ -20,6 +20,7 @@ export default function CashregisterDetailes() {
     const user = userStore();
     const todayDate = dayjs().format('YYYY-MM-DD');
 
+    
     const { data: cashRegisterData, isLoading: isCashRegisterLoading, refetch: refetchCashRegister } = useFetch(
         shopId ? `cash-transaction/shop/${shopId}/date/${todayDate}/status` : null,
         shopId ? `cash-transaction/shop/${shopId}/date/${todayDate}/status` : null,
