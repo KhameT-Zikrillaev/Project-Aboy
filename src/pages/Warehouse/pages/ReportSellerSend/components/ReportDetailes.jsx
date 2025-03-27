@@ -32,6 +32,7 @@ const ReportDetailes = () => {
 
   return (
     <div className="mt-[120px] px-2">
+       <div className="relative max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[110px]">
       <SearchFormStartEnd
         title={`${name} hisobotlari`}
         onSearch={handleDateSearch}
@@ -65,6 +66,7 @@ const ReportDetailes = () => {
       ) : (
         <p className="text-center text-gray-500 mt-4">Hech narsa yo‘q</p>
       )}
+    </div>
     </div>
   );
 };
