@@ -1,62 +1,145 @@
-import React, { useState, useEffect } from "react";
-import { Card, Pagination, Tag, Spin } from "antd";
-import "antd/dist/reset.css";
-import bgsklad from "../../../../assets/images/bg-sklad.png";
-import SearchForm from "@/components/SearchForm/SearchForm";
+import React, { useState } from "react";
+import bgsklad from "@/assets/images/bg-sklad.png";
 import ImageModal from "@/components/modal/ImageModal";
 import useFetch from "@/hooks/useFetch";
 import useUserStore from "@/store/useUser";
+import SearchFormCustom from "@/components/SearchForm/SearchFormCustom";
+import { Pagination, Table } from "antd";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 export default function Warehouse() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(8);
-  const [filteredData, setFilteredData] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const limit = 100;
+
   const { user } = useUserStore();
 
   // Fetch data from API
   const id = user?.warehouse?.id;
-  const { data, isLoading  } = useFetch(
-    id ? `warehouse-products/byWarehouse/${id}` : null, 
-    id ? `warehouse-products/byWarehouse/${id}` : null, 
-    {},
+  const { data, isLoading, refetch } = useFetch(
+    `warehouse-products/all-products`,
+    `warehouse-products/all-products`,
+    { page, limit, warehouseId: id, article: searchQuery || null },
     {
-      enabled: !!id, 
+      enabled: !!id,
     }
   );
 
-  // Отладочный вывод структуры данных
-
-
-  
-  // Update filteredData when data changes
-  useEffect(() => {
-    if (data) {
-      setFilteredData(data?.data?.products);
-    }
-  }, [data]);
-
-
-  // Адаптивность экран разрешение кароточек
-  useEffect(() => {
-    const updateItemsPerPage = () => {
-      setItemsPerPage(window.innerWidth < 768 ? 4 : 8);
-    };
-
-    updateItemsPerPage();
-    window.addEventListener("resize", updateItemsPerPage);
-    return () => window.removeEventListener("resize", updateItemsPerPage);
-  }, []);
-
-  // Логика пагинации
-  const currentData = filteredData?.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  // Функция для обработки результатов поиска
-  const handleSearchResults = (results) => {
-    setFilteredData(results);
+  const isOpenModal = (imageUrl) => {
+    setSelectedImage(imageUrl);
+    setIsImageModalOpen(true);
   };
+
+  const onCloseModal = () => {
+    setSelectedImage(null);
+    setIsImageModalOpen(false);
+  };
+
+  const handlePageChange = (page) => {
+    setPage(page);
+    refetch();
+  };
+
+  const onSearch = (value) => setSearchQuery(value);
+
+  const itemRender = (page, type, originalElement) => {
+    if (type === "prev") {
+      return (
+        <button
+          style={{
+            color: "white",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          <LeftOutlined />
+        </button>
+      );
+    }
+    if (type === "next") {
+      return (
+        <button
+          style={{
+            color: "white",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          <RightOutlined />
+        </button>
+      );
+    }
+    return originalElement;
+  };
+
+  const columns = [
+    {
+      title: "№",
+      render: (_, __, index) => (
+        <span className="text-gray-100 font-semibold">
+          {(page - 1) * limit + index + 1}
+        </span>
+      ),
+      width: 70,
+    },
+    {
+      title: "Artikul",
+      dataIndex: "article",
+      key: "article",
+      render: (text) => (
+        <span className="text-gray-100 font-semibold">{text}</span>
+      ),
+    },
+    {
+      title: "Partiya",
+      dataIndex: "batch_number",
+      key: "batch_number",
+      render: (text) => (
+        <span className="text-gray-100 font-semibold">{text}</span>
+      ),
+    },
+    {
+      title: "Rulon soni",
+      dataIndex: "quantity",
+      key: "quantity",
+      render: (text) => (
+        <span className="text-gray-100 font-semibold">{text}</span>
+      ),
+    },
+    {
+      title: "Narxi",
+      dataIndex: "price",
+      key: "price",
+      render: (text) => (
+        <span className="text-gray-100 font-semibold">{text}</span>
+      ),
+    },
+    {
+      title: "Rasm",
+      dataIndex: "image_url",
+      key: "image_url",
+      render: (text) => (
+        <div
+          className="max-h-[80px] max-w-[80px]"
+          onClick={() => isOpenModal(text)}
+        >
+          <img
+            className="h-auto w-full"
+            src={`${text}`}
+            crossOrigin="anonymous"
+          />
+        </div>
+      ),
+    },
+    {
+      title: "Vitrinadagi mahsulot",
+      dataIndex: "quantity",
+      render: (text) => (
+        <span className="text-gray-100 font-semibold">{text}</span>
+      ),
+    },
+  ];
 
   return (
     <div
@@ -66,85 +149,29 @@ export default function Warehouse() {
       <div className="absolute inset-0 bg-black/50 backdrop-blur-md z-0"></div>
 
       <div className="relative z-0 max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[120px]">
-        <SearchForm
-          data={data?.data?.products}
-          name=""
-          title="Tovarlar"
-          showDatePicker={false}
-          onSearch={handleSearchResults}
-        />
-        
-        {/* Loader while data is loading */}
-        {isLoading ? (
-          <div className="flex justify-center items-center h-64">
-            <Spin size="large" />
-          </div>
-        ) : (
-          <>
-              {filteredData?.length === 0 ? (
-              <div className="text-white text-lg">
-                Tovar topilmadi
-              </div>
-            ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full px-4">
-            {currentData?.map((item) => (
-              <Card
-                key={item?.product_id}
-                className="shadow-lg hover:shadow-xl transition-shadow rounded-lg"
-                style={{
-                  background: "rgba(255, 255, 255, 0.1)",
-                  backdropFilter: "blur(10px)",
-                  border: "1px solid rgba(255, 255, 255, 0.2)",
-                }}
-                cover={
-                  <div/>
-                }
-                bodyStyle={{ padding: "12px", color: "white" }}
-              >
-                   <img  onClick={() => setSelectedImage(item?.image_url)} className="h-48 w-full bg-cover cursor-pointer bg-center rounded-t-lg" src={item?.image_url} alt=""
-                  crossOrigin="anonymous" />
-                <div className="flex flex-col gap-2">
-                  <h3 className="text-lg font-semibold text-white">{item?.article}</h3>
-               
-                  <Tag color="blue">
-                    Part: <span className="text-red-500">{item?.batch_number}</span>
-                  </Tag>
-                  <h4 className="text-sm font-semibold text-white">
-                    {item?.price +" $" || "No price"}
-                  </h4>
-                  <div className="flex justify-between">
-                    <p className="text-gray-300 text-xs">
-                      Rulon soni: {item?.quantity} ta
-                    </p>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-          )}
-          </>
-        )}
-        
-        {/* Image Modal */}
-        <ImageModal
-          isOpen={!!selectedImage}
-          onClose={() => setSelectedImage(null)}
-          imageUrl={selectedImage}
-        />
-
-        {/* Pagination */}
-        {filteredData?.length > 0 && !isLoading && (
-          <div className="my-4 flex justify-center">
+        <SearchFormCustom title={"Mahsulotlar"} onSearch={onSearch} />
+        <div className="text-gray-100 w-full">
+          <Table
+            columns={columns}
+            dataSource={data?.data?.data}
+            pagination={false}
+            className="custom-table"
+            rowClassName={() => "custom-row"}
+            bordered
+            loading={isLoading}
+          />
+          <div className="flex justify-center mt-5">
             <Pagination
-              current={currentPage}
-              total={filteredData?.length}
-              pageSize={itemsPerPage}
-              onChange={(page) => setCurrentPage(page)}
-              showSizeChanger={false}
               className="custom-pagination"
+              current={page}
+              total={data?.data?.total}
+              pageSize={limit}
+              onChange={handlePageChange}
+              itemRender={itemRender}
             />
           </div>
-        )}
+        </div>
+        <ImageModal isOpen={isImageModalOpen} onClose={onCloseModal} imageUrl={selectedImage}/>
       </div>
     </div>
   );

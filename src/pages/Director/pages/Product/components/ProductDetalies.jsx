@@ -85,41 +85,45 @@ export default function ProductDetalies() {
                 Tovar topilmadi
               </div>
             ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full px-4">
-            {currentData?.map((item) => (
-              <Card
-                key={item?.product_id}
-                className="shadow-lg hover:shadow-xl transition-shadow rounded-lg"
-                style={{
-                  background: "rgba(255, 255, 255, 0.1)",
-                  backdropFilter: "blur(10px)",
-                  border: "1px solid rgba(255, 255, 255, 0.2)",
-                }}
-                cover={
-                  <div/>
-                }
-                bodyStyle={{ padding: "12px", color: "white" }}
-              >
-                   <img  onClick={() => setSelectedImage(item?.image_url)} className="h-48 w-full bg-cover cursor-pointer bg-center rounded-t-lg" src={item?.image_url} alt=""
-                  crossOrigin="anonymous" />
-                <div className="flex flex-col gap-2">
-                  <h3 className="text-lg font-semibold text-white">{item?.article}</h3>
-               
-                  <Tag color="blue">
-                    Part: <span className="text-red-500">{item?.batch_number}</span>
-                  </Tag>
-                  <h4 className="text-sm font-semibold text-white">
-                    {item?.price +" $" || "No price"}
-                  </h4>
-                  <div className="flex justify-between">
-                    <p className="text-gray-300 text-xs">
-                      Soni: {item?.quantity}
-                    </p>
+              <div className="flex justify-center flex-wrap gap-10">
+              {currentData?.map((item) => (
+                <Card
+                  key={item?.product_id}
+                  className="shadow-md hover:shadow-lg transition-shadow rounded-md"
+                  style={{
+                    background: "rgba(255, 255, 255, 0.1)",
+                    backdropFilter: "blur(10px)",
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                    width: "180px", // Kichraytirilgan width
+                    height: "280px", // Kichraytirilgan height
+                  }}
+                  cover={<div />}
+                  bodyStyle={{ padding: "8px", color: "white" }}
+                >
+                  <img
+                    onClick={() => setSelectedImage(item?.image_url)}
+                    className="h-32 w-full bg-cover cursor-pointer bg-center rounded-t-md" // Heightni kamaytirdim
+                    src={item?.image_url}
+                    alt=""
+                    crossOrigin="anonymous"
+                  />
+                  <div className="flex flex-col gap-1">
+                    <h3 className="text-sm font-semibold text-white">{item?.article}</h3>
+            
+                    <Tag color="blue" className="text-xs">
+                      Part: <span className="text-red-500">{item?.batch_number}</span>
+                    </Tag>
+                    <h4 className="text-xs font-semibold text-white">
+                      {item?.price + " $" || "No price"}
+                    </h4>
+                    <div className="flex justify-between">
+                      <p className="text-gray-300 text-xs">Soni: {item?.quantity}</p>
+                    </div>
                   </div>
-                </div>
-              </Card>
-            ))}
-          </div>
+                </Card>
+              ))}
+            </div>
+            
           )}
           </>
         )}

@@ -61,7 +61,6 @@ const Product = () => {
   const onCloseModal = () => {
     setImageUrl(null);
     setIsImageModalOpen(false);
-   
   };
 
   const handleDelete = (id) => {

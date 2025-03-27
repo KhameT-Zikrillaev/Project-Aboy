@@ -4,6 +4,7 @@ import { Input, Button, Form, Upload } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import useApiMutation from "@/hooks/useApiMutation";
 import { toast } from "react-toastify";
+import { FaLessThanEqual } from "react-icons/fa";
 
 const AddProduct = ({ onClose, refetch }) => {
   const {
@@ -148,7 +149,7 @@ const AddProduct = ({ onClose, refetch }) => {
           <Controller
             name="image"
             control={control}
-            rules={{ required: "Rasm yuklash majburiy" }}
+            rules={{ required: false }}
             render={({ field }) => (
               <Upload
                 listType="picture-card"

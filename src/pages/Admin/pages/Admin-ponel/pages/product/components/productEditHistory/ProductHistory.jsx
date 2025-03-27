@@ -108,7 +108,7 @@ const ProductHistory = () => {
         dataIndex: "action",
         key: "action",
         render: (text) => (
-            <span className="text-gray-100 font-semibold">{text}</span>
+            <span className="text-gray-100 font-semibold">{text === "DELETE" ? "O'chirildi" : text === "CREATE" ? "Yaratildi" : "Tahrirlandi"}</span>
         ),
       },
   ];

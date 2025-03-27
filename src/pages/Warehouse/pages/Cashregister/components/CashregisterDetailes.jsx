@@ -1,8 +1,8 @@
 import React from 'react';
 import bgsklad from '@/assets/images/bg-sklad.png';
-import { useParams, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import useFetch from '@/hooks/useFetch';
-import { Spin, Tag, Card, Pagination, Button } from 'antd';
+import { Spin, Pagination, Button } from 'antd';
 import ImageModal from '@/components/modal/ImageModal';
 import userStore from '@/store/useUser';
 import { toast } from 'react-toastify';
@@ -20,7 +20,7 @@ export default function CashregisterDetailes() {
     const user = userStore();
     const todayDate = dayjs().format('YYYY-MM-DD');
 
-    const { data: cashRegisterData, isLoading: isCashRegisterLoading, error: cashRegisterError, refetch: refetchCashRegister } = useFetch(
+    const { data: cashRegisterData, isLoading: isCashRegisterLoading, refetch: refetchCashRegister } = useFetch(
         shopId ? `cash-transaction/shop/${shopId}/date/${todayDate}/status` : null,
         shopId ? `cash-transaction/shop/${shopId}/date/${todayDate}/status` : null,
         {},
@@ -62,7 +62,6 @@ export default function CashregisterDetailes() {
             },
             onError: (error) => {
                 toast.error(`Xatolik: ${error.message || 'Kassa yopishda xatolik'}`);
-                console.error('Xatolik: ', error);
             }
         });
     };
