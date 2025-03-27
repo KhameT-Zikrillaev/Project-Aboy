@@ -9,10 +9,8 @@ const { Search } = Input;
 
 export default function Report() {
   const [term, setTerm] = useState('');
-  // const { name } = useParams();
   
   const { data, isLoading } = useFetch('warehouse', 'warehouse', {name: term ?? null});
-
 
   return (
     <div className="DirectorProduct mt-[150px] p-4">

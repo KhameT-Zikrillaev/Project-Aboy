@@ -39,7 +39,9 @@ const EditUser = ({ onClose, storageSingleData,refetch }) => {
       reset()
       toast.success("Foydalanuvchi muvaffaqiyatli yangilandi!");
     },
-    onError: () => {
+    onError: (error) => {
+      console.log(error);
+      
       toast.error("Foydalanuvchi yangilashda xatolik yuz berdi!");
     },
   });
@@ -179,7 +181,7 @@ const EditUser = ({ onClose, storageSingleData,refetch }) => {
         {/* Telfon nomer */}
         <Form.Item
           label={
-            <span className="text-gray-100 font-semibold">Telefon raqami</span>
+            <span className="text-gray-100 font-semibold">Telefon raqami (Login)</span>
           }
           validateStatus={errors.phone ? "error" : ""}
           help={errors.phone?.message}
@@ -194,7 +196,7 @@ const EditUser = ({ onClose, storageSingleData,refetch }) => {
                 className="custom-input"
                 {...field}
               />
-            )}
+            )}  
           />
         </Form.Item>
 
@@ -207,7 +209,7 @@ const EditUser = ({ onClose, storageSingleData,refetch }) => {
           <Controller
             name="password"
             control={control}
-            rules={{ required: "Parol majburiy" }}
+            rules={{ required: false }}
             render={({ field }) => (
               <Input
                 placeholder="Parolni kiriting"

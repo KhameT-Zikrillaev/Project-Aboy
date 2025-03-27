@@ -29,9 +29,13 @@ const AddUser = ({ onClose, refetch }) => {
           toast.success("Foydalanuvchi muvaffaqiyatli qo'shildi!");
         },
         onError: (error) => {
+          
           if(error?.response?.data?.message == "Bu shop'ning seller'i mavjud!"){
             toast.error("Bu magazinda sotuvchi biriktirilgan");
-          }else{
+          }else if(error?.response?.data?.message == "User with this phone already exists"){
+            toast.error("Bunday telefon raqamli foydalanuvchi mavjud");
+          }
+          else{
             toast.error("Foydalanuvchi qo'shishda xatolik yuz berdi");
           }
         },
@@ -172,7 +176,7 @@ const AddUser = ({ onClose, refetch }) => {
         {/* Telfon nomer */}
         <Form.Item
           label={
-            <span className="text-gray-100 font-semibold">Telefon raqami</span>
+            <span className="text-gray-100 font-semibold">Telefon raqami (Login)</span>
           }
           validateStatus={errors.phone ? "error" : ""}
           help={errors.phone?.message}
