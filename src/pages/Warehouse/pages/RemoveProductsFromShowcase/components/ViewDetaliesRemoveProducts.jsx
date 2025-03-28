@@ -162,7 +162,7 @@ useEffect(() => {
     <Spin size="large" />
   </div>
       ):(
-       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 w-full px-4">
+       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2 w-full px-4">
   {Array.isArray(currentData) && currentData.length > 0 ? (
     currentData.map((item) => (
       <Card
@@ -174,12 +174,12 @@ useEffect(() => {
         }
         bodyStyle={{ padding: '12px', color: 'white' }}
       >
-         <img  onClick={() => setSelectedImage(item?.image_url)} crossOrigin="anonymous" className="h-48 w-full bg-cover cursor-pointer bg-center rounded-t-lg" src={item?.image_url} alt=""/>
-        <div className="flex flex-col gap-2">
-          <h3 className="text-lg font-semibold text-white">{item?.article}</h3>
+         <img  onClick={() => setSelectedImage(item?.image_url)} crossOrigin="anonymous" className="h-28 w-full bg-cover cursor-pointer bg-center rounded-t-lg" src={item?.image_url} alt=""/>
+        <div className="flex flex-col mt-2 gap-1">
+          <h3 className="text-md font-semibold text-white">{item?.article}</h3>
           <Tag color="blue">Part: <span className="text-red-500">{item?.batch_number}</span></Tag>
           <h4 className="text-sm font-semibold text-white">{item?.price + " $"}</h4>
-          <div className='mt-[15px]'>
+          <div className=''>
             <CustomCheckbox
               checked={selectedProducts?.some((product) => product?.id === item?.id)}
               onChange={() => handleCheckboxChange(item)}

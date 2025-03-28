@@ -8,7 +8,7 @@ const CustomCheckbox = ({ checked, onChange, label }) => (
       onChange={onChange}
       className="hidden"
     />
-    <div className={`w-6 h-6 flex items-center justify-center border-2 rounded-md transition-all 
+    <div className={`w-4 h-4 flex items-center justify-center border-2 rounded-md transition-all 
       ${checked ? 'border-transparent bg-[#17212b] shadow-lg' : 'border-gray-400 group-hover:border-purple-400'} 
       transform duration-300 ease-in-out ${checked ? 'scale-105' : 'scale-100'}`}>
       {checked && (

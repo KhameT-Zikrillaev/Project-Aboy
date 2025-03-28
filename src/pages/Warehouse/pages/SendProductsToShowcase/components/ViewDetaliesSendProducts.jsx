@@ -6,6 +6,7 @@ import 'antd/dist/reset.css';
 import bgsklad from '@/assets/images/bg-sklad.png';
 import SearchForm from '@/components/SearchForm/SearchForm';
 import ModalComponent from "@/components/modal/Modal";
+import ModalComponentContent from "@/components/modal/ModalContent";
 import AddProductVitrina from "../modules/AddProductVitrina/AddProductVitrina";
 import ViewWareHoustProducts from "../modules/ViewVitrinaProducts/ViewVitrinaProducts";
 import ImageModal from "@/components/modal/ImageModal";
@@ -193,7 +194,7 @@ useEffect(() => {
     <Spin size="large" />
   </div>
       ):(
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 w-full px-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2 w-full px-4">
         {Array.isArray(currentData) && currentData.length > 0 ? (
           currentData.map((item) => (
             <Card
@@ -205,12 +206,12 @@ useEffect(() => {
               }
               bodyStyle={{ padding: '12px', color: 'white' }}
             >
-               <img  onClick={() => setSelectedImage(item?.image_url)} crossOrigin="anonymous" className="h-48 w-full bg-cover cursor-pointer bg-center rounded-t-lg" src={item?.image_url} alt=""/>
-              <div className="flex flex-col gap-2">
-                <h3 className="text-lg font-semibold text-white">{item?.article}</h3>
+               <img  onClick={() => setSelectedImage(item?.image_url)} crossOrigin="anonymous" className="h-28 w-full bg-cover cursor-pointer bg-center rounded-t-lg" src={item?.image_url} alt=""/>
+              <div className="flex flex-col mt-2 gap-1">
+                <h3 className="text-md font-semibold text-white">{item?.article}</h3>
                 <Tag color="blue">Part: <span className="text-red-500">{item?.batch_number}</span></Tag>
                 <h4 className="text-sm font-semibold text-white">{item?.price + " $"}</h4>
-                <div className='mt-[15px]'>
+                <div className=''>
                   <CustomCheckbox
                     checked={selectedProducts?.some((product) => product?.id === item?.id)}
                     onChange={() => handleCheckboxChange(item)}
@@ -239,7 +240,7 @@ useEffect(() => {
         )}
         {filteredData?.length > 0 && (
           <div className="w-full flex flex-col md:flex-row mt-2 mb-12 gap-2 justify-center items-center">
-            <span className='bg-gray-700 py-[7px] max-w-[300px] w-full text-center h-[40px] text-white text-[18px] rounded-lg shadow-lg'>
+            <span className='bg-gray-700 py-[7px] max-w-[300px] w-full text-center h-[32px] text-white text-[16px] rounded-lg shadow-lg'>
               Tanlangan: {selectedProducts.length}
             </span>
             <Button
@@ -250,8 +251,8 @@ useEffect(() => {
   style={{
     backgroundColor: selectedProducts?.length === 0 ? '#888' : '#364153',
     borderColor: '#364153',
-    fontSize: '18px',
-    height: '40px',
+    fontSize: '16px',
+    height: '32px',
     cursor: selectedProducts?.length === 0 ? 'not-allowed' : 'pointer',
     opacity: selectedProducts?.length === 0 ? 0.6 : 1,
   }}
@@ -287,13 +288,13 @@ useEffect(() => {
             shopId={shopId} // Передаем найденный ID магазина
           />
         </ModalComponent>
-        <ModalComponent
+        <ModalComponentContent
           isOpen={isWareHouseOpen}
           onClose={onClose}
           title={name + " Vitrinasi"}
         >
           <ViewWareHoustProducts idwarehouse={shopId} />
-        </ModalComponent>
+        </ModalComponentContent>
       </div>
     </div>
   );
