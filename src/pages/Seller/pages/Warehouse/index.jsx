@@ -210,56 +210,9 @@ export default function Warehouse() {
                     background: "rgba(255, 255, 255, 0.1)",
                     backdropFilter: "blur(10px)",
                   }}
-<<<<<<< HEAD
-                  cover={<div />}
-                  bodyStyle={{ padding: "12px", color: "white" }}
-                >
-                  <img
-                    onClick={() => setSelectedImage(item?.image_url)}
-                    crossOrigin="anonymous"
-                    className="h-48 w-full bg-cover object-cover cursor-pointer bg-center rounded-t-lg"
-                    src={item?.image_url}
-                    alt=""
-                  />
-                  <div className="flex flex-col gap-2">
-                    <h4 className="text-sm font-semibold text-white">
-                      {item?.article}
-                    </h4>
-                    <Tag color="blue">
-                    Партия: <span className="text-red-500">{item?.batch_number}</span>
-                    </Tag>
-                    <div className="flex justify-between">
-                      <p className="text-gray-300 text-xs">
-                      Нархи: {item?.price} $
-                      </p>
-                      <p className="text-gray-300 text-xs">
-                      Рулон сони: {item?.quantity} ta
-                      </p>
-                    </div>
-                    {user?.role === "seller" && (
-                      <Button
-                        type="primary"
-                        onClick={() => showModal(item)}
-                        style={{ backgroundColor: "#364153", borderColor: "#364153" }}
-                        onMouseEnter={(e) =>
-                          (e.currentTarget.style.backgroundColor = "#2b3445")
-                        }
-                        onMouseLeave={(e) =>
-                          (e.currentTarget.style.backgroundColor = "#364153")
-                        }
-                      >
-                        Буюртма бериш
-                      </Button>
-                    )}
-                  </div>
-                </Card>
-              ))}
-            </div>
-=======
                 />
               </div>
             )}
->>>>>>> 445d773ddbeaee8c167ba27ea380c2ce14646be5
 
             <ImageModal
               isOpen={!!selectedImage}

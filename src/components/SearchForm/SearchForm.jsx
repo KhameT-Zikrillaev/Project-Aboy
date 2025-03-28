@@ -44,7 +44,6 @@ const SearchForm = ({
   // Улучшенный обработчик поиска
   const handleSearch = (value) => {
     setSearchTerm(value);
-<<<<<<< HEAD
 
     if (typeof onSearch === 'function') {
       // Если поиск только по имени
@@ -80,12 +79,6 @@ const SearchForm = ({
       setTimeout(() => {
         onSearch(searchTerm, dateValue ? dateValue.toDate() : null);
       }, 0);
-=======
-    
-    if (onSearch) {
-      // Отправляем только строку поиска, а не объект
-      onSearch(value);
->>>>>>> 445d773ddbeaee8c167ba27ea380c2ce14646be5
     }
   };
 
@@ -99,12 +92,6 @@ const SearchForm = ({
     if (onDateChange) {
       onDateChange(null);
     }
-  };
-
-  // Изменение даты
-  const handleDateChange = (dateValue) => {
-    setDate(dateValue);
-    if (onDateChange) onDateChange(dateValue);
   };
 
   const shouldShowClearButton = showClearButton && (searchTerm.length > 0 || date !== null);
@@ -136,11 +123,7 @@ const SearchForm = ({
         
         <div className="flex items-center gap-2 w-full">
           <Search
-<<<<<<< HEAD
             placeholder="Қидириш"
-=======
-            placeholder={placeholder}
->>>>>>> 445d773ddbeaee8c167ba27ea380c2ce14646be5
             onChange={(e) => setSearchTerm(e.target.value)}
             value={searchTerm}
             enterButton
