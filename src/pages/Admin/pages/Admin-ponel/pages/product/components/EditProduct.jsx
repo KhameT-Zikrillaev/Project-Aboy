@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { Input, Button, Form, Upload } from "antd";
+import { Input, Button, Form, Upload, Select } from "antd";
 // import { PlusOutlined } from "@ant-design/icons";
 import useApiMutation from "@/hooks/useApiMutation";
 import { toast } from "react-toastify";
+import useFetch from "@/hooks/useFetch";
 
 const { TextArea } = Input;
+const { Option } = Select;
 
 const EditProduct = ({ onClose, productSingleData, refetch }) => {
   const {
@@ -15,13 +17,15 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
     reset,
   } = useForm();
 
+  const { data: warehouses } = useFetch("warehouse", "warehouse");
+
   useEffect(() => {
     if (productSingleData) {
       reset({
         article: productSingleData.article,
         name: productSingleData.name,
         batch_number: productSingleData.batch_number,
-        price: productSingleData.price
+        price: productSingleData.price,
       });
     }
   }, [productSingleData, reset]);
@@ -52,13 +56,13 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
       }
       return acc;
     }, {});
-  
+
     // Agar o'zgarish bo'lmasa, API chaqirmaslik
     if (Object.keys(updatedFields).length === 0) {
       toast.info("Ҳеч қандай ўзгариш киритилмади.");
       return;
     }
-  
+
     mutate(updatedFields);
   };
 
@@ -134,6 +138,32 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
                 className="custom-input"
                 {...field}
               />
+            )}
+          />
+        </Form.Item>
+        <Form.Item
+          label={<span className="text-gray-100 font-semibold">Омборлар</span>}
+          validateStatus={errors.warehouse_id ? "error" : ""}
+          help={errors.warehouse_id?.message}
+        >
+          <Controller
+            name="warehouse_id"
+            control={control}
+            rules={{ required: "Омбор мажбурий" }}
+            render={({ field }) => (
+              <Select
+                {...field}
+                placeholder="Омбор танланг"
+                className="custom-select"
+                onChange={(value) => field.onChange(value)}
+                dropdownClassName="custom-dropdown"
+              >
+                {warehouses?.data?.warehouses?.map((warehouse) => (
+                  <Option key={warehouse?.id} value={warehouse?.id}>
+                    {warehouse?.name}
+                  </Option>
+                ))}
+              </Select>
             )}
           />
         </Form.Item>

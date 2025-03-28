@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { Input, Button, Form, Upload } from "antd";
+import { Input, Button, Form, Upload, Select } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import useApiMutation from "@/hooks/useApiMutation";
 import { toast } from "react-toastify";
-import { FaLessThanEqual } from "react-icons/fa";
+import useFetch from "@/hooks/useFetch";
+
+const { Option } = Select;
 
 const AddProduct = ({ onClose, refetch }) => {
   const {
@@ -17,6 +19,8 @@ const AddProduct = ({ onClose, refetch }) => {
   } = useForm();
   const imageFile = watch("image");
   const [previewImage, setPreviewImage] = useState(null);
+
+  const { data: warehouses } = useFetch("warehouse", "warehouse");
 
   const { mutate, isLoading } = useApiMutation({
     url: 'products',
@@ -135,6 +139,33 @@ const AddProduct = ({ onClose, refetch }) => {
                 className="custom-input"
                 {...field}
               />
+            )}
+          />
+        </Form.Item>
+
+        <Form.Item
+          label={<span className="text-gray-100 font-semibold">Омборлар</span>}
+          validateStatus={errors.warehouse_id ? "error" : ""}
+          help={errors.warehouse_id?.message}
+        >
+          <Controller
+            name="warehouse_id"
+            control={control}
+            rules={{ required: "Омбор мажбурий" }}
+            render={({ field }) => (
+              <Select
+                {...field}
+                placeholder="Омбор танланг"
+                className="custom-select"
+                onChange={(value) => field.onChange(value)}
+                dropdownClassName="custom-dropdown"
+              >
+                {warehouses?.data?.warehouses?.map((warehouse) => (
+                  <Option key={warehouse?.id} value={warehouse?.id}>
+                    {warehouse?.name}
+                  </Option>
+                ))}
+              </Select>
             )}
           />
         </Form.Item>
