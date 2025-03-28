@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
-import { Card, Pagination, Tag, Button, Spin } from 'antd';
-import 'antd/dist/reset.css';
-import bgsklad from '@/assets/images/bg-sklad.png';
-import SearchForm from '@/components/SearchForm/SearchForm';
+import { Card, Pagination, Tag, Button, Spin } from "antd";
+import "antd/dist/reset.css";
+import bgsklad from "@/assets/images/bg-sklad.png";
+import SearchForm from "@/components/SearchForm/SearchForm";
 import ModalComponent from "@/components/modal/Modal";
 import AddProductWarehouse from "../modules/AddProductWarehouse/AddProductWarehouse";
 import ViewWareHoustProducts from "../modules/ViewWareHouseProducts/ViewWareHoustProducts";
@@ -38,10 +38,12 @@ export default function ViewDetaliesTransferProducts() {
   useEffect(() => {
     if (data?.data?.products) {
       if (data?.data?.products && Array.isArray(data?.data?.products)) {
-        setFilteredData(data?.data?.products?.map(item => ({
-          ...item,
-          key: item.id
-        })));
+        setFilteredData(
+          data?.data?.products?.map((item) => ({
+            ...item,
+            key: item.id,
+          }))
+        );
       } else {
         setFilteredData([]);
       }
@@ -55,10 +57,12 @@ export default function ViewDetaliesTransferProducts() {
       setFilteredData(results);
     } else if (results === null || results === undefined) {
       if (data?.data?.products && Array.isArray(data?.data?.products)) {
-        setFilteredData(data?.data?.products?.map(item => ({
-          ...item,
-          key: item.id
-        })));
+        setFilteredData(
+          data?.data?.products?.map((item) => ({
+            ...item,
+            key: item.id,
+          }))
+        );
       } else {
         setFilteredData([]);
       }
@@ -84,32 +88,43 @@ export default function ViewDetaliesTransferProducts() {
 
   useEffect(() => {
     updateItemsPerPage();
-    window.addEventListener('resize', updateItemsPerPage);
-    return () => window.removeEventListener('resize', updateItemsPerPage);
+    window.addEventListener("resize", updateItemsPerPage);
+    return () => window.removeEventListener("resize", updateItemsPerPage);
   }, []);
 
-  const currentData = Array.isArray(filteredData) ? filteredData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  ) : [];
+  const currentData = Array.isArray(filteredData)
+    ? filteredData.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+      )
+    : [];
 
   return (
-    <div className="min-h-screen bg-cover bg-center p-1 relative" style={{ backgroundImage: `url(${bgsklad})` }}>
+    <div
+      className="min-h-screen bg-cover bg-center p-1 relative"
+      style={{ backgroundImage: `url(${bgsklad})` }}
+    >
       <div className="absolute inset-0 bg-black/50 backdrop-blur-md z-0"></div>
       <div className="relative z-0 max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[120px]">
-        <SearchForm 
-          data={data?.data?.products} 
-          onSearch={handleSearchResults} 
-          name={name +" " +'омборига'} 
-          title="Омборидиги маҳсулотларни юбориш" 
-          showDatePicker={false} 
+        <SearchForm
+          data={data?.data?.products}
+          onSearch={handleSearchResults}
+          name={name + " " + "омборига"}
+          title="Омборидиги маҳсулотларни юбориш"
+          showDatePicker={false}
         />
-        <Button
-          style={{ marginBottom: '10px', backgroundColor: '#17212b', color: '#fff' }}
-          onClick={() => setIsWareHouseOpen(true)}
-        >
-          Омбордиги маҳсулотни кўриш
-        </Button>
+        {user?.warehouse?.isTrusted && (
+          <Button
+            style={{
+              marginBottom: "10px",
+              backgroundColor: "#17212b",
+              color: "#fff",
+            }}
+            onClick={() => setIsWareHouseOpen(true)}
+          >
+            Омбордиги маҳсулотни кўриш
+          </Button>
+        )}
         {isLoading ? (
           <div className="flex justify-center items-center h-[300px]">
             <Spin size="large" />
@@ -121,22 +136,48 @@ export default function ViewDetaliesTransferProducts() {
                 <Card
                   key={item?.key}
                   className="shadow-lg hover:shadow-xl transition-shadow rounded-lg"
-                  style={{ background: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255, 255, 255, 0.2)' }}
+                  style={{
+                    background: "rgba(255, 255, 255, 0.1)",
+                    backdropFilter: "blur(10px)",
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                  }}
                   cover={<div />}
-                  bodyStyle={{ padding: '12px', color: 'white' }}
+                  bodyStyle={{ padding: "12px", color: "white" }}
                 >
-                  <img onClick={() => setSelectedImage(item?.image_url)} className="h-48 w-full bg-cover object-cover cursor-pointer bg-center rounded-t-lg" crossOrigin='anonymous' src={item?.image_url} alt="" />
+                  <img
+                    onClick={() => setSelectedImage(item?.image_url)}
+                    className="h-48 w-full bg-cover object-cover cursor-pointer bg-center rounded-t-lg"
+                    crossOrigin="anonymous"
+                    src={item?.image_url}
+                    alt=""
+                  />
                   <div className="flex flex-col gap-2">
-                    <h3 className="text-lg font-semibold text-white">{item?.article}</h3>
-                    <Tag color="blue">Партия: <span className="text-red-500">{item?.batch_number}</span></Tag>
-                    <h4 className="text-sm font-semibold text-white">{item?.price + " $"}</h4>
-                    <h5 className="text-sm font-semibold text-white">Рулон сони {item?.quantity} ta</h5>
+                    <h3 className="text-lg font-semibold text-white">
+                      {item?.article}
+                    </h3>
+                    <Tag color="blue">
+                      Партия:{" "}
+                      <span className="text-red-500">{item?.batch_number}</span>
+                    </Tag>
+                    <h4 className="text-sm font-semibold text-white">
+                      {item?.price + " $"}
+                    </h4>
+                    <h5 className="text-sm font-semibold text-white">
+                      Рулон сони {item?.quantity} ta
+                    </h5>
                     <Button
                       type="primary"
                       onClick={() => showModal(item)}
-                      style={{ backgroundColor: '#364153', borderColor: '#364153' }}
-                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#2b3445')}
-                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#364153')}
+                      style={{
+                        backgroundColor: "#364153",
+                        borderColor: "#364153",
+                      }}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.backgroundColor = "#2b3445")
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.backgroundColor = "#364153")
+                      }
                     >
                       Юбориш
                     </Button>
@@ -144,7 +185,9 @@ export default function ViewDetaliesTransferProducts() {
                 </Card>
               ))
             ) : (
-              <div className="col-span-5 text-center text-white text-xl py-10">Малумот топилмади</div>
+              <div className="col-span-5 text-center text-white text-xl py-10">
+                Малумот топилмади
+              </div>
             )}
           </div>
         )}
@@ -171,10 +214,10 @@ export default function ViewDetaliesTransferProducts() {
           onClose={onClose}
           title={name + " " + "Витринасига юбориш"}
         >
-          <AddProductWarehouse 
-            onClose={onClose} 
-            selectedProducts={[selectedProduct]} 
-            onSuccess={refetch} 
+          <AddProductWarehouse
+            onClose={onClose}
+            selectedProducts={[selectedProduct]}
+            onSuccess={refetch}
             warehouseName={name}
             warehouseId={shopId}
           />

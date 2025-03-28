@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Input, Button, Form, Upload, Select } from "antd";
-// import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
 import useApiMutation from "@/hooks/useApiMutation";
 import { toast } from "react-toastify";
 import useFetch from "@/hooks/useFetch";
@@ -15,8 +15,9 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
     control,
     formState: { errors },
     reset,
+    watch
   } = useForm();
-
+  
   const { data: warehouses } = useFetch("warehouse", "warehouse");
 
   useEffect(() => {
@@ -29,6 +30,10 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
       });
     }
   }, [productSingleData, reset]);
+  const imageFile = watch("image");
+    const [previewImage, setPreviewImage] = useState(productSingleData?.image_url || null);
+
+    
 
   const { mutate, isLoading } = useApiMutation({
     url: `products/${productSingleData?.id}`,
@@ -66,20 +71,21 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
     mutate(updatedFields);
   };
 
-  // const beforeUpload = (file) => {
-  //   const isImage = file.type.startsWith("image/");
-  //   if (!isImage) {
-  //     message.error("Faqat rasm yuklash mumkin!");
-  //     return false;
-  //   }
+  const beforeUpload = (file) => {
+    const isImage = file.type.startsWith("image/");
+    
+    if (!isImage) {
+      // message.error("Faqat rasm yuklash mumkin!");
+      return false;
+    }
+    // setValue("image", file); // Rasmni react-hook-form state ga saqlash
+    const reader = new FileReader();
+    
+    reader.onload = () => setPreviewImage(reader.result);
+    reader.readAsDataURL(file);
 
-  //   setValue("image", file); // Rasmni react-hook-form state ga saqlash
-  //   const reader = new FileReader();
-  //   reader.onload = () => setPreviewImage(reader.result);
-  //   reader.readAsDataURL(file);
-
-  //   return false; // Ant Design uploadni avtomatik yuborishining oldini olish
-  // };
+    return false; // Ant Design uploadni avtomatik yuborishining oldini olish
+  };
 
   return (
     <div className="">
@@ -167,9 +173,9 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
             )}
           />
         </Form.Item>
-        {/* <Form.Item
+        <Form.Item
           label={
-            <span className="text-gray-100 font-semibold">Rasm yuklash</span>
+            <span className="text-gray-100 font-semibold">Расм юклаш</span>
           }
           validateStatus={errors.image ? "error" : ""}
           help={errors.image?.message}
@@ -177,7 +183,7 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
           <Controller
             name="image"
             control={control}
-            rules={{ required: "Rasm yuklash majburiy" }}
+            rules={{ required: false }}
             render={({ field }) => (
               <Upload
                 listType="picture-card"
@@ -188,9 +194,10 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
                   return false;
                 }}
               >
-                {imageFile ? (
+                {imageFile || previewImage ? (
                   <img
                     src={previewImage}
+                    crossOrigin="anonymous"
                     alt="avatar"
                     style={{ width: "100%" }}
                   />
@@ -200,14 +207,14 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
                     <div
                       style={{ marginTop: 8, color: "#fff", fontWeight: "500" }}
                     >
-                      Rasm yuklash
+                      Расм юклаш  
                     </div>
                   </div>
                 )}
               </Upload>
             )}
           />
-        </Form.Item> */}
+        </Form.Item>
         <Form.Item
           label={<span className="text-gray-100 font-semibold">Изоҳ</span>}
           validateStatus={errors.comment ? "error" : ""}

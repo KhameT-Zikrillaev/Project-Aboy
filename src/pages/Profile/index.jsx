@@ -8,6 +8,7 @@ import { AdminCards } from "./data/AdminCards.js"; // Импортируем д�
 import { SkladCards } from "./data/WarehouseCards.js"; // Импортируем данные
 import { SellerCards } from "./data/SellerCards.js";
 import { DirectorCards } from "./data/DirectorCards.js";
+import { SkladCardsNot } from "./data/WarehouseCardsNot.js";
 import  useUserStore  from "@/store/useUser";
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -28,7 +29,10 @@ export default function Home() {
   if (location.pathname === "/admin") {
     userRole = "Админ";
     cards = AdminCards;
-  } else if (location.pathname === "/warehouse") {
+  } else if (location.pathname === "/warehouse" && !user?.warehouse?.isTrusted) {
+    userRole = "Омборчи";
+    cards = SkladCardsNot;
+  }else if (location.pathname === "/warehouse") {
     userRole = "Омборчи";
     cards = SkladCards;
   } else if (location.pathname === "/seller") {
@@ -69,17 +73,17 @@ export default function Home() {
         </div>
 
         {/* Кнопки */}
-        {cards.length > 0 && (
+        {cards?.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl px-4">
-            {cards.map((card, index) => (
+            {cards?.map((card, index) => (
               <Link
                 key={index}
-                to={card.link}
+                to={card?.link}
                 className="flex flex-col items-center justify-center p-6 bg-black/50 md:bg-white/10 backdrop-blur-md rounded-lg border border-white/10 hover:bg-white/20 transition-all duration-300 hover:scale-105"
               >
                 {card.icon}
-                <span className="text-xl text-center font-semibold text-white">{card.title}</span>
-                <p className="text-gray-200 text-center mt-2">{card.description}</p>
+                <span className="text-xl text-center font-semibold text-white">{card?.title}</span>
+                <p className="text-gray-200 text-center mt-2">{card?.description}</p>
               </Link>
             ))}
           </div>

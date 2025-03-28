@@ -17,6 +17,7 @@ const AddProduct = ({ onClose, refetch }) => {
     reset,
     watch,
   } = useForm();
+  
   const imageFile = watch("image");
   const [previewImage, setPreviewImage] = useState(null);
 
