@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation } from "react-router-dom";
-import { Link } from "react-router-dom";
-import { Card, Pagination, Tag, Button, Spin } from 'antd';
+import { Table, Pagination, Tag, Button, Spin, Checkbox } from 'antd';
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import 'antd/dist/reset.css';
 import bgsklad from '@/assets/images/bg-sklad.png';
 import SearchForm from '@/components/SearchForm/SearchForm';
@@ -10,7 +10,6 @@ import ModalComponentContent from "@/components/modal/ModalContent";
 import AddProductVitrina from "../modules/AddProductVitrina/AddProductVitrina";
 import ViewWareHoustProducts from "../modules/ViewVitrinaProducts/ViewVitrinaProducts";
 import ImageModal from "@/components/modal/ImageModal";
-import CustomCheckbox from "@/components/CustomCheckbox";
 import useFetch from "@/hooks/useFetch";
 import useUserStore from "@/store/useUser";
 
@@ -50,7 +49,7 @@ export default function ViewDetaliesSendProducts() {
       enabled: !!id,
     }
   );
-// ~~~~~~~~~~~~~~~~~~ original ne udalim~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
   useEffect(() => {
     if (productsData?.data?.data) {
       setFilteredData(productsData.data.data.map(item => ({
@@ -61,9 +60,6 @@ export default function ViewDetaliesSendProducts() {
       setFilteredData([]);
     }
   }, [productsData]);
-
-
-
 
   const handleSearchResults = (searchValue) => {
     setSearchTerm(searchValue);
@@ -81,7 +77,7 @@ export default function ViewDetaliesSendProducts() {
   };
 
   const updateItemsPerPage = () => {
-    setItemsPerPage(window.innerWidth < 768 ? 4 : 50);
+    setItemsPerPage(window.innerWidth < 768 ? 10 : 50);
   };
 
   useEffect(() => {
@@ -109,7 +105,7 @@ export default function ViewDetaliesSendProducts() {
     if (selectedProducts.length === filteredData.length) {
       setSelectedProducts([]);
     } else {
-      setSelectedProducts(filteredData);
+      setSelectedProducts([...filteredData]);
     }
   };
 
@@ -117,6 +113,105 @@ export default function ViewDetaliesSendProducts() {
     resetSelection();
     refetchProducts();
   };
+
+  const itemRender = (page, type, originalElement) => {
+    if (type === "prev") {
+      return (
+        <button style={{ color: "white", border: "none", cursor: "pointer" }}>
+          <LeftOutlined />
+        </button>
+      );
+    }
+    if (type === "next") {
+      return (
+        <button style={{ color: "white", border: "none", cursor: "pointer" }}>
+          <RightOutlined />
+        </button>
+      );
+    }
+    return originalElement;
+  };
+
+  const columns = [
+    {
+      title: (
+        <Checkbox
+          indeterminate={selectedProducts.length > 0 && selectedProducts.length < filteredData.length}
+          checked={selectedProducts.length === filteredData.length && filteredData.length > 0}
+          onChange={handleSelectAll}
+        />
+      ),
+      key: 'selection',
+      width: 50,
+      render: (_, record) => (
+        <Checkbox
+          checked={selectedProducts.some(item => item.id === record.id)}
+          onChange={() => handleCheckboxChange(record)}
+        />
+      ),
+    },
+    {
+      title: "№",
+      key: 'index',
+      width: 50,
+      render: (_, __, index) => (
+        <span className="text-gray-100">
+          {(currentPage - 1) * itemsPerPage + index + 1}
+        </span>
+      ),
+    },
+    {
+      title: "Artikul",
+      dataIndex: "article",
+      key: "article",
+      render: (text) => <span className="text-gray-100">{text}</span>,
+    },
+    {
+      title: "Partiya",
+      dataIndex: "batch_number",
+      key: "batch_number",
+      render: (text) => (
+        <Tag color="blue" className="text-gray-100">
+          {text}
+        </Tag>
+      ),
+    },
+    {
+      title: "Narxi ($)",
+      dataIndex: "price",
+      key: "price",
+      render: (text) => <span className="text-gray-100">{text}</span>,
+    },
+    {
+      title: "Rulon soni",
+      dataIndex: "quantity",
+      key: "quantity",
+      render: (text) => <span className="text-gray-100">{text} ta</span>,
+    },
+    {
+      title: "Rasm",
+      dataIndex: "image_url",
+      key: "image_url",
+      render: (text) => (
+        <div 
+          className="max-h-[60px] max-w-[60px] cursor-pointer"
+          onClick={() => setSelectedImage(text)}
+        >
+          <img
+            className="h-auto w-full object-cover"
+            src={text}
+            crossOrigin="anonymous"
+            alt="product"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = 'placeholder-image-url';
+            }}
+          />
+        </div>
+      ),
+      width: 100,
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-cover bg-center p-1 relative" style={{ backgroundImage: `url(${bgsklad})` }}>
@@ -129,21 +224,36 @@ export default function ViewDetaliesSendProducts() {
           showDatePicker={false} 
         />
         
-        <div className='w-full flex justify-between'>
+        <div className='w-full flex justify-between mb-4'>
           <Button
-            style={{ marginBottom: '10px', backgroundColor: '#17212b', color: '#fff' }}
+            style={{ backgroundColor: '#17212b', color: '#fff' }}
             onClick={() => setIsWareHouseOpen(true)}
           >
             Vitrinani ko'rish
           </Button>
           
-          <Button
-            type=""
-            onClick={handleSelectAll}
-            style={{ marginBottom: '10px', backgroundColor: '#17212b', color: '#fff' }}
-          >
-            {selectedProducts.length === filteredData.length ? 'Hammasini yechish' : 'Hammasini tanlash'}
-          </Button>
+          <div className="flex items-center gap-2">
+            <span className='bg-gray-700 py-1 px-3 text-white text-sm rounded-lg shadow-lg'>
+              Tanlangan: {selectedProducts.length}
+            </span>
+            <Button
+              type="primary"
+              onClick={showModal}
+              disabled={selectedProducts?.length === 0}
+              style={{
+                backgroundColor: selectedProducts?.length === 0 ? '#888' : '#364153',
+                borderColor: '#364153',
+              }}
+              onMouseEnter={(e) => {
+                if (selectedProducts?.length > 0) e.currentTarget.style.backgroundColor = "#2b3445";
+              }}
+              onMouseLeave={(e) => {
+                if (selectedProducts?.length > 0) e.currentTarget.style.backgroundColor = "#364153";
+              }}
+            >
+              Yuborish
+            </Button>
+          </div>
         </div>
 
         {productsLoading ? (
@@ -151,43 +261,22 @@ export default function ViewDetaliesSendProducts() {
             <Spin size="large" />
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 gap-1 w-full px-2">
+          <div className="w-full px-2">
             {filteredData.length > 0 ? (
-              filteredData.map((item) => (
-                <Card
-                  key={item.id}
-                  className="shadow-lg hover:shadow-xl transition-shadow rounded-lg"
-                  style={{ background: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255, 255, 255, 0.2)' }}
-                  bodyStyle={{ padding: '4px', color: 'white' }}
-                >
-                  <div className="flex flex-col">
-                    <img 
-                      onClick={() => setSelectedImage(item?.image_url)} 
-                      crossOrigin="anonymous" 
-                      className="h-12 w-full object-cover cursor-pointer rounded-t-lg mb-1" 
-                      src={item?.image_url} 
-                      alt={item?.article}
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = 'placeholder-image-url';
-                      }}
-                    />
-                    <h3 className="text-sm font-semibold text-white">{item?.article}</h3>
-                    <Tag style={{ width: '100%', fontSize: '12px'}} color="blue">Part: <br/>
-                      <span className="text-red-500">{item?.batch_number}</span></Tag>
-                    <h4 className="text-sm font-semibold text-white">{item?.price + " $"}</h4>
-                    <div className=' flex justify-end'>
-                      <CustomCheckbox
-                        checked={selectedProducts?.some((product) => product?.id === item?.id)}
-                        onChange={() => handleCheckboxChange(item)}
-                        label="Tanlash"
-                      />
-                    </div>
-                  </div>
-                </Card>
-              ))
+              <Table
+                columns={columns}
+                dataSource={filteredData}
+                pagination={false}
+                className="custom-table"
+                rowClassName={() => "custom-row"}
+                bordered
+                style={{
+                  background: "rgba(255, 255, 255, 0.1)",
+                  backdropFilter: "blur(10px)",
+                }}
+              />
             ) : (
-              <div className="col-span-full text-center text-white text-xl py-10">Malumot topilmadi</div>
+              <div className="text-center text-white text-xl py-10">Malumot topilmadi</div>
             )}
           </div>
         )}
@@ -203,38 +292,9 @@ export default function ViewDetaliesSendProducts() {
                 refetchProducts();
               }}
               showSizeChanger={false}
-              className="custom-pagination text-white"
+              className="custom-pagination"
+              itemRender={itemRender}
             />
-          </div>
-        )}
-
-        {filteredData.length > 0 && (
-          <div className="w-full flex flex-col md:flex-row mt-2 mb-12 gap-2 justify-center items-center">
-            <span className='bg-gray-700 py-[7px] max-w-[300px] w-full text-center h-[32px] text-white text-[16px] rounded-lg shadow-lg'>
-              Tanlangan: {selectedProducts.length}
-            </span>
-            <Button
-              type="primary"
-              className='max-w-[300px] w-full'
-              onClick={showModal}
-              disabled={selectedProducts?.length === 0}
-              style={{
-                backgroundColor: selectedProducts?.length === 0 ? '#888' : '#364153',
-                borderColor: '#364153',
-                fontSize: '16px',
-                height: '32px',
-                cursor: selectedProducts?.length === 0 ? 'not-allowed' : 'pointer',
-                opacity: selectedProducts?.length === 0 ? 0.6 : 1,
-              }}
-              onMouseEnter={(e) => {
-                if (selectedProducts?.length > 0) e.currentTarget.style.backgroundColor = "#2b3445";
-              }}
-              onMouseLeave={(e) => {
-                if (selectedProducts?.length > 0) e.currentTarget.style.backgroundColor = "#364153";
-              }}
-            >
-              Yuborish
-            </Button>
           </div>
         )}
 

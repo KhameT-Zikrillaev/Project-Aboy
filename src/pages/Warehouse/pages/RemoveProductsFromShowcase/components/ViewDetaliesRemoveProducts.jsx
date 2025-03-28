@@ -1,75 +1,58 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation } from "react-router-dom";
-import { Link } from "react-router-dom";
-import { Card, Pagination, Tag, Button, Spin} from 'antd';
+import { Table, Pagination, Tag, Button, Spin, Checkbox } from 'antd';
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import 'antd/dist/reset.css';
 import bgsklad from '@/assets/images/bg-sklad.png';
 import SearchForm from '@/components/SearchForm/SearchForm';
 import ModalComponent from "@/components/modal/Modal";
 import DeleteProductVitrina from "../modules/DeleteProductVitrina/DeleteProductVitrina";
-// import ViewWareHoustProducts from "../modules/ViewWareHouseProducts/ViewWareHoustProducts";
 import ImageModal from "@/components/modal/ImageModal";
-import CustomCheckbox from "@/components/CustomCheckbox";
 import useFetch from "@/hooks/useFetch";
 import useUserStore from "@/store/useUser";
 
-
 export default function ViewDetaliesRemoveProducts() {
-  const { name } = useParams(); // Получаем параметр name и shopId из URL
+  const { name } = useParams();
   const location = useLocation();
-  const shopId = location.state?.shopId; // Получаем shopId из state
+  const shopId = location.state?.shopId;
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(8);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [warehouseId, setWarehouseId] = useState(""); // Для хранения ID склада
-  // const { user } = useUserStore();
-// ~~~~~~~~~~~~~~~~~~~~~~логика товаров из апи~~~~~~~~~~~~~~~~~~~~~~~~~~
-// const id = user?.warehouse?.id;
-const { data: productsData, isLoading: productsLoading, refetch: refetchProducts } = useFetch(
-  shopId ? `Storefront-product/${shopId}` : null, // Если id нет, не создаем ключ запроса
-  shopId ? `Storefront-product/${shopId}` : null, // Если id нет, не делаем запрос
-  {},
-  {
-    enabled: !! shopId, // Запрос будет выполнен только если id существует
-  }
-);
+  const [warehouseId, setWarehouseId] = useState("");
 
-//~~~~~~~~~~~~~~~~~~~~ логика шопах из апи~~~~~~~~~~~~~~~~~~~~~~~~~~
-// const userWarehouseId = user?.warehouse?.id;
-// Update filteredData when products data changes
-useEffect(() => {
-  if (productsData?.data) {
-    // Проверяем, что productsData является массивом
-    if (Array.isArray(productsData?.data)) {
-      setFilteredData(productsData?.data.map(item => ({
+  const { data: productsData, isLoading: productsLoading, refetch: refetchProducts } = useFetch(
+    shopId ? `Storefront-product/${shopId}` : null,
+    shopId ? `Storefront-product/${shopId}` : null,
+    {},
+    {
+      enabled: !!shopId,
+    }
+  );
+
+  useEffect(() => {
+    if (productsData?.data) {
+      setFilteredData(productsData.data.map(item => ({
         ...item,
-        key: item.id // используем id как key
+        key: item.id
       })));
     } else {
-      // Если данные не являются массивом, устанавливаем пустой массив
       setFilteredData([]);
     }
-  } else {
-    setFilteredData([]);
-  }
-}, [productsData]);
+  }, [productsData]);
 
-  // Открытие модального окна
   const showModal = () => {
     setIsModalOpen(true);
   };
 
-  // Закрытие модального окна
   const onClose = () => {
     setIsModalOpen(false);
   };
 
-  // Изменение количества товаров на странице  АДАПТИВНОСТЬ
   const updateItemsPerPage = () => {
-    setItemsPerPage(window.innerWidth < 768 ? 4 : 10);
+    setItemsPerPage(window.innerWidth < 768 ? 5 : 10);
   };
 
   useEffect(() => {
@@ -78,62 +61,136 @@ useEffect(() => {
     return () => window.removeEventListener('resize', updateItemsPerPage);
   }, []);
 
-  // Обработчик выбора товара
   const handleCheckboxChange = (item) => {
     setSelectedProducts((prev) => {
-      const isSelected = prev?.some((product) => product?.id === item?.id);
+      const isSelected = prev.some((product) => product.id === item.id);
       if (isSelected) {
-        return prev.filter((product) => product?.id !== item?.id);
+        return prev.filter((product) => product.id !== item.id);
       } else {
-        return [...prev, item]; // Добавляем весь объект товара
+        return [...prev, item];
       }
     });
   };
-  
+
   const resetSelection = () => {
-    setSelectedProducts([]); // Сбрасываем все выбранные элементы
-  };
-  // Функция для выбора всех товаров
-  const handleSelectAll = () => {
-    if (selectedProducts?.length === filteredData?.length) {
-      setSelectedProducts([]);
-    } else {
-      setSelectedProducts(filteredData); // Передаём массив объектов
-    }
-  };
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // Обработчик успешной отправки товаров
-  const handleSuccessSubmit = () => {
-    resetSelection(); // Сбрасываем выбранные товары
-    refetchProducts(); // Обновляем данные с сервера
+    setSelectedProducts([]);
   };
 
-  // Обработчик результатов поиска
+  const handleSelectAll = () => {
+    if (selectedProducts.length === filteredData.length) {
+      setSelectedProducts([]);
+    } else {
+      setSelectedProducts([...filteredData]);
+    }
+  };
+
+  const handleSuccessSubmit = () => {
+    resetSelection();
+    refetchProducts();
+  };
+
   const handleSearchResults = (results) => {
-    // Проверяем, что результаты поиска являются массивом
     if (Array.isArray(results)) {
       setFilteredData(results);
     } else if (results === null || results === undefined) {
-      // Если результаты поиска null или undefined, возвращаемся к исходным данным
-      if (Array.isArray(productsData)) {
-        setFilteredData(productsData.map(item => ({
-          ...item,
-          key: item.id
-        })));
+      if (productsData?.data && Array.isArray(productsData.data)) {
+        setFilteredData(productsData.data);
       } else {
         setFilteredData([]);
       }
     } else {
-      console.warn('Search results are not an array:', results);
       setFilteredData([]);
     }
   };
 
-  // Текущие данные для отображения
-  const currentData = Array.isArray(filteredData) ? filteredData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  ) : [];
+  const itemRender = (page, type, originalElement) => {
+    if (type === "prev") {
+      return (
+        <button style={{ color: "white", border: "none", cursor: "pointer" }}>
+          <LeftOutlined />
+        </button>
+      );
+    }
+    if (type === "next") {
+      return (
+        <button style={{ color: "white", border: "none", cursor: "pointer" }}>
+          <RightOutlined />
+        </button>
+      );
+    }
+    return originalElement;
+  };
+
+  const columns = [
+    {
+      title: (
+        <Checkbox
+          indeterminate={selectedProducts.length > 0 && selectedProducts.length < filteredData.length}
+          checked={selectedProducts.length === filteredData.length && filteredData.length > 0}
+          onChange={handleSelectAll}
+        />
+      ),
+      key: 'selection',
+      width: 50,
+      render: (_, record) => (
+        <Checkbox
+          checked={selectedProducts.some(item => item.id === record.id)}
+          onChange={() => handleCheckboxChange(record)}
+        />
+      ),
+    },
+    {
+      title: "№",
+      key: 'index',
+      width: 50,
+      render: (_, __, index) => (
+        <span className="text-gray-100">
+          {(currentPage - 1) * itemsPerPage + index + 1}
+        </span>
+      ),
+    },
+    {
+      title: "Artikul",
+      dataIndex: "article",
+      key: "article",
+      render: (text) => <span className="text-gray-100">{text}</span>,
+    },
+    {
+      title: "Partiya",
+      dataIndex: "batch_number",
+      key: "batch_number",
+      render: (text) => (
+        <Tag color="blue" className="text-gray-100">
+          {text}
+        </Tag>
+      ),
+    },
+    {
+      title: "Narxi ($)",
+      dataIndex: "price",
+      key: "price",
+      render: (text) => <span className="text-gray-100">{text}</span>,
+    },
+    {
+      title: "Rasm",
+      dataIndex: "image_url",
+      key: "image_url",
+      render: (text) => (
+        <div 
+          className="max-h-[60px] max-w-[60px] cursor-pointer"
+          onClick={() => setSelectedImage(text)}
+        >
+          <img
+            className="h-auto w-full object-cover"
+            src={text}
+            crossOrigin="anonymous"
+            alt="product"
+          />
+        </div>
+      ),
+      width: 100,
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-cover bg-center p-1 relative" style={{ backgroundImage: `url(${bgsklad})` }}>
@@ -142,100 +199,75 @@ useEffect(() => {
         <SearchForm 
           data={productsData?.data} 
           onSearch={handleSearchResults} 
-          name={name +''} 
-          title="vitrinasini o'chirish" 
+          name={name} 
+          title={`${name} vitrinasini o'chirish`} 
           showDatePicker={false} 
         />
-        <div className='w-full flex justify-end'>
-             {/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~select all~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */}
-        <Button
-          type=""
-          onClick={handleSelectAll}
         
-          style={{ marginBottom: '10px',backgroundColor: '#17212b',color: '#fff' }}
-        >
-          {selectedProducts?.length === filteredData?.length ? 'Hammasini yechish' : 'Hammasini tanlash'}
-        </Button>
-        </div>
-        {productsLoading ? (
-  <div className="flex justify-center items-center h-[300px]">
-    <Spin size="large" />
-  </div>
-      ):(
-       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2 w-full px-4">
-  {Array.isArray(currentData) && currentData.length > 0 ? (
-    currentData.map((item) => (
-      <Card
-        key={item.key}
-        className="shadow-lg hover:shadow-xl transition-shadow rounded-lg"
-        style={{ background: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255, 255, 255, 0.2)' }}
-        cover={
-          <div/>
-        }
-        bodyStyle={{ padding: '12px', color: 'white' }}
-      >
-         <img  onClick={() => setSelectedImage(item?.image_url)} crossOrigin="anonymous" className="h-28 w-full bg-cover cursor-pointer bg-center rounded-t-lg" src={item?.image_url} alt=""/>
-        <div className="flex flex-col mt-2 gap-1">
-          <h3 className="text-md font-semibold text-white">{item?.article}</h3>
-          <Tag color="blue">Part: <span className="text-red-500">{item?.batch_number}</span></Tag>
-          <h4 className="text-sm font-semibold text-white">{item?.price + " $"}</h4>
-          <div className=''>
-            <CustomCheckbox
-              checked={selectedProducts?.some((product) => product?.id === item?.id)}
-              onChange={() => handleCheckboxChange(item)}
-              label="Tanlash"
-            />
+        <div className='w-full flex justify-between mb-4'>
+          <div className="flex items-center justify-end w-full gap-2">
+            <span className='bg-gray-700 py-1 px-3 text-white text-sm rounded-lg shadow-lg'>
+              Tanlangan: {selectedProducts.length}
+            </span>
+            <Button
+              type="primary"
+              onClick={showModal}
+              disabled={selectedProducts.length === 0}
+              style={{
+                backgroundColor: selectedProducts.length === 0 ? '#888' : '#364153',
+                borderColor: '#364153',
+              }}
+              onMouseEnter={(e) => {
+                if (selectedProducts.length > 0) e.currentTarget.style.backgroundColor = "#2b3445";
+              }}
+              onMouseLeave={(e) => {
+                if (selectedProducts.length > 0) e.currentTarget.style.backgroundColor = "#364153";
+              }}
+            >
+              O'chirish
+            </Button>
           </div>
         </div>
-      </Card>
-    ))
-  ) : (
-    <div className="col-span-5 text-center text-white text-xl py-10">Malumot topilmadi</div>
-  )}
-</div>
-      )}
-        {filteredData?.length > 0 && (
+
+        {productsLoading ? (
+          <div className="flex justify-center items-center h-[300px]">
+            <Spin size="large" />
+          </div>
+        ) : (
+          <div className="w-full px-4">
+            {filteredData.length > 0 ? (
+              <Table
+                columns={columns}
+                dataSource={filteredData}
+                pagination={false}
+                className="custom-table"
+                rowClassName={() => "custom-row"}
+                bordered
+                style={{
+                  background: "rgba(255, 255, 255, 0.1)",
+                  backdropFilter: "blur(10px)",
+                }}
+              />
+            ) : (
+              <div className="text-center text-white text-xl py-10">Malumot topilmadi</div>
+            )}
+          </div>
+        )}
+
+        {filteredData.length > 0 && (
           <div className="my-2 mb-12 md:mb-0 flex justify-center">
             <Pagination
               current={currentPage}
-              total={filteredData?.length}
+              total={filteredData.length}
               pageSize={itemsPerPage}
               onChange={(page) => setCurrentPage(page)}
               showSizeChanger={false}
-              className="custom-pagination text-white"
+              className="custom-pagination"
+              itemRender={itemRender}
             />
           </div>
         )}
-        {filteredData?.length > 0 && (
-          <div className="w-full flex flex-col md:flex-row mt-2 mb-12 gap-2 justify-center items-center">
-            <span className='bg-gray-700 py-[7px] max-w-[300px] w-full text-center h-[40px] text-white text-[18px] rounded-lg shadow-lg'>
-              Tanlangan: {selectedProducts?.length}
-            </span>
-            <Button
-  type="primary"
-  
-  className='max-w-[300px] w-full'
-  onClick={showModal}
-  disabled={selectedProducts?.length === 0} // Отключаем кнопку, если нет выбранных товаров
-  style={{
-    backgroundColor: selectedProducts?.length === 0 ? '#888' : '#364153',
-    borderColor: '#364153',
-    fontSize: '18px',
-    height: '40px',
-    cursor: selectedProducts?.length === 0 ? 'not-allowed' : 'pointer',
-    opacity: selectedProducts?.length === 0 ? 0.6 : 1,
-  }}
-  onMouseEnter={(e) => {
-    if (selectedProducts?.length > 0) e.currentTarget.style.backgroundColor = "#2b3445";
-  }}
-  onMouseLeave={(e) => {
-    if (selectedProducts?.length > 0) e.currentTarget.style.backgroundColor = "#364153";
-  }}
->
-  O'chirish
-</Button>
-          </div>
-        )}
+
         <ImageModal
           isOpen={!!selectedImage}
           onClose={() => setSelectedImage(null)}
@@ -246,14 +278,14 @@ useEffect(() => {
         <ModalComponent
           isOpen={isModalOpen}
           onClose={onClose}
-          title={name + " " +"Vitrinasidan o'chirish"}
+          title={`${name} vitrinasidan o'chirish`}
         >
           <DeleteProductVitrina 
             onClose={onClose} 
             selectedProducts={selectedProducts} 
             onSuccess={handleSuccessSubmit} 
             warehouseName={name}
-            shopId={shopId} // Передаем найденный ID магазина
+            shopId={shopId}
           />
         </ModalComponent>
       </div>

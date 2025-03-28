@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import useFetch from "@/hooks/useFetch";
-import { Card, Spin, Empty, Tag, Pagination, Button } from "antd";
+import { Table, Spin, Empty, Tag, Pagination } from "antd";
 import SearchForm from "@/components/SearchForm/SearchForm";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 
 export default function ViewVitrinaProducts({ idwarehouse }) {
   const [filteredData, setFilteredData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(2);
   const [selectedImage, setSelectedImage] = useState(null);
   const [searchLoading, setSearchLoading] = useState(false);
+  const pageSize = 10; // Фиксированное количество элементов
 
   const { data, isLoading, refetch } = useFetch(
     `Storefront-product/${idwarehouse}`,
@@ -55,25 +56,87 @@ export default function ViewVitrinaProducts({ idwarehouse }) {
     }, 500);
   };
 
-  const currentData = Array.isArray(filteredData) 
-    ? filteredData.slice(
-        (currentPage - 1) * pageSize,
-        currentPage * pageSize
-      ) 
-    : [];
-
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
-  const resetSearch = () => {
-    if (data?.data) {
-      setFilteredData(data.data);
-    } else {
-      setFilteredData([]);
+  const itemRender = (page, type, originalElement) => {
+    if (type === "prev") {
+      return (
+        <button style={{ color: "white", border: "none", cursor: "pointer" }}>
+          <LeftOutlined />
+        </button>
+      );
     }
-    setCurrentPage(1);
+    if (type === "next") {
+      return (
+        <button style={{ color: "white", border: "none", cursor: "pointer" }}>
+          <RightOutlined />
+        </button>
+      );
+    }
+    return originalElement;
   };
+
+  const columns = [
+    {
+      title: "№",
+      key: "index",
+      width: 50,
+      render: (_, __, index) => (
+        <span className="text-gray-100">
+          {(currentPage - 1) * pageSize + index + 1}
+        </span>
+      ),
+    },
+    {
+      title: "Artikul/Nomi",
+      dataIndex: "article",
+      key: "article",
+      render: (text, record) => (
+        <span className="text-gray-100">
+          {text || record?.name || 'Без названия'}
+        </span>
+      ),
+    },
+    {
+      title: "Partiya",
+      dataIndex: "batch_number",
+      key: "batch_number",
+      render: (text) => (
+        <Tag color="blue" className="text-gray-100">
+          {text || 'N/A'}
+        </Tag>
+      ),
+    },
+    {
+      title: "Narxi ($)",
+      dataIndex: "price",
+      key: "price",
+      render: (text) => (
+        <span className="text-gray-100">{text || 0} $</span>
+      ),
+    },
+    {
+      title: "Rasm",
+      dataIndex: "image_url",
+      key: "image_url",
+      render: (text) => (
+        <div 
+          className="max-h-[60px] max-w-[60px] cursor-pointer"
+          onClick={() => setSelectedImage(text)}
+        >
+          <img
+            className="h-auto w-full object-cover"
+            src={text}
+            crossOrigin="anonymous"
+            alt="product"
+          />
+        </div>
+      ),
+      width: 100,
+    },
+  ];
 
   return (
     <div className="p-4 w-full">
@@ -92,53 +155,39 @@ export default function ViewVitrinaProducts({ idwarehouse }) {
         </div>
       ) : (
         <>
-          {currentData.length === 0 ? (
+          {filteredData.length === 0 ? (
             <div className="flex flex-col items-center text-white justify-center h-64">
               <Empty style={{ color: 'white' }} description="Tovar topilmadi" />
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2 w-full px-4">
-              {currentData?.map((item) => (
-                <Card
-                  key={item?.id}
-                  className="shadow-lg hover:shadow-xl transition-shadow rounded-lg"
-                  style={{ 
-                    background: 'rgba(255, 255, 255, 0.1)', 
-                    backdropFilter: 'blur(10px)', 
-                    border: '1px solid rgba(255, 255, 255, 0.2)' 
-                  }}
-                  bodyStyle={{ padding: '12px', color: 'white' }}
-                >
-                  <img 
-                    onClick={() => setSelectedImage(item?.image_url)} 
-                    className="h-28 w-full bg-cover cursor-pointer bg-center rounded-t-lg" 
-                    crossOrigin='anonymous' 
-                    src={item?.image_url} 
-                    alt=""
-                  />
-                  <div className="flex flex-col mt-[6px] gap-1">
-                    <h3 className="text-md font-semibold text-white">
-                      {item?.article || item?.name || 'Без названия'}
-                    </h3>
-                    <Tag color="blue">Part: <span className="text-red-500">{item?.batch_number || 'N/A'}</span></Tag>
-                    <h4 className="text-sm font-semibold text-white">{(item?.price || 0) + " $"}</h4>
-                  </div>
-                </Card>
-              ))}
+            <div className="w-full px-4">
+              <Table
+                columns={columns}
+                dataSource={filteredData}
+                pagination={false}
+                className="custom-table"
+                rowClassName={() => "custom-row"}
+                bordered
+                style={{
+                  background: "rgba(255, 255, 255, 0.1)",
+                  backdropFilter: "blur(10px)",
+                }}
+              />
             </div>
           )}
         </>
       )}
 
-      {!isLoading && !searchLoading && filteredData.length > pageSize && (
+      {!isLoading && !searchLoading && filteredData.length > 0 && (
         <div className="flex justify-center mt-4">
           <Pagination
             current={currentPage}
             pageSize={pageSize}
             total={filteredData.length}
             onChange={handlePageChange}
-            showSizeChanger={false}
+            showSizeChanger={false} // Отключен выбор количества элементов
             className="custom-pagination"
+            itemRender={itemRender}
           />
         </div>
       )}

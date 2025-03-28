@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Card, Pagination, Tag, Button, Spin } from "antd";
+import { Table, Pagination, Tag, Button, Spin } from "antd";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import "antd/dist/reset.css";
 import bgsklad from "../../../../assets/images/bg-sklad.png";
 import SearchForm from "@/components/SearchForm/SearchForm";
@@ -11,7 +12,7 @@ import useUserStore from "@/store/useUser";
 
 export default function Warehouse() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(8);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -45,7 +46,7 @@ export default function Warehouse() {
   };
 
   const updateItemsPerPage = () => {
-    setItemsPerPage(window.innerWidth < 768 ? 4 : 10);
+    setItemsPerPage(window.innerWidth < 768 ? 5 : 10);
   };
 
   useEffect(() => {
@@ -62,6 +63,115 @@ export default function Warehouse() {
   const handleSearchResults = (results) => {
     setFilteredData(results);
   };
+
+  const itemRender = (page, type, originalElement) => {
+    if (type === "prev") {
+      return (
+        <button style={{ color: "white", border: "none", cursor: "pointer" }}>
+          <LeftOutlined />
+        </button>
+      );
+    }
+    if (type === "next") {
+      return (
+        <button style={{ color: "white", border: "none", cursor: "pointer" }}>
+          <RightOutlined />
+        </button>
+      );
+    }
+    return originalElement;
+  };
+
+  const columns = [
+    {
+      title: "№",
+      render: (_, __, index) => (
+        <span className="text-gray-100 font-semibold">
+          {(currentPage - 1) * itemsPerPage + index + 1}
+        </span>
+      ),
+      width: 50,
+    },
+    {
+      title: "Artikul",
+      dataIndex: "article",
+      key: "article",
+      render: (text) => (
+        <span className="text-gray-100 font-semibold">{text}</span>
+      ),
+    },
+    {
+      title: "Partiya",
+      dataIndex: "batch_number",
+      key: "batch_number",
+      render: (text) => (
+        <Tag color="blue" className="text-gray-100">
+          {text}
+        </Tag>
+      ),
+    },
+    {
+      title: "Narxi ($)",
+      dataIndex: "price",
+      key: "price",
+      render: (text) => (
+        <span className="text-gray-100 font-semibold">{text}</span>
+      ),
+    },
+    {
+      title: "Rulon soni",
+      dataIndex: "quantity",
+      key: "quantity",
+      render: (text) => (
+        <span className="text-gray-100 font-semibold">{text} ta</span>
+      ),
+    },
+    {
+      title: "Rasm",
+      dataIndex: "image_url",
+      key: "image_url",
+      render: (text) => (
+        <div 
+          className="max-h-[60px] max-w-[60px] cursor-pointer"
+          onClick={() => setSelectedImage(text)}
+        >
+          <img
+            className="h-auto w-full object-cover"
+            src={text}
+            crossOrigin="anonymous"
+            alt="product"
+          />
+        </div>
+      ),
+      width: 100,
+    },
+    {
+      title: "Harakatlar",
+      key: "action",
+      render: (_, record) => (
+        user?.role === "seller" && (
+          <Button
+            type="primary"
+            onClick={() => showModal(record)}
+            style={{ 
+              backgroundColor: "#364153", 
+              borderColor: "#364153", 
+              fontSize: "12px",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.backgroundColor = "#2b3445")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.backgroundColor = "#364153")
+            }
+          >
+            Buyurtma berish
+          </Button>
+        )
+      ),
+      width: 150,
+    },
+  ];
 
   return (
     <div
@@ -85,50 +195,24 @@ export default function Warehouse() {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-2 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 gap-1 w-full px-2">
-              {currentData?.map((item) => (
-                <Card
-                  key={item?.id}
-                  className="shadow-lg hover:shadow-xl transition-shadow rounded-lg"
+            {filteredData?.length === 0 ? (
+              <div className="text-white text-lg">Mahsulot topilmadi</div>
+            ) : (
+              <div className="w-full px-2">
+                <Table
+                  columns={columns}
+                  dataSource={currentData}
+                  pagination={false}
+                  className="custom-table"
+                  rowClassName={() => "custom-row"}
+                  bordered
                   style={{
                     background: "rgba(255, 255, 255, 0.1)",
                     backdropFilter: "blur(10px)",
-                    border: "1px solid rgba(255, 255, 255, 0.2)",
                   }}
-                  bodyStyle={{ padding: '4px', color: 'white' }}
-                >
-                  <img
-                    onClick={() => setSelectedImage(item?.image_url)}
-                    crossOrigin="anonymous"
-                    className="h-12 w-full object-cover cursor-pointer rounded-t-lg mb-1" 
-                    src={item?.image_url}
-                    alt=""
-                  />
-                   <h3 className="text-sm font-semibold text-white">{item?.article}</h3>
-                    <Tag style={{ width: '100%', fontSize: '12px'}} color="blue">Part: <br/>
-                      <span className="text-red-500">{item?.batch_number}</span></Tag>
-                      <h4 className="text-sm font-semibold text-white">Narxi: {item?.price + " $"}</h4>        
-                      <span className="text-gray-300 text-xs">
-                        Rulon soni: {item?.quantity} ta
-                      </span>
-                    {user?.role === "seller" && (
-                      <Button
-                        type="primary"
-                        onClick={() => showModal(item)}
-                        style={{ backgroundColor: "#364153", borderColor: "#364153", fontSize: "12px", width: "100%", padding: "1px" }}
-                        onMouseEnter={(e) =>
-                          (e.currentTarget.style.backgroundColor = "#2b3445")
-                        }
-                        onMouseLeave={(e) =>
-                          (e.currentTarget.style.backgroundColor = "#364153")
-                        }
-                      >
-                        <span className="text-xs">Buyurtma <br/> berish</span>
-                      </Button>
-                    )}    
-                </Card>
-              ))}
-            </div>
+                />
+              </div>
+            )}
 
             <ImageModal
               isOpen={!!selectedImage}
@@ -151,6 +235,7 @@ export default function Warehouse() {
                   onChange={(page) => setCurrentPage(page)}
                   showSizeChanger={false}
                   className="custom-pagination"
+                  itemRender={itemRender}
                 />
               </div>
             )}
