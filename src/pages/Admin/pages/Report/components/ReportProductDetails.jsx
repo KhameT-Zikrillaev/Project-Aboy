@@ -180,10 +180,10 @@ export default function ReportWarehouseSend() {
                           <div key={index} className="border-b border-gray-600 pb-2 last:border-0 last:pb-0">
                             <div className="flex justify-between">
                               <span className="text-sm font-medium">{product.product?.article || 'Noma\'lum'}</span>
-                              <span className="text-sm">{product.quantity} dona</span>
+                              <span className="text-sm">{product.quantity} дона</span>
                             </div>
                             <div className="flex justify-between text-xs text-gray-300 mt-1">
-                              <span>Partiya: {product.product?.batch_number || 'Noma\'lum'}</span>
+                              <span>Партия: {product.product?.batch_number || 'Noma\'lum'}</span>
                               <Tooltip title="Narx o'zgarishi">
                                 <span className={`${product.new_price > product.orginal_price ? 'text-green-400' : 'text-red-400'}`}>
                                   {product.orginal_price?.toLocaleString()} → {product.new_price?.toLocaleString()} $

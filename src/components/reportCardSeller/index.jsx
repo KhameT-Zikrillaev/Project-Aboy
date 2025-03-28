@@ -15,13 +15,13 @@ const ReportCard = ({ item }) => {
   const getStatusBadge = (status) => {
     switch(status) {
       case 'approved':
-        return <Badge status="success" text="Tasdiqlangan" />;
+        return <Badge status="success" text="Тасдиқланган" />;
       case 'pending':
-        return <Badge status="processing" text="Kutilmoqda" />;
+        return <Badge status="processing" text="Кутилмоқда" />;
       case 'rejected':
-        return <Badge status="error" text="Rad etilgan" />;
+        return <Badge status="error" text="Рад этилган" />;
       default:
-        return <Badge status="default" text={status || 'Noma\'lum'} />;
+        return <Badge status="default" text={status || 'Номаълум'} />;
     }
   };
 
@@ -48,19 +48,19 @@ const ReportCard = ({ item }) => {
         <div className="flex justify-between items-start">
           <div>
             <h3 className="text-lg font-semibold text-white mb-1 flex items-center">
-              <Tooltip title="Manba ombor">
-                <span>{item?.warehouse?.name || 'Noma\'lum'}</span>
+              <Tooltip title="Манба омбор">
+                <span>{item?.warehouse?.name || 'Номаълум'}</span>
               </Tooltip>
               <ArrowRightOutlined className="mx-2 text-yellow-400" />
-              <Tooltip title="Manzil ombor">
-                <span>{item?.shop?.name || 'Noma\'lum'}</span>
+              <Tooltip title="Манзил омбор">
+                <span>{item?.shop?.name || 'Номаълум'}</span>
               </Tooltip>
             </h3>
             <div className="mb-2">
               {getStatusBadge(item?.status)}
             </div>
           </div>
-          <Tooltip title="Yaratilgan sana">
+          <Tooltip title="Яратилган сана">
             <span className="text-xs text-gray-300">
               {formatDate(item?.createdAt)}
             </span>
@@ -68,17 +68,17 @@ const ReportCard = ({ item }) => {
         </div>
         
         <div className="bg-black/20 p-3 rounded-lg">
-          <h4 className="text-sm font-medium text-yellow-300 mb-2">Mahsulotlar</h4>
+          <h4 className="text-sm font-medium text-yellow-300 mb-2">Маҳсулотлар</h4>
           {item?.items && item?.items?.length > 0 ? (
             <div className="space-y-3">
               {item?.items?.map((product, index) => (
                 <div key={index} className="border-b border-gray-600 pb-2 last:border-0 last:pb-0">
                   <div className="flex justify-between">
-                    <span className="text-sm font-medium">{product?.product?.article || 'Noma\'lum'}</span>
-                    <span className="text-sm">{product?.quantity} dona</span>
+                    <span className="text-sm font-medium">{product?.product?.article || 'Номаълум'}</span>
+                    <span className="text-sm">{product?.quantity} Дона</span>
                   </div>
                   <div className="flex justify-between text-xs text-gray-300 mt-1">
-                    <span>Partiya: {product?.product?.batch_number || 'Noma\'lum'}</span>
+                    <span>Партия: {product?.product?.batch_number || 'Номаълум'}</span>
                     <Tooltip title="Narx">
                       <span className="text-yellow-400">
                         {product?.product?.price?.toLocaleString()} $
@@ -86,20 +86,20 @@ const ReportCard = ({ item }) => {
                     </Tooltip>
                   </div>
                   {product?.remarks && (
-                    <p className="text-xs text-gray-400 mt-1 italic">Izoh: {product?.remarks}</p>
+                    <p className="text-xs text-gray-400 mt-1 italic">Изоҳ: {product?.remarks}</p>
                   )}
                 </div>
               ))}
               {/* Отображение общей суммы */}
               <div className="pt-2 border-t border-gray-600">
                 <div className="flex justify-between text-sm font-medium text-yellow-300">
-                  <span>Umumiy summa:</span>
+                  <span>Умумий сумма:</span>
                   <span>{calculateTotalAmount(item?.items).toLocaleString()} $</span>
                 </div>
               </div>
             </div>
           ) : (
-            <p className="text-sm text-gray-400">Mahsulotlar mavjud emas</p>
+            <p className="text-sm text-gray-400">Маҳсулотлар мавжуд эмас</p>
           )}
         </div>
       </div>

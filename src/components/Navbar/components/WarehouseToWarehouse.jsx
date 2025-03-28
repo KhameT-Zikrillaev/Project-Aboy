@@ -16,8 +16,8 @@ const WarehouseToWarehouse = ({ report }) => {
         {/* Ombor nomi */}
         <div className="flex justify-between items-start">
           <h3 className="text-lg font-semibold text-white">
-            <Tooltip title="Ombor nomi">
-              <span>{report?.warehouseName || "Noma’lum ombor"}</span>
+            <Tooltip title="Омбор номи">
+              <span>{report?.warehouseName || "Номаълум омбор"}</span>
             </Tooltip>
           </h3>
           <Badge status="processing" text="Hisobot" />
@@ -25,31 +25,31 @@ const WarehouseToWarehouse = ({ report }) => {
 
         {/* Mahsulotlar */}
         <div className="bg-black/20 p-3 rounded-lg">
-          <h4 className="text-sm font-medium text-yellow-300 mb-2">Mahsulot ma'lumotlari</h4>
+          <h4 className="text-sm font-medium text-yellow-300 mb-2">Маҳсулот маълумотлари</h4>
           <div className="space-y-3">
             {report?.products?.length > 0 ? (
               report?.products.map((product, index) => (
                 <div key={index} className="p-2 bg-black/40 rounded-md">
                   <div className="flex justify-between text-sm font-medium">
-                    <span>Mahsulot:</span>
+                    <span>Маҳсулот:</span>
                     <span className="text-white">{product.name}</span>
                   </div>
                   <div className="flex justify-between text-sm font-medium text-gray-300">
-                    <span>Articles:</span>
+                    <span>Артикл:</span>
                     <span>{product?.articles}</span>
                   </div>
                   <div className="flex justify-between text-sm font-medium text-gray-400">
-                    <span>Partiya:</span>
+                    <span>Партия:</span>
                     <span>{product?.batch}</span>
                   </div>
                   <div className="flex justify-between text-sm font-medium text-green-400">
-                    <span>Soni:</span>
+                    <span>Сони:</span>
                     <span>{product?.quantity}</span>
                   </div>
                 </div>
               ))
             ) : (
-              <p className="text-red-400">Mahsulotlar mavjud emas</p>
+              <p className="text-red-400">Маҳсулотлар мавжуд эмас</p>
             )}
           </div>
         </div>

@@ -79,10 +79,10 @@ const Navbar = () => {
     }
   };
   const roleTranslations = {
-    director: "Direktor",
-    seller: "Sotuvchi",
-    staff: "Omborchi",
-    admin: "Admin"
+    director: "Директор",
+    seller: "Сотувчи",
+    staff: "Омборчи",
+    admin: "Админ"
   };
   return (
     <div className="w-full h-[105px] left-0 top-0 flex justify-between fixed z-10 items-center mb-6 md:mb-10 py-6 px-6 md:px-6 bg-[#17212b] rounded-lg shadow-xl">
@@ -142,7 +142,7 @@ const Navbar = () => {
               clipRule="evenodd"
             />
           </svg>
-          Chiqish
+          Чиқиш
         </Link>
       </div>
       {openNotification && (
@@ -158,7 +158,7 @@ const Navbar = () => {
       >
         <div className="flex flex-col gap-2">
         {requests?.length === 0 ? (
-            <p className="text-gray-100 text-center mt-10">Xabarlar mavjud emas</p>
+            <p className="text-gray-100 text-center mt-10">Хабарлар мавжуд эмас</p>
           ) : (
             requests?.map((request) => (
               <PendingCardWarehouse fetchRequests={fetchRequests} key={request?.id} item={request} />

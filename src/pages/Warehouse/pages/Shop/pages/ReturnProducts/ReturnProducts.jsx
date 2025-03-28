@@ -173,7 +173,7 @@ export default function ReturnProducts() {
                           $
                         </p>
                         <p className="text-gray-300 text-xs">
-                          Soni: {Math.floor(item?.items[0]?.quantity)} dona
+                          Soni: {Math.floor(item?.items[0]?.quantity)} дона
                         </p>
                         <p className="text-gray-300 text-xs">
                           Jami narxi:{" "}
