@@ -29,23 +29,22 @@ const iconMap = {
 };
 
 const SearchForm = ({ 
-  data, 
-  onSearch, 
   name, 
   title, 
   showDatePicker = true, 
   onDateChange, 
-  searchByNameOnly = false // Флаг для поиска только по имени
+  onSearch, // Функция для обработки поиска
+  searchParam = 'article', // Параметр поиска по умолчанию
+  placeholder = "Qidirish",
+  showClearButton = true
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [date, setDate] = useState(null);
 
-  // Поиск
-  const handleSearch = (value, event) => {
-    if (event) {
-      event.preventDefault(); // Предотвращаем стандартное поведение
-    }
+  // Улучшенный обработчик поиска
+  const handleSearch = (value) => {
     setSearchTerm(value);
+<<<<<<< HEAD
 
     if (typeof onSearch === 'function') {
       // Если поиск только по имени
@@ -81,6 +80,12 @@ const SearchForm = ({
       setTimeout(() => {
         onSearch(searchTerm, dateValue ? dateValue.toDate() : null);
       }, 0);
+=======
+    
+    if (onSearch) {
+      // Отправляем только строку поиска, а не объект
+      onSearch(value);
+>>>>>>> 445d773ddbeaee8c167ba27ea380c2ce14646be5
     }
   };
 
@@ -88,18 +93,22 @@ const SearchForm = ({
   const handleClear = () => {
     setSearchTerm('');
     setDate(null);
-
-    if (typeof onSearch === 'function') {
-      if (searchByNameOnly) {
-        onSearch({ name: '' });
-      } else {
-        onSearch(data?.products || data);
-      }
+    if (onSearch) {
+      onSearch(''); // Отправляем пустую строку для сброса поиска
+    }
+    if (onDateChange) {
+      onDateChange(null);
     }
   };
 
-  const shouldShowClearButton = searchTerm.length > 1 || date !== null;
-  const IconComponent = iconMap[title] || FaBox; 
+  // Изменение даты
+  const handleDateChange = (dateValue) => {
+    setDate(dateValue);
+    if (onDateChange) onDateChange(dateValue);
+  };
+
+  const shouldShowClearButton = showClearButton && (searchTerm.length > 0 || date !== null);
+  const IconComponent = iconMap[title] || FaBox;
 
   return (
     <div className="flex flex-col md:flex-row w-full justify-between gap-3 mb-4 p-4 bg-white/10 backdrop-blur-md rounded-lg hover:bg-white/20 transition-all duration-300">
@@ -111,7 +120,7 @@ const SearchForm = ({
       </div>
 
       <div className="flex flex-col md:flex-row gap-3 items-center">
-        {showDatePicker && !searchByNameOnly && (
+        {showDatePicker && (
           <DatePicker
             onChange={handleDateChange}
             value={date}
@@ -124,15 +133,23 @@ const SearchForm = ({
             }}
           />
         )}
+        
         <div className="flex items-center gap-2 w-full">
           <Search
+<<<<<<< HEAD
             placeholder="Қидириш"
+=======
+            placeholder={placeholder}
+>>>>>>> 445d773ddbeaee8c167ba27ea380c2ce14646be5
             onChange={(e) => setSearchTerm(e.target.value)}
             value={searchTerm}
             enterButton
             className="custom-search max-w-md"
             onSearch={handleSearch}
+         
+            onPressEnter={(e) => handleSearch(e.target.value)}
           />
+          
           {shouldShowClearButton && (
             <Button 
               type="primary" 
