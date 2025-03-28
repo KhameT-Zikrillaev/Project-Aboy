@@ -41,7 +41,7 @@ export default function WarehouseProducts() {
       <SearchForm
         data={filteredData}
         name=""
-        title="Sotuvchilar"
+        title="Сотувчилар"
         showDatePicker={false}
         onSearch={handleSearch}
       />
@@ -67,7 +67,7 @@ export default function WarehouseProducts() {
           </div>
         ) : (
           <div className="flex justify-center items-center h-[100px] text-xl text-gray-500">
-            Tovar topilmadi
+            Товар топилмади
           </div>
         )}
       </>
@@ -78,7 +78,7 @@ export default function WarehouseProducts() {
             onClick={loadMoreDistricts}
             className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
           >
-            Yana
+            Яна
           </button>
         </div>
       )}

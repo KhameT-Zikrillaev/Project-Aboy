@@ -26,10 +26,10 @@ const EditReturnProduct = ({ onClose, product, refetch }) => {
         reset(); // Formani tozalash
         onClose();
         refetch();
-        toast.success("Mahsulot muvaffaqiyatli qaytarildi!");
+        toast.success("Маҳсулот муваффақиятли қайтарилди!");
       },
       onError: () => {
-        toast.error("Mahsulotni qaytarishda xatolik yuz berdi");
+        toast.error("Маҳсулотни қайтаришда хатолик юз берди");
       },
     });
   const onSubmit = (data) => {
@@ -73,49 +73,49 @@ const EditReturnProduct = ({ onClose, product, refetch }) => {
           >
             <p className="text-gray-100 font-semibold">
               {" "}
-              Article: <span className="text-red-500">{(product?.items[0]?.product?.article)}</span>
+              Артикле: <span className="text-red-500">{(product?.items[0]?.product?.article)}</span>
             </p>
             <p className="text-gray-100 font-semibold">
               {" "}
-              Narxi: <span className="text-red-500">{Math.floor(product?.items[0]?.price).toLocaleString()} $</span>
+              Нархи: <span className="text-red-500">{Math.floor(product?.items[0]?.price).toLocaleString()} $</span>
             </p>
             <p className="text-gray-100 font-semibold">
               {" "}
-              Soni: <span className="text-red-500">{Math.floor(product?.items[0]?.quantity)} ta</span>
+              Сони: <span className="text-red-500">{Math.floor(product?.items[0]?.quantity)} ta</span>
             </p>
             <p className="text-gray-100 font-semibold">
               {" "}
-              Jami narxi: <span className="text-red-500">{Math.floor(product?.items[0]?.total).toLocaleString()} $</span>
+              Жами нархи: <span className="text-red-500">{Math.floor(product?.items[0]?.total).toLocaleString()} $</span>
             </p>
           </Form.Item>
         )}
 
         {/* Поле для ввода количества */}
         <Form.Item
-          label={<span className="text-gray-100 font-semibold">Qaytariladigan mahsulot soni:</span>}
+          label={<span className="text-gray-100 font-semibold">Қайтариладиган маҳсулот сони:</span>}
           validateStatus={errors.quantity ? "error" : ""}
           help={
             errors.quantity?.message ||
-            (quantity > Math.floor(product?.items[0]?.quantity) && `Max ${Math.floor(product?.items[0]?.quantity)} ta`)
+            (quantity > Math.floor(product?.items[0]?.quantity) && `Max ${Math.floor(product?.items[0]?.quantity)} та`)
           }
         >
           <Controller
             name="quantity"
             control={control}
             rules={{
-              required: "Sonni kiriting",
+              required: "Сонни киритинг",
               max: {
                 value: Math.floor(product?.items[0]?.quantity), // Максимум product.quantity
-                message: `Max ${Math.floor(product?.items[0]?.quantity)} ta product kiriting`,
+                message: `Max ${Math.floor(product?.items[0]?.quantity)} та продукт киритинг`,
               },
               min: {
                 value: 1,
-                message: "Min 1 ta",
+                message: "Мин 1 а",
               },
             }}
             render={({ field }) => (
               <Input
-                placeholder="Sonnini kiriting"
+                placeholder="Соннини киритинг"
                 className="custom-input"
                 defaultValue={Math.floor(product?.items[0]?.quantity)}
                 {...field}
@@ -151,7 +151,7 @@ const EditReturnProduct = ({ onClose, product, refetch }) => {
               (e.currentTarget.style.backgroundColor = "#364153")
             }
           >
-            Mahsulotni qaytarish
+            Маҳсулотни қайтариш
           </Button>
         </Form.Item>
       </Form>

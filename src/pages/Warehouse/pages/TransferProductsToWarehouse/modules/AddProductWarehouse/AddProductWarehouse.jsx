@@ -15,12 +15,12 @@ const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess, warehouseId
     url: "warehouse-products",
     method: "PATCH",
     onSuccess: () => {
-      toast.success("Mahsulot muvaffaqiyatli o'tkazildi");
+      toast.success("Маҳсулот муваффақиятли ўтказилди");
       if (onSuccess) onSuccess();
       onClose();
     },
     onError: () => {
-      toast.error(`Mahsulot o'tkazishda xatolik yuz berdi!`);
+      toast.error(`Маҳсулот ўтказишда хатолик юз берди!`);
     },
   });
 
@@ -62,7 +62,7 @@ const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess, warehouseId
   // Отправка формы
   const onSubmit = () => {
     if (selectedItems.length === 0) {
-      message.warning("Hech narsa tanlanmagan");
+      message.warning("Ҳеч нарса танланмаган");
       return;
     }
 
@@ -96,12 +96,12 @@ const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess, warehouseId
 
             {/* Номер партии */}
             <p className="text-gray-100 font-semibold">
-              Part: <span className="text-red-500">{product?.batch_number}</span>
+            Партия: <span className="text-red-500">{product?.batch_number}</span>
             </p>
 
             {/* Показываем начальное количество (initialQuantity) */}
             <span className="text-gray-100 font-semibold">
-              {product?.initialQuantity} dona bor omborda
+              {product?.initialQuantity} дона бор омборда
             </span>
 
             {/* Инпут для изменения количества */}
@@ -110,8 +110,8 @@ const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess, warehouseId
                 name={`quantity-${product.id}`}
                 control={control}
                 rules={{
-                  required: "Son kiriting",
-                  min: { value: 1, message: "Min 1" },
+                  required: "Сон киритинг",
+                  min: { value: 1, message: "Мин 1" },
                   max: {
                     value: product.initialQuantity, // Устанавливаем лимит по начальному количеству
                     message: `Max ${product.initialQuantity}`,
@@ -186,7 +186,7 @@ const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess, warehouseId
               (e.currentTarget.style.backgroundColor = "#364153")
             }
           >
-            {isSending ? "Yuborish..." : "Yuborish"}
+            {isSending ? "Юбориш..." : "Юбориш"}
           </Button>
         </Form.Item>
       </Form>

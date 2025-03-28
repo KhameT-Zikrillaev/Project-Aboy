@@ -62,9 +62,6 @@ const { data: productsData, isLoading: productsLoading, refetch: refetchProducts
   }
 );
 
-//~~~~~~~~~~~~~~~~~~~~ логика шопах из апи~~~~~~~~~~~~~~~~~~~~~~~~~~
-// const userWarehouseId = user?.warehouse?.id;
-
 useEffect(() => {
   if (productsData?.data) {
     // Проверяем, что data?.products является массивом
@@ -163,21 +160,17 @@ useEffect(() => {
     currentPage * itemsPerPage
   ) : [];
 
-
-
   return (
     <div className="min-h-screen bg-cover bg-center p-1 relative" style={{ backgroundImage: `url(${bgsklad})` }}>
       <div className="absolute inset-0 bg-black/50 backdrop-blur-md z-0"></div>
       <div className="relative z-0 max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[120px]">
-        <SearchForm data={productsData?.data?.products} onSearch={handleSearchResults} name={name +'iga'} title="Omboridigi mahsulotlarni vitringa yuborish" showDatePicker={false} />
+        <SearchForm data={productsData?.data?.products} onSearch={handleSearchResults} name={name +'iga'} title="Омборидиги маҳсулотларни витринага юбориш" showDatePicker={false} />
         <div className='w-full flex justify-between'>
-
-
           {/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~view products~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */}
         <Button
            style={{ marginBottom: '10px',backgroundColor: '#17212b',color: '#fff' }}
             onClick={() => setIsWareHouseOpen(true)}
-            >Vitrinani ko'rish</Button>
+            >Витринани кўриш</Button>
              {/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~select all~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */}
         <Button
           type=""
@@ -185,7 +178,7 @@ useEffect(() => {
         
           style={{ marginBottom: '10px',backgroundColor: '#17212b',color: '#fff' }}
         >
-          {selectedProducts.length === filteredData.length ? 'Hammasini yechish' : 'Hammasini tanlash'}
+          {selectedProducts.length === filteredData.length ? 'Ҳаммасини ечиш' : 'Ҳаммасини танлаш'}
         </Button>
         </div>
         {productsLoading ? (
@@ -208,20 +201,20 @@ useEffect(() => {
                <img  onClick={() => setSelectedImage(item?.image_url)} crossOrigin="anonymous" className="h-48 w-full bg-cover cursor-pointer bg-center rounded-t-lg" src={item?.image_url} alt=""/>
               <div className="flex flex-col gap-2">
                 <h3 className="text-lg font-semibold text-white">{item?.article}</h3>
-                <Tag color="blue">Part: <span className="text-red-500">{item?.batch_number}</span></Tag>
+                <Tag color="blue">Партия: <span className="text-red-500">{item?.batch_number}</span></Tag>
                 <h4 className="text-sm font-semibold text-white">{item?.price + " $"}</h4>
                 <div className='mt-[15px]'>
                   <CustomCheckbox
                     checked={selectedProducts?.some((product) => product?.id === item?.id)}
                     onChange={() => handleCheckboxChange(item)}
-                    label="Tanlash"
+                    label="Танлаш"
                   />
                 </div>
               </div>
             </Card>
           ))
         ) : (
-          <div className="col-span-5 text-center text-white text-xl py-10">Malumot topilmadi</div>
+          <div className="col-span-5 text-center text-white text-xl py-10">Малумот топилмади</div>
         )}
       </div>
       )}
@@ -240,7 +233,7 @@ useEffect(() => {
         {filteredData?.length > 0 && (
           <div className="w-full flex flex-col md:flex-row mt-2 mb-12 gap-2 justify-center items-center">
             <span className='bg-gray-700 py-[7px] max-w-[300px] w-full text-center h-[40px] text-white text-[18px] rounded-lg shadow-lg'>
-              Tanlangan: {selectedProducts.length}
+            Танланган: {selectedProducts.length}
             </span>
             <Button
   type="primary"
@@ -262,7 +255,7 @@ useEffect(() => {
     if (selectedProducts?.length > 0) e.currentTarget.style.backgroundColor = "#364153";
   }}
 >
-  Yuborish
+Юбориш
 </Button>
           </div>
         )}
@@ -276,7 +269,7 @@ useEffect(() => {
         <ModalComponent
           isOpen={isModalOpen}
           onClose={onClose}
-          title={name + " " +"Vitrinasiga yuborish"}
+          title={name + " " +"Витринасига юбориш"}
         >
           <AddProductVitrina 
             onClose={onClose} 
@@ -290,7 +283,7 @@ useEffect(() => {
         <ModalComponent
           isOpen={isWareHouseOpen}
           onClose={onClose}
-          title={name + " Vitrinasi"}
+          title={name + " Витринаси"}
         >
           <ViewWareHoustProducts idwarehouse={shopId} />
         </ModalComponent>

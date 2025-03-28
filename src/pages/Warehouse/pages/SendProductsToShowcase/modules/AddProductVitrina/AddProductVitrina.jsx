@@ -14,12 +14,12 @@ const AddProductVitrina = ({ onClose, selectedProducts, onSuccess, warehouseId, 
     url: 'Storefront-product',
     method: 'POST',
     onSuccess: (data) => {
-      toast.success('Tovar muvaffaqiyatli qo`shildi!');
+      toast.success('Товар муваффақиятли қўшилди!');
       if (onSuccess) onSuccess();
       onClose();
     },
     onError: (error) => {
-      message.error(`Error: ${error.message || 'Failed to send products'}`);
+      toast.error(`Товар қўшишда хатолик юз берди`);
     }
   });
   
@@ -50,7 +50,7 @@ const AddProductVitrina = ({ onClose, selectedProducts, onSuccess, warehouseId, 
   // Отправка данных
   const onSubmit = () => {
     if (selectedItems?.length === 0) {
-      message.warning('Tanlangan tovar yoq');
+      message.warning('Танланган товар йўқ');
       return;
     }
     // Проверяем наличие ID магазина
@@ -141,7 +141,7 @@ const AddProductVitrina = ({ onClose, selectedProducts, onSuccess, warehouseId, 
         {/* Количество товаров */}
         <div className="text-center text-white mt-4">
           <span>
-           Tanlangan tovarlar soni:{" "}
+          Танланган товарлар сони:{" "}
             <span className="font-bold">{selectedItems?.length}</span>
           </span>
         </div>
@@ -154,7 +154,7 @@ const AddProductVitrina = ({ onClose, selectedProducts, onSuccess, warehouseId, 
           disabled={isSending || selectedItems?.length === 0 || !shopId}
           style={{ marginTop: 20, width: "100%" }}
         >
-          {isSending ? 'Отправка...' : 'Yuborish'}
+          {isSending ? 'Юбориш...' : 'Юбориш'}
         </Button>
       </div>
     </div>

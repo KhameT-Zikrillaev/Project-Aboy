@@ -99,7 +99,7 @@ export default function ReturnProducts() {
           <div className="flex justify-center md:justify-start items-center">
             <FaArchive className="text-3xl text-white" />
             <span className="text-xl font-semibold ml-2 text-white">
-              Sotilgan mahsulotlar
+              Сотилган маҳсулотлар
             </span>
           </div>
 
@@ -163,26 +163,26 @@ export default function ReturnProducts() {
                           </Tag>
                         </div>
                         <h4 className="text-sm font-semibold text-white">
-                          Do'kon nomi: {item?.shop?.name}
+                          Дўкон номи: {item?.shop?.name}
                         </h4>
                       </div>
                       <div>
                         <p className="text-gray-300 text-xs">
-                          Narxi:{" "}
+                        Нархи:{" "}
                           {Math.floor(item?.items[0]?.price).toLocaleString()}{" "}
                           $
                         </p>
                         <p className="text-gray-300 text-xs">
-                          Soni: {Math.floor(item?.items[0]?.quantity)} дона
+                        Сони: {Math.floor(item?.items[0]?.quantity)} дона
                         </p>
                         <p className="text-gray-300 text-xs">
-                          Jami narxi:{" "}
+                        Жами нархи:{" "}
                           {Math.floor(item?.items[0]?.total).toLocaleString()}{" "}
                           $
                         </p>
                         <div className="flex items-center justify-between">
                           <p className="text-gray-300 text-xs">
-                            Sotilgan sanasi: {formatDate(item?.createdAt)}
+                          Сотилган санаси: {formatDate(item?.createdAt)}
                           </p>
                           <button onClick={() => showModal(item)}>
                             <EditOutlined
@@ -226,7 +226,7 @@ export default function ReturnProducts() {
         <ModalComponent
           isOpen={isModalOpen}
           onClose={onClose}
-          title={"Mahsulotni qaytarish"}
+          title={"Маҳсулотни қайтариш"}
         >
           <EditReturnProduct
             refetch={refetch}

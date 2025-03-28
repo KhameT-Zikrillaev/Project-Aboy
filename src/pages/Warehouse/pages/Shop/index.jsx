@@ -28,7 +28,7 @@ export default function Shop() {
           <div className="flex justify-center md:justify-start items-center">
             <FaArchive className="text-3xl text-white" />
             <span className="text-xl font-semibold ml-2 text-white">
-              Do'konlar
+            Дўконлар
             </span>
           </div>
 
