@@ -5,7 +5,7 @@ import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import 'antd/dist/reset.css';
 import bgsklad from '@/assets/images/bg-sklad.png';
 import SearchForm from '@/components/SearchForm/SearchForm';
-import ModalComponent from "@/components/modal/Modal";
+import ModalComponentContent from "@/components/modal/ModalContent";
 import DeleteProductVitrina from "../modules/DeleteProductVitrina/DeleteProductVitrina";
 import ImageModal from "@/components/modal/ImageModal";
 import useFetch from "@/hooks/useFetch";
@@ -275,7 +275,7 @@ export default function ViewDetaliesRemoveProducts() {
           idWarehouse={warehouseId}
         />
 
-        <ModalComponent
+        <ModalComponentContent
           isOpen={isModalOpen}
           onClose={onClose}
           title={`${name} vitrinasidan o'chirish`}
@@ -287,7 +287,7 @@ export default function ViewDetaliesRemoveProducts() {
             warehouseName={name}
             shopId={shopId}
           />
-        </ModalComponent>
+        </ModalComponentContent>
       </div>
     </div>
   );

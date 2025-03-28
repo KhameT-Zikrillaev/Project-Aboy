@@ -305,7 +305,7 @@ export default function ViewDetaliesSendProducts() {
           idWarehouse={warehouseId}
         />
 
-        <ModalComponent
+        <ModalComponentContent
           isOpen={isModalOpen}
           onClose={onClose}
           title={name + " " + "Vitrinasiga yuborish"}
@@ -318,7 +318,7 @@ export default function ViewDetaliesSendProducts() {
             warehouseId={warehouseId}
             shopId={shopId}
           />
-        </ModalComponent>
+        </ModalComponentContent>
 
         <ModalComponentContent
           isOpen={isWareHouseOpen}
