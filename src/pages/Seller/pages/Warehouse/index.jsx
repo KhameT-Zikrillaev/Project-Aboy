@@ -85,7 +85,7 @@ export default function Warehouse() {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 w-full px-4">
+            <div className="grid grid-cols-2 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 gap-1 w-full px-2">
               {currentData?.map((item) => (
                 <Card
                   key={item?.id}
@@ -95,36 +95,27 @@ export default function Warehouse() {
                     backdropFilter: "blur(10px)",
                     border: "1px solid rgba(255, 255, 255, 0.2)",
                   }}
-                  cover={<div />}
-                  bodyStyle={{ padding: "12px", color: "white" }}
+                  bodyStyle={{ padding: '4px', color: 'white' }}
                 >
                   <img
                     onClick={() => setSelectedImage(item?.image_url)}
                     crossOrigin="anonymous"
-                    className="h-48 w-full bg-cover object-cover cursor-pointer bg-center rounded-t-lg"
+                    className="h-12 w-full object-cover cursor-pointer rounded-t-lg mb-1" 
                     src={item?.image_url}
                     alt=""
                   />
-                  <div className="flex flex-col gap-2">
-                    <h4 className="text-sm font-semibold text-white">
-                      {item?.article}
-                    </h4>
-                    <Tag color="blue">
-                      Part: <span className="text-red-500">{item?.batch_number}</span>
-                    </Tag>
-                    <div className="flex justify-between">
-                      <p className="text-gray-300 text-xs">
-                        Narxi: {item?.price} $
-                      </p>
-                      <p className="text-gray-300 text-xs">
+                   <h3 className="text-sm font-semibold text-white">{item?.article}</h3>
+                    <Tag style={{ width: '100%', fontSize: '12px'}} color="blue">Part: <br/>
+                      <span className="text-red-500">{item?.batch_number}</span></Tag>
+                      <h4 className="text-sm font-semibold text-white">Narxi: {item?.price + " $"}</h4>        
+                      <span className="text-gray-300 text-xs">
                         Rulon soni: {item?.quantity} ta
-                      </p>
-                    </div>
+                      </span>
                     {user?.role === "seller" && (
                       <Button
                         type="primary"
                         onClick={() => showModal(item)}
-                        style={{ backgroundColor: "#364153", borderColor: "#364153" }}
+                        style={{ backgroundColor: "#364153", borderColor: "#364153", fontSize: "12px", width: "100%", padding: "1px" }}
                         onMouseEnter={(e) =>
                           (e.currentTarget.style.backgroundColor = "#2b3445")
                         }
@@ -132,10 +123,9 @@ export default function Warehouse() {
                           (e.currentTarget.style.backgroundColor = "#364153")
                         }
                       >
-                        Buyurtma berish
+                        <span className="text-xs">Buyurtma <br/> berish</span>
                       </Button>
-                    )}
-                  </div>
+                    )}    
                 </Card>
               ))}
             </div>

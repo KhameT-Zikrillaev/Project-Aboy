@@ -29,59 +29,25 @@ const iconMap = {
 };
 
 const SearchForm = ({ 
-  data, 
-  onSearch, 
   name, 
   title, 
   showDatePicker = true, 
   onDateChange, 
-  searchByNameOnly = false // Флаг для поиска только по имени
+  onSearch, // Функция для обработки поиска
+  searchParam = 'article', // Параметр поиска по умолчанию
+  placeholder = "Qidirish",
+  showClearButton = true
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [date, setDate] = useState(null);
 
-  // Поиск
-  const handleSearch = (value, event) => {
-    if (event) {
-      event.preventDefault(); // Предотвращаем стандартное поведение
-    }
+  // Улучшенный обработчик поиска
+  const handleSearch = (value) => {
     setSearchTerm(value);
-
-    if (typeof onSearch === 'function') {
-      // Если поиск только по имени
-      if (searchByNameOnly) {
-        onSearch({ name: value || '' });
-      } else {
-        // Обычный поиск по нескольким параметрам
-        if (!value || value.trim() === '') {
-          onSearch(data?.products || data);
-          return;
-        }
-        const dataToFilter = data?.products || data;
-        if (!dataToFilter || !Array.isArray(dataToFilter)) {
-          console.warn('No data to filter or data is not an array');
-          return;
-        }
-        const filteredData = dataToFilter.filter(item => {
-          const articleMatch = item?.article && item?.article.toLowerCase().includes(value.toLowerCase());
-          const nameMatch = item?.name && item?.name.toLowerCase().includes(value.toLowerCase());
-          const descriptionMatch = item?.description && item?.description.toLowerCase().includes(value.toLowerCase());
-          return articleMatch || nameMatch || descriptionMatch;
-        });
-        onSearch(filteredData);
-      }
-    }
-  };
-
-  // Изменение даты
-  const handleDateChange = (dateValue) => {
-    setDate(dateValue);
-    if (onDateChange) onDateChange(dateValue);
-
-    if (typeof onSearch === 'function' && !searchByNameOnly) {
-      setTimeout(() => {
-        onSearch(searchTerm, dateValue ? dateValue.toDate() : null);
-      }, 0);
+    
+    if (onSearch) {
+      // Отправляем только строку поиска, а не объект
+      onSearch(value);
     }
   };
 
@@ -89,18 +55,22 @@ const SearchForm = ({
   const handleClear = () => {
     setSearchTerm('');
     setDate(null);
-
-    if (typeof onSearch === 'function') {
-      if (searchByNameOnly) {
-        onSearch({ name: '' });
-      } else {
-        onSearch(data?.products || data);
-      }
+    if (onSearch) {
+      onSearch(''); // Отправляем пустую строку для сброса поиска
+    }
+    if (onDateChange) {
+      onDateChange(null);
     }
   };
 
-  const shouldShowClearButton = searchTerm.length > 1 || date !== null;
-  const IconComponent = iconMap[title] || FaBox; 
+  // Изменение даты
+  const handleDateChange = (dateValue) => {
+    setDate(dateValue);
+    if (onDateChange) onDateChange(dateValue);
+  };
+
+  const shouldShowClearButton = showClearButton && (searchTerm.length > 0 || date !== null);
+  const IconComponent = iconMap[title] || FaBox;
 
   return (
     <div className="flex flex-col md:flex-row w-full justify-between gap-3 mb-4 p-4 bg-white/10 backdrop-blur-md rounded-lg hover:bg-white/20 transition-all duration-300">
@@ -112,7 +82,7 @@ const SearchForm = ({
       </div>
 
       <div className="flex flex-col md:flex-row gap-3 items-center">
-        {showDatePicker && !searchByNameOnly && (
+        {showDatePicker && (
           <DatePicker
             onChange={handleDateChange}
             value={date}
@@ -125,15 +95,19 @@ const SearchForm = ({
             }}
           />
         )}
+        
         <div className="flex items-center gap-2 w-full">
           <Search
-            placeholder="Qidirish"
+            placeholder={placeholder}
             onChange={(e) => setSearchTerm(e.target.value)}
             value={searchTerm}
             enterButton
             className="custom-search max-w-md"
             onSearch={handleSearch}
+         
+            onPressEnter={(e) => handleSearch(e.target.value)}
           />
+          
           {shouldShowClearButton && (
             <Button 
               type="primary" 

@@ -17,7 +17,7 @@ const CustomCheckbox = ({ checked, onChange, label }) => (
         </svg>
       )}
     </div>
-    <span className="ml-3 text-white  transition-colors duration-300">{label}</span>
+    <span className="ml-1 text-white  transition-colors duration-300">{label}</span>
   </label>
 );
 

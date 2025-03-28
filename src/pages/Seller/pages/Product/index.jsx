@@ -83,7 +83,7 @@ export default function Vitrina() {
                 Tovar topilmadi
               </div>
             ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full px-4">
+          <div className="grid grid-cols-2 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 gap-1 w-full px-2">
             {currentData?.map((item) => (
               <Card
                 key={item?.product_id}
@@ -93,21 +93,22 @@ export default function Vitrina() {
                   backdropFilter: "blur(10px)",
                   border: "1px solid rgba(255, 255, 255, 0.2)",
                 }}
-                cover={
-                  <div/>
-                } 
-                bodyStyle={{ padding: "12px", color: "white" }}
+                bodyStyle={{ padding: '4px', color: 'white' }}
+
               >
-                 <img  onClick={() => setSelectedImage(item?.image_url)} crossOrigin="anonymous" className="h-48 w-full bg-cover cursor-pointer bg-center rounded-t-lg" src={item?.image_url} alt=""/>
-                <div className="flex flex-col gap-2">
-                  <h3 className="text-lg font-semibold text-white">{item?.article}</h3>
-                  <Tag color="blue">
-                    Part: <span className="text-red-500">{item?.batch_number}</span>
-                  </Tag>
+
+                 <div className="flex flex-col">
+                 <img  onClick={() => setSelectedImage(item?.image_url)} crossOrigin="anonymous" 
+                   className="h-12 w-full object-cover cursor-pointer rounded-t-lg mb-1"  src={item?.image_url} alt=""/>
+                  <h3 className="text-sm font-semibold text-white">{item?.article}</h3>
+                    <Tag style={{ width: '100%', fontSize: '12px'}} color="blue">Part: <br/>
+                      <span className="text-red-500">{item?.batch_number}</span></Tag>
+                 
                   <h4 className="text-sm font-semibold text-white">
                     {item?.price +" $" || "No price"}
                   </h4>
-                </div>
+               
+                   </div>
               </Card>
             ))}
           </div>
