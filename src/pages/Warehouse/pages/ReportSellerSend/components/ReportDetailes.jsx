@@ -5,7 +5,6 @@ import { Pagination, Spin } from "antd";
 import useFetch from "@/hooks/useFetch";
 import WarehouseSendShopReportCard from "@/components/warehousesendShopReport";
 
-
 const ReportDetailes = () => {
   const [selectedDates, setSelectedDates] = useState({ from: null, to: null });
   const [page, setPage] = useState(1);
@@ -34,13 +33,13 @@ const ReportDetailes = () => {
     <div className="mt-[120px] px-2">
        <div className="relative max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[110px]">
       <SearchFormStartEnd
-        title={`${name} hisobotlari`}
+        title={`${name} ҳисоботлари`}
         onSearch={handleDateSearch}
       />
 
       {!startDate || !endDate ? (
         <p className="text-center text-gray-500 text-[20px] pt-14">
-          Iltimos, sanani tanlang
+          Илтимос, санани танланг
         </p>
       ) : isLoading ? (
         <div className="flex justify-center mt-20">
@@ -64,7 +63,7 @@ const ReportDetailes = () => {
           </div>
         </div>
       ) : (
-        <p className="text-center text-gray-500 mt-4">Hech narsa yo‘q</p>
+        <p className="text-center text-gray-500 mt-4">Ҳеч нарса йўқ</p>
       )}
     </div>
     </div>

@@ -73,7 +73,7 @@ export default function Warehouse() {
         <SearchForm
           data={data?.data?.products}
           name=""
-          title="Omborxona"
+          title="Омборхона"
           showDatePicker={false}
           onSearch={handleSearchResults}
         />
@@ -110,14 +110,14 @@ export default function Warehouse() {
                       {item?.article}
                     </h4>
                     <Tag color="blue">
-                      Part: <span className="text-red-500">{item?.batch_number}</span>
+                    Партия: <span className="text-red-500">{item?.batch_number}</span>
                     </Tag>
                     <div className="flex justify-between">
                       <p className="text-gray-300 text-xs">
-                        Narxi: {item?.price} $
+                      Нархи: {item?.price} $
                       </p>
                       <p className="text-gray-300 text-xs">
-                        Rulon soni: {item?.quantity} ta
+                      Рулон сони: {item?.quantity} ta
                       </p>
                     </div>
                     {user?.role === "seller" && (
@@ -132,7 +132,7 @@ export default function Warehouse() {
                           (e.currentTarget.style.backgroundColor = "#364153")
                         }
                       >
-                        Buyurtma berish
+                        Буюртма бериш
                       </Button>
                     )}
                   </div>
@@ -148,7 +148,7 @@ export default function Warehouse() {
             <ModalComponent
               isOpen={isModalOpen}
               onClose={onClose}
-              title={"Omborga buyurtma berish"}
+              title={"Омборга буюртма бериш"}
             >
               <AddProduct onClose={onClose} product={selectedProduct} />
             </ModalComponent>

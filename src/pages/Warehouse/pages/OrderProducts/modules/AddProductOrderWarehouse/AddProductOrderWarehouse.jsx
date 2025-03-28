@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Input, message } from "antd";
+import { Button, Input } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import userStore from "@/store/useUser";
 import useApiMutation from "@/hooks/useApiMutation";
@@ -10,18 +10,18 @@ const AddProductOrderWarehouse = ({ onClose, selectedProducts, onSuccess, idWare
   const [selectedItems, setSelectedItems] = useState([]);
   const { user } = userStore();
 
-  const { handleSubmit, control, setValue, watch, formState: { errors } } = useForm();
+  const { handleSubmit, control, setValue, formState: { errors } } = useForm();
 
   const { mutate, isLoading } = useApiMutation({
     url: 'warehouse-requests/send-request',
     method: 'POST',
     onSuccess: () => {
       onClose();
-      toast.success("Buyurtma berildi");
+      toast.success("Буюртма берилди");
       if (onSuccess) onSuccess();
     },
     onError: () => {
-      toast.error("Buyurtma berishda xatolik!");
+      toast.error("Буюртма беришда хатолик!");
     },
   });
 
@@ -59,12 +59,12 @@ const AddProductOrderWarehouse = ({ onClose, selectedProducts, onSuccess, idWare
 
   const onSubmit = () => {
     if (!user?.warehouse?.id) {
-      message.error("Ombor ma'lumotlari topilmadi!");
+      toast.error("Омбор маълумотлари топилмади!");
       return;
     }
 
     if (selectedItems.length === 0) {
-      message.warning("Mijozga yetkazib bera olmayan mahsulotlar tanlanmagan");
+      toast.error("Мижозга етказиб бера олмайман маҳсулотлар танланмаган");
       return;
     }
 
@@ -94,11 +94,11 @@ const AddProductOrderWarehouse = ({ onClose, selectedProducts, onSuccess, idWare
 
             <h3 className="text-gray-100 font-semibold">{product?.article}</h3>
             <p className="text-gray-100 font-semibold">
-              Part: <span className="text-red-500">{product?.batch_number}</span>
+            Партия: <span className="text-red-500">{product?.batch_number}</span>
             </p>
 
             <span className="text-gray-100 font-semibold">
-              {product?.initialQuantity} dona bor omborda
+              {product?.initialQuantity} дона бор омборда
             </span>
 
             <div className="flex mt-2">
@@ -178,7 +178,7 @@ const AddProductOrderWarehouse = ({ onClose, selectedProducts, onSuccess, idWare
             (e.currentTarget.style.backgroundColor = "#364153")
           }
         >
-          {isLoading ? "Отправка..." : "Zakaz berish!"}
+          {isLoading ? "Отправка..." : "Заказ бериш!"}
         </Button>
       </form>
     </div>

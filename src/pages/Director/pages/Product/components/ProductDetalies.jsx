@@ -33,8 +33,6 @@ export default function ProductDetalies() {
       setFilteredData(data?.data?.products);
     }
   }, [data]);
-
-
   // Адаптивность экран разрешение кароточек
   useEffect(() => {
     const updateItemsPerPage = () => {
@@ -68,7 +66,7 @@ export default function ProductDetalies() {
         <SearchForm
           data={data?.data?.products}
           name=""
-          title="Tovarlar"
+          title="Товарлар"
           showDatePicker={false}
           onSearch={handleSearchResults}
         />
@@ -82,7 +80,7 @@ export default function ProductDetalies() {
           <>
               {filteredData?.length === 0 ? (
               <div className="text-white text-lg">
-                Tovar topilmadi
+                Товар топилмади
               </div>
             ) : (
               <div className="flex justify-center flex-wrap gap-10">
@@ -111,13 +109,13 @@ export default function ProductDetalies() {
                     <h3 className="text-sm font-semibold text-white">{item?.article}</h3>
             
                     <Tag color="blue" className="text-xs">
-                      Part: <span className="text-red-500">{item?.batch_number}</span>
+                    Партия: <span className="text-red-500">{item?.batch_number}</span>
                     </Tag>
                     <h4 className="text-xs font-semibold text-white">
                       {item?.price + " $" || "No price"}
                     </h4>
                     <div className="flex justify-between">
-                      <p className="text-gray-300 text-xs">Soni: {item?.quantity}</p>
+                      <p className="text-gray-300 text-xs">Сони: {item?.quantity}</p>
                     </div>
                   </div>
                 </Card>

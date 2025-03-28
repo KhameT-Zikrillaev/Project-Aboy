@@ -97,8 +97,8 @@ export default function ViewDetaliesOrderProducts() {
         <SearchForm 
           data={data?.data?.products} 
           onSearch={handleSearchResults} 
-          name={name +" " +'omboriga'} 
-          title="zakaz berish" 
+          name={name +" " +'омборига'} 
+          title="заказ бериш" 
           showDatePicker={false} 
         />
         {isLoading ? (
@@ -119,9 +119,9 @@ export default function ViewDetaliesOrderProducts() {
                   <img onClick={() => setSelectedImage(item?.image_url)} className="h-48 w-full bg-cover cursor-pointer bg-center rounded-t-lg" crossOrigin='anonymous' src={item?.image_url} alt="" />
                   <div className="flex flex-col gap-2">
                     <h3 className="text-lg font-semibold text-white">{item?.article}</h3>
-                    <Tag color="blue">Part: <span className="text-red-500">{item?.batch_number}</span></Tag>
+                    <Tag color="blue">Партия: <span className="text-red-500">{item?.batch_number}</span></Tag>
                     <h4 className="text-sm font-semibold text-white">{item?.price + " $"}</h4>
-                    <h5 className="text-sm font-semibold text-white">Rulon soni: {item?.quantity} ta</h5>
+                    <h5 className="text-sm font-semibold text-white">Рулон сони: {item?.quantity} ta</h5>
                     <Button
                       type="primary"
                       onClick={() => showModal(item)}
@@ -129,13 +129,13 @@ export default function ViewDetaliesOrderProducts() {
                       onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#2b3445')}
                       onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#364153')}
                     >
-                      Zakaz berish
+                      Заказ бериш
                     </Button>
                   </div>
                 </Card>
               ))
             ) : (
-              <div className="col-span-5 text-center text-white text-xl py-10">Malumot topilmadi</div>
+              <div className="col-span-5 text-center text-white text-xl py-10">Малумот топилмади</div>
             )}
           </div>
         )}
@@ -160,7 +160,7 @@ export default function ViewDetaliesOrderProducts() {
         <ModalComponent
           isOpen={isModalOpen}
           onClose={onClose}
-          title={name + " " + "Vitrinasiga yuborish"}
+          title={name + " " + "Витринасига юбориш"}
         >
           <AddProductOrderWarehouse 
             onClose={onClose} 

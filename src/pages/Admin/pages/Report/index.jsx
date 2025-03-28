@@ -18,14 +18,14 @@ export default function Report() {
       <div className="flex justify-center md:justify-start items-center">
         <FaWarehouse className="text-3xl text-white" />
         <span className="text-xl font-semibold ml-2 text-white">
-          Omborlar
+        Омборлар
         </span>
       </div>
 
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-2 w-full">
           <Search
-            placeholder="Qidirish"
+            placeholder="Қидириш"
             onChange={(e) => setTerm(e.target.value)}
             value={term}
             enterButton

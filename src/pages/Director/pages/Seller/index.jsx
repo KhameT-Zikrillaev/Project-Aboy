@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { DatePicker, Input, Button, message, List, Tag, Modal } from "antd";
 import { FaPencilAlt } from "react-icons/fa";
 import SearchForm from "@/components/SearchForm/SearchForm";
@@ -15,7 +15,7 @@ export default function Seller() {
   const [errors, setErrors] = useState({});
   const [searchParams, setSearchParams] = useState({});
 
-  const { data: usersData, isLoading: usersLoading, refetch: refetchUsers } = useFetch(
+  const { data: usersData, isLoading: usersLoading } = useFetch(
     "users",
     "users",
     { page: currentPage, limit: 12, role: "seller", name: searchParams.name || "" }
@@ -35,22 +35,22 @@ export default function Seller() {
     url: "debtors",
     method: "POST",
     onSuccess: () => {
-      message.success("Tovar muvaffaqiyatli qo'shildi!");
+      toast.success("Қарз муваффақиятли қўшилди!");
       resetForm();
       refetchDebtors();
       setIsModalVisible(false);
     },
-    onError: (error) => message.error(`Xatolik: ${error.message || "Tovar qo'shishda xatolik"}`)
+    onError: () => toast.error("Қарз қўшишда хатолик юз берди!")
   });
 
   const { mutate: deleteMutate, isLoading: isDeleting } = useApiMutation({
     url: "debtors",
     method: "DELETE",
     onSuccess: () => {
-      message.success("Qarz muvaffaqiyatli o'chirildi!");
+      toast.success("Қарз муваффақиятли ўчирилди!");
       refetchDebtors();
     },
-    onError: (error) => message.error(`Xatolik: ${error.message || "Qarz o'chirishda xatolik"}`)
+    onError: () => toast.error("Қарз ўчиришда хатолик")
   });
 
   const handleFormChange = (key, value) => {
@@ -81,10 +81,10 @@ export default function Seller() {
     url: "debtors/send-sms",
     method: "POST",
     onSuccess: () => {
-      toast.success("Xabar muvaffaqiyatli yuborildi!");
+      toast.success("Хабар муваффақиятли юборилди!");
       refetchDebtors();
     },
-    onError: (error) => toast.error(`Xatolik: ${error.message || "Tovar qo'shishda xatolik"}`),
+    onError: () => toast.error("Хабар юборишда хатолик юз берди!"),
   });
 
   const handleConfirm = (debtId, sellerId) => {
@@ -119,13 +119,13 @@ export default function Seller() {
           setSearchParams({ name: params.name });
           setCurrentPage(1);
         }}
-        title="Sotuvchilar"
+        title="Сотувчилар"
         searchFields={["name", "phone"]}
         searchByNameOnly={true}
       />
 
       {users.length === 0 && !usersLoading && (
-        <div className="text-center text-gray-400">Sotuvchilar topilmadi</div>
+        <div className="text-center text-gray-400">Сотувчилар топилмади</div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 md:grid-cols-3 gap-4" style={{ gridAutoRows: "1fr" }}>
@@ -144,7 +144,7 @@ export default function Seller() {
                   <h4 className="text-lg font-semibold">{user.name}</h4>
                   <p className="text-sm text-gray-300">{user.phone}</p>
                   {userDebts.length > 0 && (
-                    <Tag>Hamma qarzi: <span className="text-red-500">{totalDebt}</span> $</Tag>
+                    <Tag>Ҳамма қарзи: <span className="text-red-500">{totalDebt}</span> $</Tag>
                   )}
                 </div>
                 <button
@@ -152,7 +152,7 @@ export default function Seller() {
                   className="flex p-2 bg-gray-700 hover:bg-gray-600 rounded-xl items-center gap-2"
                 >
                   <FaPencilAlt />
-                  <span>Belgilash</span>
+                  <span>Белгилаш</span>
                 </button>
               </div>
 
@@ -176,7 +176,7 @@ export default function Seller() {
                          <span className="p-1 rounded-lg">
                             {debt.comment || "Без комментария"}
                           </span>
-                          <span className="text-green-500">{debt?.isSent ? "Ogohlantirildi" : ""}</span>
+                          <span className="text-green-500">{debt?.isSent ? "Огоҳлантирилди" : ""}</span>
                          </div>
                       
                           <div className="flex justify-end w-full gap-4">
@@ -186,7 +186,7 @@ export default function Seller() {
                               onClick={() => handleConfirm(debt.id, user.id)}
                               loading={isDeleting}
                             >
-                              Eslatnoma Xabar yuborish
+                              Эслатнома Хабар юбориш
                             </Button>
 
                             <Button
@@ -197,7 +197,7 @@ export default function Seller() {
                               onClick={() => handleDelete(debt.id)}
                               loading={isDeleting}
                             >
-                              O'chirish
+                              Ўчириш
                             </Button>
                           </div>
                         </div>
@@ -205,7 +205,7 @@ export default function Seller() {
                     )}
                   />
                 ) : (
-                  <div className="text-gray-400 text-center">Qarzi yo'q</div>
+                  <div className="text-gray-400 text-center">Қарзи йўқ</div>
                 )}
               </div>
             </div>
@@ -219,8 +219,8 @@ export default function Seller() {
         onOk={handleSubmit}
         onCancel={handleCancel}
         confirmLoading={isSending}
-        okText="Belgilash"
-        cancelText="Bekor qilish"
+        okText="Белгилаш"
+        cancelText="Бекор қилиш"
         width={600}
         bodyStyle={{ backgroundColor: '#1F2937', color: 'white' }}
       >
@@ -232,29 +232,29 @@ export default function Seller() {
               className="w-full"
               style={{ backgroundColor: "#374151", color: "white" }}
             />
-            {errors.date && <p className="text-red-500">Sanani tanlang!</p>}
+            {errors?.date && <p className="text-red-500">Санани танланг!</p>}
           </div>
 
           <div>
             <Input
               value={form.price}
               onChange={(e) => handleFormChange("price", e.target.value)}
-              placeholder="Narx"
+              placeholder="Нарх"
               type="number"
               style={{ backgroundColor: "#374151", color: "white" }}
             />
-            {errors.price && <p className="text-red-500">Narx yozing!</p>}
+            {errors.price && <p className="text-red-500">Нарх ёзинг!</p>}
           </div>
 
           <div>
             <TextArea
               value={form.comment}
               onChange={(e) => handleFormChange("comment", e.target.value)}
-              placeholder="Komment"
+              placeholder="Коммент"
               style={{ backgroundColor: "#374151", color: "white" }}
               rows={4}
             />
-            {errors.comment && <p className="text-red-500">Komment yozib keting!</p>}
+            {errors.comment && <p className="text-red-500">Коммент ёзиб кетинг!</p>}
           </div>
         </div>
       </Modal>

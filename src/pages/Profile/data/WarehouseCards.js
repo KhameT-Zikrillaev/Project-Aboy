@@ -17,48 +17,48 @@ import {
       icon: React.createElement(FaBox, {
         className: "text-4xl text-white mb-4",
       }),
-      title: "Tovarlar",
-      description: "Tovarlarni boshqarish",
+      title: "Товарлар",
+      description: "Товарларни бошқариш",
       link: "/warehouse/product-list",
     },
     {
       icon: React.createElement(FaTruck, {
         className: "text-4xl text-white mb-4",
       }),
-      title: "Tovarlarni vitrinaga jo'natish",
-      description: "Tovarlarni vitrinaga jo'natish",
+      title: "Товарларни витринага жўнатиш",
+      description: "Товарларни витринага жўнатиш",
       link: "/warehouse/send-to-showcase",
     },
     {
       icon: React.createElement(FaWarehouse, {
         className: "text-4xl text-white mb-4",
       }),
-      title: "Tovarlarni vitrinadan o'chirish",
-      description: "Tovarlarni vitrinadan o'chirish",
+      title: "Товарларни витринадан ўчириш",
+      description: "Товарларни витринадан ўчириш",
       link: "/warehouse/remove-from-showcase",
     },
     {
       icon: React.createElement(FaTruck, {
         className: "text-4xl text-white mb-4",
       }),
-      title: "Mahsulotlarni boshqa omborga jo'natish",
-      description: "Mahsulotlarni boshqa omborga jo'natish",
+      title: "Маҳсулотларни бошқа омборга жўнатиш",
+      description: "Маҳсулотларни бошқа омборга жўнатиш",
       link: "/warehouse/transfer-to-warehouse",
     },
     {
       icon: React.createElement(FaCashRegister, {
         className: "text-4xl text-white mb-4",
       }),
-      title: "Kassa",
-      description: "Moliya operatsiyalarini boshqarish",
+      title: "Касса",
+      description: "Молия операцияларини бошқариш",
       link: "/warehouse/cash-register",
     },
     {
       icon: React.createElement(AiOutlineRollback, {
         className: "text-6xl font-bold text-white mb-4",
       }),
-      title: "Mahsulot qaytarish",
-      description: "Do'konlardan mahsulot qaytarish",
+      title: "Маҳсулот қайтариш",
+      description: "Дўконлардан маҳсулот қайтариш",
       link: "/warehouse/shop",
     },
     // {
@@ -73,24 +73,24 @@ import {
       icon: React.createElement(FaShoppingCart, {
         className: "text-4xl text-white mb-4",
       }),
-      title: "Mahsulot zakaz qilish",
-      description: "Yangi mahsulotlar zakaz qilish",
+      title: "Маҳсулот заказ қилиш",
+      description: "Янги маҳсулотлар заказ қилиш",
       link: "/warehouse/order-products",
     },
     {
       icon: React.createElement(FaChartLine, {
         className: "text-4xl text-white mb-4",
       }),
-      title: "Hisobotlar omborlarniki",
-      description: "Tarix va arxiv",
+      title: "Ҳисоботлар омборларники",
+      description: "Тарих ва архив",
       link: "/warehouse/report-warehouse-send",
     },
     {
       icon: React.createElement(FaChartLine, {
         className: "text-4xl text-white mb-4",
       }),
-      title: "Hisobotlar sotuvchilarniki",
-      description: "Tarix va arxiv",
+      title: "Ҳисоботлар сотувчиларники",
+      description: "Тарих ва архив",
       link: "/warehouse/report-seller-send",
     }
   ];

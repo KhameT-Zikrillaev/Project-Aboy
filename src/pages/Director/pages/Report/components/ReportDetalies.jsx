@@ -5,7 +5,6 @@ import { useLocation } from "react-router-dom";
 import bgsklad from "@/assets/images/bg-sklad.png";
 import SearchFormStartEnd from "@/components/SearchFormStartEnd/SearchFormStartEnd";
 import useFetch from "@/hooks/useFetch";
-import useUserStore from "@/store/useUser";
 import ReportCard from "@/components/reportCard";
 export default function ReportDetalies() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -77,7 +76,7 @@ export default function ReportDetalies() {
         <SearchFormStartEnd 
           data={data?.data} 
           name="" 
-          title="Hisobotlar omborlar" 
+          title="Ҳисоботлар омборлар" 
           showDatePicker={true} 
           onSearch={handleSearch} 
           className="w-full mb-6"
@@ -90,7 +89,7 @@ export default function ReportDetalies() {
         ) : filteredData.length === 0 ? (
           <Empty 
             description={
-              <span className="text-white">Ma'lumot topilmadi</span>
+              <span className="text-white">Маълумот топилмади</span>
             } 
             className="my-12"
           />

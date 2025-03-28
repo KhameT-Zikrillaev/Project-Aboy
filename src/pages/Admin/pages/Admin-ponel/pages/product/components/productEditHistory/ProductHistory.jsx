@@ -66,31 +66,31 @@ const ProductHistory = () => {
       width: 70,
     },
     {
-      title: "Artikul",
+      title: "Артикул",
       render: (text) => (
         <span className="text-gray-100 font-semibold">{text?.action == "DELETE" ? text?.oldData?.article : text?.newData?.article}</span>
       ),
     },
     {
-      title: "Partiya",
+      title: "Партия",
       render: (text) => (
         <span className="text-gray-100 font-semibold">{text?.action == "DELETE" ? text?.oldData?.batch_number : text?.newData?.batch_number}</span>
       ),
     },
     {
-      title: "Rulon soni",
+      title: "Рулон сони",
       render: (text) => (
         <span className="text-gray-100 font-semibold">{text?.action == "DELETE" ? "-" : text?.newData?.quantity}</span>
       ),
     },
     {
-      title: "Narxi",
+      title: "Нархи",
       render: (text) => (
         <span className="text-gray-100 font-semibold">{text?.action == "DELETE" ? text?.oldData?.price : text?.newData?.price}</span>
       ),
     },
     {
-      title: "Rasm",
+      title: "Расм",
       render: (text) => (
         <div className="max-h-[80px] max-w-[80px]">
           <img className="h-auto w-full" src={`${text?.action == "DELETE" ? text?.oldData?.image_url : text?.newData?.image_url}`} crossOrigin="anonymous" />
@@ -98,17 +98,17 @@ const ProductHistory = () => {
       ),
     },
     {
-        title: "Izoh",
+        title: "Изоҳ",
         render: (text) => (
             <span className="text-gray-100 font-semibold">{text?.action == "DELETE" ? "Mahsulot o'chirildi" : text?.action == "CREATE" ? "Mahsulot yaratildi" : text?.newData?.comment}</span>
         ),
       },
       {
-        title: "Status",
+        title: "Статус",
         dataIndex: "action",
         key: "action",
         render: (text) => (
-            <span className="text-gray-100 font-semibold">{text === "DELETE" ? "O'chirildi" : text === "CREATE" ? "Yaratildi" : "Tahrirlandi"}</span>
+            <span className="text-gray-100 font-semibold">{text === "DELETE" ? "Ўчирилди" : text === "CREATE" ? "Яратилди" : "Таҳрирланди"}</span>
         ),
       },
   ];
@@ -117,12 +117,12 @@ const ProductHistory = () => {
 
   return (
     <div className="p-5">
-      <div onClick={() => navigate(-1)} className="flex text-gray-100 mb-5 text-[20px] cursor-pointer font-semibold"><GrFormPreviousLink  className="text-[25px]"/> Orqaga </div>
+      <div onClick={() => navigate(-1)} className="flex text-gray-100 mb-5 text-[20px] cursor-pointer font-semibold"><GrFormPreviousLink  className="text-[25px]"/> Орқага </div>
       <div className="flex justify-between items-center mb-5">
-        <div className="text-3xl font-bold  text-gray-100">Tahrirlangan mahsulotlar</div>
+        <div className="text-3xl font-bold  text-gray-100">Таҳрирланган маҳсулотлар</div>
         <div className="flex gap-3 items-center">
           <Search
-            placeholder="Qidirish"
+            placeholder="Қидириш"
             onSearch={onSearch}
             enterButton
             className="custom-search"

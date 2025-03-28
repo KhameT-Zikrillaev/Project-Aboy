@@ -38,13 +38,12 @@ export default function CashregisterDetailes() {
     const { mutate, isLoading: isSending } = useApiMutation({
         url: 'cash-transaction/daily-report',
         method: 'POST',
-        onSuccess: (data) => {
-            toast.success('Kassa muvaffaqiyatli yopildi!');
+        onSuccess: () => {
+            toast.success('Касса муваффақиятли ёпилди!');
             refetchCashRegister(); // Обновляем данные после закрытия кассы
         },
-        onError: (error) => {
-            toast.error(`Xatolik: ${error.message || 'Kassa yopishda xatolik'}`);
-            console.error('Xatolik: ', error);
+        onError: () => {
+            toast.error('Касса ёпишда хатолик');
         }
     });
 
@@ -61,8 +60,9 @@ export default function CashregisterDetailes() {
                     refetchCashRegister({ force: true }); // Обновляем данные после закрытия кассы
                 }, 2000);
             },
-            onError: (error) => {
-                toast.error(`Xatolik: ${error.message || 'Kassa yopishda xatolik'}`);
+            onError: () => {
+                toast.error('Касса ёпишда хатолик');
+        
             }
         });
     };
@@ -78,7 +78,7 @@ export default function CashregisterDetailes() {
                 ) : (
                     <>
                         {!cashRegisterData?.data?.isActive ? (
-                            <div className="text-white text-lg">Kassa yopildi</div>
+                            <div className="text-white text-lg">Касса ёпилди</div>
                         ) : (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full px-4">
                                 {currentData?.map((item) => (
@@ -116,7 +116,7 @@ export default function CashregisterDetailes() {
                         loading={isSending}
                         disabled={isSending}
                     >
-                        Kassa yopish
+                        Касса ёпиш
                     </Button>
                 )}
             </div>

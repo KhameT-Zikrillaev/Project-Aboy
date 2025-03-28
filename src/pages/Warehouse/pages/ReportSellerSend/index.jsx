@@ -52,7 +52,7 @@ export default function ReportSellerSend() {
         <SearchForm
           data={filteredData}
           name=""
-          title="Sotuvchilar"
+          title="Сотувчилар"
           showDatePicker={false}
           onSearch={handleSearch}
         />
@@ -65,7 +65,7 @@ export default function ReportSellerSend() {
           <>
             {filteredBySearch?.length > 0 ? (
               <div className="grid grid-cols-2 gap-4 w-full">
-                {filteredBySearch.slice(0, visibleDistricts).map((district) => (
+                {filteredBySearch?.slice(0, visibleDistricts).map((district) => (
                   <Link
                     key={district.id}
                     to={`/warehouse/report-seller-send/${district.name}`}
@@ -79,7 +79,7 @@ export default function ReportSellerSend() {
               </div>
             ) : (
               <div className="col-span-2 text-center text-gray-500">
-                Hech narsa yo'q
+                Ҳеч нарса йўқ
               </div>
             )}
           </>
@@ -91,7 +91,7 @@ export default function ReportSellerSend() {
               onClick={loadMoreDistricts}
               className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
             >
-              Yana
+              Яна
             </button>
           </div>
         )}

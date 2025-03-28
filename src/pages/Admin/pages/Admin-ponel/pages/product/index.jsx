@@ -46,10 +46,10 @@ const Product = () => {
     method: "DELETE",
     onSuccess: () => {
       refetch();
-      toast.success("Mahsulot muvaffaqiyatli o'chirildi!");
+      toast.success("Маҳсулот муваффақиятли ўчирилди!");
     },
     onError: () => {
-      toast.error("Mahsulotni o'chirishda xatolik yuz berdi");
+      toast.error("Маҳсулотни ўчиришда хатолик юз берди");
     },
   });
 
@@ -134,7 +134,7 @@ const Product = () => {
       width: 70,
     },
     {
-      title: "Artikul",
+      title: "Артикул",
       dataIndex: "article",
       key: "article",
       render: (text) => (
@@ -142,7 +142,7 @@ const Product = () => {
       ),
     },
     {
-      title: "Partiya",
+      title: "Партия",
       dataIndex: "batch_number",
       key: "batch_number",
       render: (text) => (
@@ -150,7 +150,7 @@ const Product = () => {
       ),
     },
     {
-      title: "Rulon soni",
+      title: "Рулон сони",
       dataIndex: "quantity",
       key: "quantity",
       render: (text) => (
@@ -158,7 +158,7 @@ const Product = () => {
       ),
     },
     {
-      title: "Narxi",
+      title: "Нархи",
       dataIndex: "price",
       key: "price",
       render: (text) => (
@@ -166,7 +166,7 @@ const Product = () => {
       ),
     },
     {
-      title: "Rasm",
+      title: "Расм",
       dataIndex: "image_url",
       key: "image_url",
       render: (text) => (
@@ -177,7 +177,7 @@ const Product = () => {
       ),
     },
     {
-      title: "Actions",
+      title: "Ҳаракатлар",
       key: "actions",
       render: (_, record) => (
         <Space size="middle">
@@ -188,10 +188,10 @@ const Product = () => {
             onClick={() => handleEdit(record)}
           />
           <Popconfirm
-            title="O‘chirishni tasdiqlaysizmi?"
+            title="Ўчиришни тасдиқлайсизми?"
             onConfirm={() => handleDelete(record?.id)}
-            okText="Ha"
-            cancelText="Yo‘q"
+            okText="Ҳа"
+            cancelText="Йўқ"
           >
             <Button
               type="primary"
@@ -209,22 +209,22 @@ const Product = () => {
     <div className="p-5">
       
       <div className="flex justify-between items-center mb-5">
-        <div className="text-3xl font-bold  text-gray-100">Mahsulotlar</div>
+        <div className="text-3xl font-bold  text-gray-100">Маҳсулотлар</div>
         <div className="flex gap-3 items-center">
         <Select
             value={warehouseId}
-            placeholder="Ombor tanlang"
+            placeholder="Омбор танланг"
             className="custom-select-filter"
             onChange={handleChange}
             dropdownClassName="custom-dropdown"
           >
-            <Option value="">Hammasi</Option>
+            <Option value="">Ҳаммаси</Option>
            {warehouseData?.data?.warehouses?.map((item) => (
              <Option value={item.id}>{item.name}</Option>
            ))}
           </Select>
           <Search
-            placeholder="Qidirish"
+            placeholder="Қидириш"
             onSearch={onSearch}
             enterButton
             className="custom-search"
@@ -242,7 +242,7 @@ const Product = () => {
             className="hover:bg-[#0056b3] hover:border-[#004494] focus:bg-[#004494] "
             onClick={() => showModal("add")}
           >
-            Qo'shish
+            Қўшиш
           </Button>
           <Button
             type="primary"
@@ -257,7 +257,7 @@ const Product = () => {
             className="hover:bg-[#0056b3] hover:border-[#004494] focus:bg-[#004494] "
             onClick={() => navigate("/admin/admin-panel/product-edit-history")}
           >
-            Mahsulotlar tarixi
+            Маҳсулотлар тарихи
           </Button>
         </div>
       </div>
@@ -288,7 +288,7 @@ const Product = () => {
         isOpen={isModalOpen}
         onClose={onClose}
         title={
-          formType === "add" ? "Mahsulot qo'shish" : "Mahsulotni tahrirlash"
+          formType === "add" ? "Маҳсулот қўшиш" : "Маҳсулотни таҳрирлаш"
         }
       >
         {formType === "add" ? (

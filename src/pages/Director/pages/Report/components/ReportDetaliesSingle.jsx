@@ -4,7 +4,6 @@ import { useLocation } from "react-router-dom";
 import bgsklad from "@/assets/images/bg-sklad.png";
 import SearchFormStartEnd from "@/components/SearchFormStartEnd/SearchFormStartEnd";
 import useFetch from "@/hooks/useFetch";
-import useUserStore from "@/store/useUser";
 import ReportCard from "@/components/reportCard";
 
 export default function ReportDetaliesSingle() {
@@ -14,7 +13,6 @@ export default function ReportDetaliesSingle() {
   
   const location = useLocation();
   const shopId = location.state?.shopId;
-  const { user } = useUserStore();
 
   const startDate = selectedDates?.from;
   const endDate = selectedDates?.to;
@@ -26,16 +24,12 @@ export default function ReportDetaliesSingle() {
     { startDate, endDate, page, limit },
     { enabled: isFetchEnabled }
   );
-  console.log(data)
   const handleDateSearch = (from, to) => {
     setSelectedDates({ from, to });
     setPage(1);
   };
 
   // Функция для динамического изменения количества элементов на странице
-  const updateItemsPerPage = () => {
-    return window.innerWidth < 768 ? 4 : 9;
-  };
 
   return (
     <div
@@ -47,14 +41,14 @@ export default function ReportDetaliesSingle() {
       <div className="relative z-10 max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[110px]">
   
         <SearchFormStartEnd 
-          title="Hisobotlar omborlar" 
+          title="Ҳисоботлар омборлар" 
           showDatePicker={true} 
           onSearch={handleDateSearch}
         />
         
         {!startDate || !endDate ? (
           <p className="text-center text-white text-[20px] pt-14">
-            Iltimos, sanani tanlang
+            Илтимос, санани танланг
           </p>
         ) : isLoading ? (
           <div className="flex justify-center items-center h-64 w-full">
@@ -83,7 +77,7 @@ export default function ReportDetaliesSingle() {
           </>
         ) : (
           <Empty 
-            description={<span className="text-white">Ma'lumot topilmadi</span>} 
+            description={<span className="text-white">Маълумот топилмади</span>} 
             className="my-12"
           />
         )}

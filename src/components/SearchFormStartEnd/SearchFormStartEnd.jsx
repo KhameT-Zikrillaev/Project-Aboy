@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { DatePicker } from 'antd'; 
-import { FaWarehouse, FaChartLine,FaListAlt, FaBox,FaUserTie} from "react-icons/fa";
+import { FaChartLine} from "react-icons/fa";
 import { CloseCircleOutlined } from '@ant-design/icons'; 
 import dayjs from 'dayjs';
 
@@ -41,7 +41,7 @@ const SearchFormStartEnd = ({ onSearch, title, showDatePicker = true }) => {
             value={dateRange}
             format="DD/MM/YYYY"
             className="custom-datepicker"
-            placeholder={["Boshlanish sanasi", "Tugash sanasi"]}
+            placeholder={["Бошланиш санаси", "Тугаш санаси"]}
             style={{ backgroundColor: "#17212b" }}
           />
         )}
@@ -49,7 +49,7 @@ const SearchFormStartEnd = ({ onSearch, title, showDatePicker = true }) => {
           <button 
             onClick={handleClear} 
             className="flex items-center justify-center bg-blue-600 text-white p-2 rounded-lg"
-            title="Tozalash"
+            title="Тозалаш"
           >
             <CloseCircleOutlined />
           </button>

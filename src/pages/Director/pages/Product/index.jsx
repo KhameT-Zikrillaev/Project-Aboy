@@ -51,7 +51,7 @@ export default function DirectorProduct() {
       <SearchForm 
         data={filteredData} 
         name="" 
-        title="Omborlar" 
+        title="Омборлар" 
         showDatePicker={false} 
         onSearch={handleSearch} 
       />
@@ -76,7 +76,7 @@ export default function DirectorProduct() {
         </div>
       ) : (
         <div className="flex justify-center items-center h-[300px] text-gray-400">
-          Ombor topilmadi
+          Омбор топилмади
         </div>
       )}
       
@@ -86,7 +86,7 @@ export default function DirectorProduct() {
             onClick={loadMoreDistricts}
             className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
           >
-            Yana
+            Яна
           </button>
         </div>
       )}

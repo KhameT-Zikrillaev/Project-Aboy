@@ -34,13 +34,13 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
       reset(); // Formani tozalash
       onClose();
       refetch();
-      toast.success("Mahsulot muvaffaqiyatli yangilandi!");
+      toast.success("Маҳсулот муваффақиятли янгиланди!");
     },
     onError: (error) => {
       if (error?.response?.data?.message === "This product already exists") {
-        toast.error("Bunday partiyali mahsulot mavjud");
+        toast.error("Бундай партияли маҳсулот мавжуд");
       } else {
-        toast.error("Mahsulotni yangilashda xatolik yuz berdi");
+        toast.error("Маҳсулотни янгилашда хатолик юз берди");
       }
     },
   });
@@ -55,7 +55,7 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
   
     // Agar o'zgarish bo'lmasa, API chaqirmaslik
     if (Object.keys(updatedFields).length === 0) {
-      toast.info("Hech qanday o'zgarish kiritilmadi.");
+      toast.info("Ҳеч қандай ўзгариш киритилмади.");
       return;
     }
   
@@ -82,17 +82,17 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
       <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
         {/* Ombor nomi */}
         <Form.Item
-          label={<span className="text-gray-100 font-semibold">Artikul</span>}
+          label={<span className="text-gray-100 font-semibold">Артикул</span>}
           validateStatus={errors.article ? "error" : ""}
           help={errors.article?.message}
         >
           <Controller
             name="article"
             control={control}
-            rules={{ required: "Artikul majburiy" }}
+            rules={{ required: "Артикул мажбурий" }}
             render={({ field }) => (
               <Input
-                placeholder="Artikulni kiriting"
+                placeholder="Артикулни киритинг"
                 className="custom-input"
                 {...field}
               />
@@ -101,17 +101,17 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
         </Form.Item>
 
         <Form.Item
-          label={<span className="text-gray-100 font-semibold">Partiya</span>}
+          label={<span className="text-gray-100 font-semibold">Партия</span>}
           validateStatus={errors.batch_number ? "error" : ""}
           help={errors.batch_number?.message}
         >
           <Controller
             name="batch_number"
             control={control}
-            rules={{ required: "Partiya majburiy" }}
+            rules={{ required: "Партия мажбурий" }}
             render={({ field }) => (
               <Input
-                placeholder="Partiyani kiriting"
+                placeholder="Партияни киритинг"
                 className="custom-input"
                 {...field}
               />
@@ -119,17 +119,17 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
           />
         </Form.Item>
         <Form.Item
-          label={<span className="text-gray-100 font-semibold">Narxi ($)</span>}
+          label={<span className="text-gray-100 font-semibold">Нархи ($)</span>}
           validateStatus={errors.price ? "error" : ""}
           help={errors.price?.message}
         >
           <Controller
             name="price"
             control={control}
-            rules={{ required: "Narxi majburiy" }}
+            rules={{ required: "Нархи мажбурий" }}
             render={({ field }) => (
               <Input
-                placeholder="Narxini kiriting"
+                placeholder="Нархини киритинг"
                 type="number"
                 className="custom-input"
                 {...field}
@@ -179,18 +179,18 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
           />
         </Form.Item> */}
         <Form.Item
-          label={<span className="text-gray-100 font-semibold">Izoh</span>}
+          label={<span className="text-gray-100 font-semibold">Изоҳ</span>}
           validateStatus={errors.comment ? "error" : ""}
           help={errors.comment?.message}
         >
           <Controller
             name="comment"
             control={control}
-            rules={{ required: "Izoh majburiy" }}
+            rules={{ required: "Изоҳ мажбурий" }}
             render={({ field }) => (
               <TextArea
                 rows={4}
-                placeholder="Izohni kiriting"
+                placeholder="Изоҳни киритинг"
                 className="custom-input"
                 {...field}
               />
@@ -214,7 +214,7 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
               width: "100%",
             }}
           >
-            Tahrirlash
+            Таҳрирлаш
           </Button>
         </Form.Item>
       </Form>

@@ -21,7 +21,7 @@ const SearchFormCustom = ({
       <div className="flex flex-col md:flex-row gap-3 items-center">
         <div className="flex items-center gap-2 w-full">
           <Search
-            placeholder="Qidirish"
+            placeholder="Қидириш"
             enterButton
             className="custom-search max-w-md"
             onSearch={onSearch}

@@ -50,7 +50,7 @@ export default function CashRegister() {
       <SearchForm 
         data={shops?.data?.shops} 
         name="" 
-        title="Sotuvchilar" 
+        title="Сотувчилар" 
         showDatePicker={false} 
         onSearch={handleSearchResults} 
       />
@@ -74,7 +74,7 @@ export default function CashRegister() {
             ))
           : (
             <div className="col-span-2 text-center text-gray-500">
-              Ma'lumotlar topilmadi
+              Маълумотлар топилмади
             </div>
           )}
         </div>
@@ -85,7 +85,7 @@ export default function CashRegister() {
             onClick={loadMoreDistricts}
             className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
           >
-            Yana
+            Яна
           </button>
         </div>
       )}

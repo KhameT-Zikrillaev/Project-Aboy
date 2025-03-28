@@ -23,10 +23,7 @@ export default function Vitrina() {
       enabled: !!id, 
     }
   );
-  // Отладочный вывод структуры данных
 
-  
-  // Update filteredData when data changes
   useEffect(() => {
     if (data?.data) {
       setFilteredData(data?.data);
@@ -66,7 +63,7 @@ export default function Vitrina() {
         <SearchForm
           data={data?.data}
           name=""
-          title="Vitrina"
+          title="Витрина"
           showDatePicker={false}
           onSearch={handleSearchResults}
         />
@@ -80,7 +77,7 @@ export default function Vitrina() {
           <>
               {filteredData?.length === 0 ? (
               <div className="text-white text-lg">
-                Tovar topilmadi
+                Товар топилмади
               </div>
             ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full px-4">
@@ -102,7 +99,7 @@ export default function Vitrina() {
                 <div className="flex flex-col gap-2">
                   <h3 className="text-lg font-semibold text-white">{item?.article}</h3>
                   <Tag color="blue">
-                    Part: <span className="text-red-500">{item?.batch_number}</span>
+                  Парт: <span className="text-red-500">{item?.batch_number}</span>
                   </Tag>
                   <h4 className="text-sm font-semibold text-white">
                     {item?.price +" $" || "No price"}

@@ -39,7 +39,7 @@ export default function WarehouseOrderProducts() {
       <SearchForm
         data={filteredData}
         name=""
-        title="Omborlar ro'yxati"
+        title="Омборлар рўйхати"
         showDatePicker={false}
         onSearch={handleSearch}
       />
@@ -68,7 +68,7 @@ export default function WarehouseOrderProducts() {
             onClick={loadMoreDistricts}
             className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
           >
-            Yana
+            Яна
           </button>
         </div>
       )}

@@ -84,7 +84,7 @@ export default function Warehouse() {
       width: 70,
     },
     {
-      title: "Artikul",
+      title: "Артикул",
       dataIndex: "article",
       key: "article",
       render: (text) => (
@@ -92,7 +92,7 @@ export default function Warehouse() {
       ),
     },
     {
-      title: "Partiya",
+      title: "Партия",
       dataIndex: "batch_number",
       key: "batch_number",
       render: (text) => (
@@ -100,7 +100,7 @@ export default function Warehouse() {
       ),
     },
     {
-      title: "Rulon soni",
+      title: "Рулон сони",
       dataIndex: "quantity",
       key: "quantity",
       render: (text) => (
@@ -108,7 +108,7 @@ export default function Warehouse() {
       ),
     },
     {
-      title: "Narxi",
+      title: "Нархи",
       dataIndex: "price",
       key: "price",
       render: (text) => (
@@ -116,7 +116,7 @@ export default function Warehouse() {
       ),
     },
     {
-      title: "Rasm",
+      title: "Расм",
       dataIndex: "image_url",
       key: "image_url",
       render: (text) => (
@@ -133,7 +133,7 @@ export default function Warehouse() {
       ),
     },
     {
-      title: "Vitrinadagi mahsulot",
+      title: "Витринадаги маҳсулот",
       dataIndex: "quantity",
       render: (text) => (
         <span className="text-gray-100 font-semibold">{text}</span>
@@ -149,7 +149,7 @@ export default function Warehouse() {
       <div className="absolute inset-0 bg-black/50 backdrop-blur-md z-0"></div>
 
       <div className="relative z-0 max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[120px]">
-        <SearchFormCustom title={"Mahsulotlar"} onSearch={onSearch} />
+        <SearchFormCustom title={"Маҳсулотлар"} onSearch={onSearch} />
         <div className="text-gray-100 w-full">
           <Table
             columns={columns}

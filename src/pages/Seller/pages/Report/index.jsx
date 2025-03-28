@@ -10,10 +10,7 @@ const ReportDetailes = () => {
   const [selectedDates, setSelectedDates] = useState({ from: null, to: null });
   const [page, setPage] = useState(1);
   const limit = 10;
-  
-  const { name } = useParams();
   const shopId = sessionStorage.getItem("shopId"); 
-
   const startDate = selectedDates?.from;
   const endDate = selectedDates?.to;
   const isFetchEnabled = !!(shopId && startDate && endDate);
@@ -34,13 +31,13 @@ const ReportDetailes = () => {
     <div className="mt-[120px] px-2">
         <div className="relative max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[110px]">
       <SearchFormStartEnd
-        title={`Hisobotlar`}
+        title={`Ҳисоботлар`}
         onSearch={handleDateSearch}
       />
 
       {!startDate || !endDate ? (
         <p className="text-center text-gray-500 text-[20px] pt-14">
-          Iltimos, sanani tanlang
+         Илтимос, санани танланг
         </p>
       ) : isLoading ? (
         <div className="flex justify-center mt-20">
@@ -64,7 +61,7 @@ const ReportDetailes = () => {
           </div>
         </div>
       ) : (
-        <p className="text-center text-gray-500 mt-4">Hech narsa yo‘q</p>
+        <p className="text-center text-gray-500 mt-4">Ҳеч нарса йўқ</p>
       )}
     </div>
     </div>

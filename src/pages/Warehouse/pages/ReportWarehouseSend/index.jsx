@@ -81,7 +81,7 @@ export default function ReportWarehouseSend() {
         <SearchFormStartEnd
           data={data?.data} 
           name="" 
-          title="Hisobotlar omborlar" 
+          title="Ҳисоботлар омборлар" 
           showDatePicker={true} 
           onSearch={handleSearch} 
           className="w-full mb-6"
@@ -94,7 +94,7 @@ export default function ReportWarehouseSend() {
         ) : filteredData.length === 0 ? (
           <Empty 
             description={
-              <span className="text-white">Ma'lumot topilmadi</span>
+              <span className="text-white">Маълумот топилмади</span>
             } 
             className="my-12"
           />

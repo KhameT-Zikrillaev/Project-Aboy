@@ -32,15 +32,15 @@ const EditSeller = ({ onClose, sellerSingleData, refetch }) => {
     onSuccess: () => {
       onClose();
       refetch();
-      toast.success("Magazin muvaffaqiyatli yangilandi!");
+      toast.success("Магазин муваффақиятли янгиланди!");
     },
     onError: (error) => {
       if(
         error?.response?.data?.message === "Shop with this name already exists"
       ){
-        toast.error("Bunday magazin nomi mavjud");
+        toast.error("Бундай магазин номи мавжуд");
       }else {
-        toast.error("Magazini yangilashda xatolik yuz berdi");
+        toast.error("Магазини янгилашда хатолик юз берди");
       }
     },
   });
@@ -55,7 +55,7 @@ const EditSeller = ({ onClose, sellerSingleData, refetch }) => {
     
         // Agar hech qanday o'zgarish bo'lmasa, zapros yubormaslik
         if (Object.keys(changedValues).length === 0) {
-          toast.info("Hech qanday o'zgarish qilinmadi");
+          toast.info("Ҳеч қандай ўзгариш қилинмади");
           return;
         }
     
@@ -68,7 +68,7 @@ const EditSeller = ({ onClose, sellerSingleData, refetch }) => {
         {/* Ombor nomi */}
         <Form.Item
           label={
-            <span className="text-gray-100 font-semibold">Magazin nomi</span>
+            <span className="text-gray-100 font-semibold">Магазин номи</span>
           }
           validateStatus={errors.name ? "error" : ""}
           help={errors.name?.message}
@@ -76,10 +76,10 @@ const EditSeller = ({ onClose, sellerSingleData, refetch }) => {
           <Controller
             name="name"
             control={control}
-            rules={{ required: "Magazin nomi majburiy" }}
+            rules={{ required: "Магазин номи мажбурий" }}
             render={({ field }) => (
               <Input
-                placeholder="Magazin nomini kiriting"
+                placeholder="Магазин номини киритинг"
                 className="custom-input"
                 {...field}
               />
@@ -88,18 +88,18 @@ const EditSeller = ({ onClose, sellerSingleData, refetch }) => {
         </Form.Item>
 
         <Form.Item
-          label={<span className="text-gray-100 font-semibold">Omborlar</span>}
+          label={<span className="text-gray-100 font-semibold">Омборлар</span>}
           validateStatus={errors.warehouse_id ? "error" : ""}
           help={errors.warehouse_id?.message}
         >
           <Controller
             name="warehouse_id"
             control={control}
-            rules={{ required: "Ombor majburiy" }}
+            rules={{ required: "Омбор мажбурий" }}
             render={({ field }) => (
               <Select
                 {...field}
-                placeholder="Ombor tanlang"
+                placeholder="Омбор танланг"
                 className="custom-select"
                 onChange={(value) => field.onChange(value)}
                 dropdownClassName="custom-dropdown"
@@ -130,7 +130,7 @@ const EditSeller = ({ onClose, sellerSingleData, refetch }) => {
               width: "100%",
             }}
           >
-            Tahrirlash
+            Таҳрирлаш
           </Button>
         </Form.Item>
       </Form>

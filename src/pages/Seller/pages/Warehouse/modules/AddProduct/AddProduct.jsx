@@ -19,24 +19,22 @@ const AddProduct = ({ onClose, product }) => {
   const idWarehouse = user?.shop?.warehouse_id; // warehouseId
   const idShop = user?.shop?.id; // shopID
 
- 
-
   const { mutate, isLoading } = useApiMutation({
     url: "shop-request/send-request",
     method: "POST",
     onSuccess: () => {
       reset(); // Formani tozalash
       onClose();
-      toast.success("Buyurtma berildi");
+      toast.success("Буюртма берилди");
     },
     onError: () => {
-      toast.error("Buyutma berishda xatolik!");
+      toast.error("Буютма беришда хатолик!");
     },
   });
 
   const onSubmit = (data) => {
     if (data?.quantity > product?.quantity) {
-      message.error(`Max ${product?.quantity} ta.`);
+      message.error(`Мах ${product?.quantity} та.`);
       return;
     }
   
@@ -51,9 +49,7 @@ const AddProduct = ({ onClose, product }) => {
         }
       ]
     };
-  
     mutate(requestBody); // Отправляем запрос на бекенд
-  
   };
   
 
@@ -77,47 +73,47 @@ const AddProduct = ({ onClose, product }) => {
         {product && (
           <Form.Item
             label={
-              <span className="text-gray-100 font-semibold">Tovar nomi</span>
+              <span className="text-gray-100 font-semibold">Товар номи</span>
             }
           >
             <img  crossOrigin="anonymous" className="h-48 w-full bg-cover cursor-pointer bg-center rounded-t-lg" src={product?.image_url} alt=""/>
             <h3 className="text-gray-100 font-semibold">{product?.article}</h3>
             <p className="text-gray-100 font-semibold">
               {" "}
-              Part:{" "}
+              Партия:{" "}
               <span className="text-red-500">{product?.batch_number}</span>
             </p>
             <span className="text-gray-100 font-semibold">
-              {product?.quantity} dona bor omborda
+              {product?.quantity} дона бор омборда
             </span>
           </Form.Item>
         )}
 
         <Form.Item
-          label={<span className="text-gray-100 font-semibold">Soni</span>}
+          label={<span className="text-gray-100 font-semibold">Сони</span>}
           validateStatus={errors.quantity ? "error" : ""}
           help={
             errors.quantity?.message ||
-            (quantity > product?.quantity && `Max ${product?.quantity} ta`)
+            (quantity > product?.quantity && `Max ${product?.quantity} та.`)
           }
         >
           <Controller
             name="quantity"
             control={control}
             rules={{
-              required: "Sonni kiriting",
+              required: "Сонни киритинг",
               max: {
                 value: product?.quantity, // Максимум product.stock
-                message: `Max ${product?.quantity} ta`,
+                message: `Max ${product?.quantity} та.`,
               },
               min: {
                 value: 1,
-                message: "Min 1 ta",
+                message: "Мин 1 та.",
               },
             }}
             render={({ field }) => (
               <Input
-                placeholder="Sonnini kiriting"
+                placeholder="Соннини киритинг"
                 className="custom-input"
                 {...field}
                 onChange={handleQuantityChange} // Обработчик для ограничения ввода
@@ -151,7 +147,7 @@ const AddProduct = ({ onClose, product }) => {
               (e.currentTarget.style.backgroundColor = "#364153")
             }
           >
-            Buyurtma berish
+            Буюртма бериш
           </Button>
         </Form.Item>
       </Form>

@@ -42,7 +42,6 @@ export default function ReportDetaliesSellers() {
         return !isUserShop; // Возвращаем true, если имя пользователя НЕ содержится в имени склада
       });
       
-      console.log("Фильтрованные склады:", filtered);
       setFilteredData(filtered);
       setFilteredBySearch(filtered); // Изначально устанавливаем то же самое данные для поиска
     } else {
@@ -62,7 +61,7 @@ export default function ReportDetaliesSellers() {
       <SearchForm 
         data={filteredData} 
         name="" 
-        title="Sotuvchilar" 
+        title="Сотувчилар" 
         showDatePicker={false} 
         onSearch={handleSearch} 
       />
@@ -87,7 +86,7 @@ export default function ReportDetaliesSellers() {
         </div>
       ) : (
         <div className="flex justify-center items-center h-[300px] text-gray-400">
-          Ombor topilmadi
+          Омбор топилмади
         </div>
       )}
       
@@ -97,7 +96,7 @@ export default function ReportDetaliesSellers() {
             onClick={loadMoreDistricts}
             className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
           >
-            Yana
+            Яна
           </button>
         </div>
       )}

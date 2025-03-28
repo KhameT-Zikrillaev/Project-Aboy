@@ -7,25 +7,25 @@ import { CloseCircleOutlined } from '@ant-design/icons';
 const { Search } = Input;
 
 const iconMap = {
-  Vitrina: FaListAlt,
-  Vitrinasi: FaListAlt,
-  Tovarlar: FaBox,
-  Tovarlari: FaBox,
-  Sotuvchilar: FaUserTie,
-  Ombori: FaWarehouse,
-  Omborlar: FaWarehouse,
-  Omborxona: FaWarehouse,
-  Hisobot: FaChartLine,
-  Hisobotlar: FaChartLine,
-  Hisobotlari: FaChartLine,
-  Kassa: TbShoppingCartCheck,
-  "Kassa ma'lumotlari": TbShoppingCartCheck,
-  'Omboridigi mahsulotlarni yuborish': FaWarehouse,
-  'Omboridigi mahsulotlarni vitringa yuborish': FaWarehouse,
-  'Hisobotlar omborlar': FaWarehouse,
-  'Hisobotlar sotuvchilar': FaUserTie,
-  "Omborlar ro'yxati": FaWarehouse,
-  "zakaz berish": FaWarehouse,
+  Витрина: FaListAlt,
+  Витринаси: FaListAlt,
+  Товарлар: FaBox,
+  Товарлари: FaBox,
+  Сотувчилар: FaUserTie,
+  Омбори: FaWarehouse,
+  Омборлар: FaWarehouse,
+  Омборхона: FaWarehouse,
+  Ҳисобот: FaChartLine,
+  Ҳисоботлар: FaChartLine,
+  Ҳисоботлари: FaChartLine,
+  Касса: TbShoppingCartCheck,
+  "Касса маълумотлари": TbShoppingCartCheck,
+  'Омборидиги маҳсулотларни юбориш': FaWarehouse,
+  'Омборидиги маҳсулотларни витринга юбориш': FaWarehouse,
+  'Ҳисоботлар омборлар': FaWarehouse,
+  'Ҳисоботлар сотувчилар': FaUserTie,
+  "Омборлар рўйхати": FaWarehouse,
+  "заказ бериш": FaWarehouse,
 };
 
 const SearchForm = ({ 
@@ -59,7 +59,6 @@ const SearchForm = ({
         }
         const dataToFilter = data?.products || data;
         if (!dataToFilter || !Array.isArray(dataToFilter)) {
-          console.warn('No data to filter or data is not an array');
           return;
         }
         const filteredData = dataToFilter.filter(item => {
@@ -118,7 +117,7 @@ const SearchForm = ({
             value={date}
             format="DD/MM/YYYY"
             className="custom-datepicker"
-            placeholder="Sana tanlang"
+            placeholder="Сана танланг"
             style={{
               backgroundColor: "#17212b",
               "--placeholder-color": "white",
@@ -127,7 +126,7 @@ const SearchForm = ({
         )}
         <div className="flex items-center gap-2 w-full">
           <Search
-            placeholder="Qidirish"
+            placeholder="Қидириш"
             onChange={(e) => setSearchTerm(e.target.value)}
             value={searchTerm}
             enterButton
@@ -143,7 +142,7 @@ const SearchForm = ({
               style={{
                 backgroundColor: "#17212b"
               }}
-              title="Tozalash"
+              title="Тозалаш"
             />
           )}
         </div>

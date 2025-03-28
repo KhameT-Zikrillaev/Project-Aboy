@@ -9,8 +9,6 @@ import { SkladCards } from "./data/WarehouseCards.js"; // Импортируем
 import { SellerCards } from "./data/SellerCards.js";
 import { DirectorCards } from "./data/DirectorCards.js";
 import  useUserStore  from "@/store/useUser";
-// import useRequest from "./components/useRequest.jsx";
-// import useRequestShop from "./components/useRequestShop.jsx";
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const {user} = useUserStore();
@@ -23,29 +21,25 @@ export default function Home() {
 
     return () => clearTimeout(timer);
   }, []);
-  // useRequest(user?.role, user?.warehouse?.id);
-  // useRequestShop(user, user?.warehouse?.id);
 
-  // Определяем, какой текст и карточки отображать в зависимости от маршрута
   let userRole = "";
   let cards = [];
 
   if (location.pathname === "/admin") {
-    userRole = "Admin";
+    userRole = "Админ";
     cards = AdminCards;
   } else if (location.pathname === "/warehouse") {
-    userRole = "Omborchi";
+    userRole = "Омборчи";
     cards = SkladCards;
   } else if (location.pathname === "/seller") {
-    userRole = "Sotuvchi";
-    // Если роль пользователя - user, удаляем последний элемент из SellerCards
+    userRole = "Сотувчи";
     cards = user?.role === "user" ? SellerCards.slice(0, -1) : SellerCards;
   } else if (location.pathname === "/director") {
-    userRole = "Direktor";
+    userRole = "Директор";
     cards = DirectorCards;
   } else {
     // Если маршрут не /admin и не /sklad, можно ничего не отображать или показать что-то нейтральное
-    userRole = "User";
+    userRole = "Сотувчи 2";
     cards = []; // Пустой массив, чтобы ничего не отображать
   }
 
@@ -70,8 +64,8 @@ export default function Home() {
 
         {/* Заголовок */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">Boshqaruv paneli</h1>
-          <p className="text-gray-200">Boshqaruv paneliga kirish uchun bo'limni tanlang</p>
+          <h1 className="text-4xl font-bold text-white mb-2">Бошқарув панели</h1>
+          <p className="text-gray-200">Бошқарув панелига кириш учун бўлимни танланг</p>
         </div>
 
         {/* Кнопки */}
@@ -94,7 +88,7 @@ export default function Home() {
         {/* Если карточек нет (например, для других маршрутов) */}
         {cards.length === 0 && (
           <div className="text-center">
-            <p className="text-white">Bu bo'lim uchun ma'lumotlar mavjud emas.</p>
+            <p className="text-white">Бу бўлим учун маълумотлар мавжуд эмас.</p>
           </div>
         )}
       </div>

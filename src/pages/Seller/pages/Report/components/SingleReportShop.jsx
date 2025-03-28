@@ -36,7 +36,7 @@ const SingleReportShop = () => {
             </div>
           </div>
         ) : (
-          <p className="text-center text-gray-500 mt-4">Hech narsa yo‘q</p>
+          <p className="text-center text-gray-500 mt-4">Ҳеч нарса йўқ</p>
         )
       }
     </div>
