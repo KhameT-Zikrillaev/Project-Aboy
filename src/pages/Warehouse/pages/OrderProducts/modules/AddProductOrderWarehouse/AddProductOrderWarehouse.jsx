@@ -24,11 +24,11 @@ const AddProductOrderWarehouse = ({
     method: 'POST',
     onSuccess: () => {
       onClose();
-      toast.success("Buyurtma muvaffaqiyatli berildi!");
+      toast.success("Буюртма муваффақиятли бериш");
       if (onSuccess) onSuccess();
     },
     onError: () => {
-      toast.error("Buyurtma berishda xatolik yuz berdi!");
+      toast.error("Буюртма беришда хатолик юз бериш!");
     },
   });
 
@@ -75,7 +75,7 @@ const AddProductOrderWarehouse = ({
     }
 
     if (selectedItems.length === 0) {
-      message.warning("Hech qanday mahsulot tanlanmagan!");
+      message.warning("Махсулот танланмаган!");
       return;
     }
 
@@ -101,13 +101,13 @@ const AddProductOrderWarehouse = ({
       ),
     },
     {
-      title: "Artikul",
+      title: "Артикул",
       dataIndex: "article",
       key: "article",
       render: (text) => <span className="text-gray-100">{text}</span>,
     },
     {
-      title: "Partiya",
+      title: "Партия",
       dataIndex: "batch_number",
       key: "batch_number",
       render: (text) => (
@@ -117,14 +117,14 @@ const AddProductOrderWarehouse = ({
       ),
     },
     {
-      title: "Mavjud",
+      title: "Мавjud",
       key: "initialQuantity",
       render: (_, record) => (
         <span className="text-gray-100">{record.initialQuantity} ta</span>
       ),
     },
     {
-      title: "Miqdor",
+      title: "Миқдори",
       key: "quantity",
       render: (_, record) => (
         <div className="flex items-center gap-2">
@@ -132,11 +132,11 @@ const AddProductOrderWarehouse = ({
             name={`quantity-${record.id}`}
             control={control}
             rules={{
-              required: "Miqdorni kiriting",
-              min: { value: 1, message: "Kamida 1" },
+              required: "Миқдори киритинг",
+              min: { value: 1, message: "Мин 1" },
               max: {
                 value: record.initialQuantity,
-                message: `Maksimum ${record.initialQuantity}`,
+                message: `Макс ${record.initialQuantity}`,
               },
             }}
             render={({ field }) => (
@@ -164,7 +164,7 @@ const AddProductOrderWarehouse = ({
       ),
     },
     {
-      title: "Harakat",
+      title: "Харакат",
       key: "action",
       render: (_, record) => (
         <Button
@@ -185,7 +185,7 @@ const AddProductOrderWarehouse = ({
   return (
     <div className="p-4 bg-[#1a202c] rounded-lg">
       <h2 className="text-white text-lg font-semibold mb-4">
-        {warehouseName} omboriga buyurtma
+        {warehouseName} омборига буюртма
       </h2>
       
       {loading ? (
@@ -208,7 +208,7 @@ const AddProductOrderWarehouse = ({
             locale={{
               emptyText: (
                 <div className="text-white py-4">
-                  Tanlangan mahsulotlar mavjud emas
+                  Танланган махсулотлар мавжуд эмес
                 </div>
               ),
             }}
@@ -237,7 +237,7 @@ const AddProductOrderWarehouse = ({
                   (e.currentTarget.style.backgroundColor = "#364153")
                 }
               >
-                {isLoading ? "Jo'natilmoqda..." : "Buyurtma berish"}
+                {isLoading ? "Жўнатилмоқда..." : "Буюртма бериш"}
               </Button>
             </Col>
           </Row>

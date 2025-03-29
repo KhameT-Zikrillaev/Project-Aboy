@@ -150,13 +150,13 @@ export default function ViewDetaliesRemoveProducts() {
       ),
     },
     {
-      title: "Artikul",
+      title: "Артикул",
       dataIndex: "article",
       key: "article",
       render: (text) => <span className="text-gray-100">{text}</span>,
     },
     {
-      title: "Partiya",
+      title: "Партия",
       dataIndex: "batch_number",
       key: "batch_number",
       render: (text) => (
@@ -166,13 +166,13 @@ export default function ViewDetaliesRemoveProducts() {
       ),
     },
     {
-      title: "Narxi ($)",
+      title: "Нархи",
       dataIndex: "price",
       key: "price",
       render: (text) => <span className="text-gray-100">{text}</span>,
     },
     {
-      title: "Rasm",
+      title: "Расм",
       dataIndex: "image_url",
       key: "image_url",
       render: (text) => (
@@ -203,14 +203,14 @@ export default function ViewDetaliesRemoveProducts() {
           data={productsData?.data} 
           onSearch={handleSearchResults} 
           name={name} 
-          title={`${name} vitrinasini o'chirish`} 
+          title={`${name} витринасини ўчириш `} 
           showDatePicker={false} 
         />
         
         <div className='w-full flex justify-between mb-4'>
           <div className="flex items-center justify-end w-full gap-2">
             <span className='bg-gray-700 py-1 px-3 text-white text-sm rounded-lg shadow-lg'>
-              Tanlangan: {selectedProducts.length}
+              Танланган: {selectedProducts.length}
             </span>
             <Button
               type="primary"
@@ -227,7 +227,7 @@ export default function ViewDetaliesRemoveProducts() {
                 if (selectedProducts.length > 0) e.currentTarget.style.backgroundColor = "#364153";
               }}
             >
-              O'chirish
+             Ўчириш 
             </Button>
           </div>
         </div>
@@ -252,7 +252,7 @@ export default function ViewDetaliesRemoveProducts() {
                 }}
               />
             ) : (
-              <div className="text-center text-white text-xl py-10">Malumot topilmadi</div>
+              <div className="text-center text-white text-xl py-10">Маълумот топилмади</div>
             )}
           </div>
         )}

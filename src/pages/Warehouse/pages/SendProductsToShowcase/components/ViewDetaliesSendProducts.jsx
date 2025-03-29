@@ -161,13 +161,13 @@ export default function ViewDetaliesSendProducts() {
       ),
     },
     {
-      title: "Artikul",
+      title: "Артикул",
       dataIndex: "article",
       key: "article",
       render: (text) => <span className="text-gray-100">{text}</span>,
     },
     {
-      title: "Partiya",
+      title: "Партия",
       dataIndex: "batch_number",
       key: "batch_number",
       render: (text) => (
@@ -177,19 +177,19 @@ export default function ViewDetaliesSendProducts() {
       ),
     },
     {
-      title: "Narxi ($)",
-      dataIndex: "price",
-      key: "price",
-      render: (text) => <span className="text-gray-100">{text}</span>,
-    },
-    {
-      title: "Rulon soni",
+      title: "Рулон сони",
       dataIndex: "quantity",
       key: "quantity",
       render: (text) => <span className="text-gray-100">{text} ta</span>,
     },
     {
-      title: "Rasm",
+      title: "Нархи",
+      dataIndex: "price",
+      key: "price",
+      render: (text) => <span className="text-gray-100">{text}</span>,
+    },
+    {
+      title: "Расм",
       dataIndex: "image_url",
       key: "image_url",
       render: (text) => (
@@ -232,12 +232,12 @@ export default function ViewDetaliesSendProducts() {
             style={{ backgroundColor: '#17212b', color: '#fff' }}
             onClick={() => setIsWareHouseOpen(true)}
           >
-            Vitrinani ko'rish
+            Витринани куриш
           </Button>
           
           <div className="flex items-center gap-2">
             <span className='bg-gray-700 py-1 px-3 text-white text-sm rounded-lg shadow-lg'>
-              Tanlangan: {selectedProducts.length}
+              Танланган: {selectedProducts.length}
             </span>
             <Button
               type="primary"
@@ -254,7 +254,7 @@ export default function ViewDetaliesSendProducts() {
                 if (selectedProducts?.length > 0) e.currentTarget.style.backgroundColor = "#364153";
               }}
             >
-              Yuborish
+              Юбориш
             </Button>
           </div>
         </div>
@@ -279,7 +279,7 @@ export default function ViewDetaliesSendProducts() {
                 }}
               />
             ) : (
-              <div className="text-center text-white text-xl py-10">Malumot topilmadi</div>
+              <div className="text-center text-white text-xl py-10">Малумот топилмади</div>
             )}
           </div>
         )}
@@ -311,7 +311,7 @@ export default function ViewDetaliesSendProducts() {
         <ModalComponentContent
           isOpen={isModalOpen}
           onClose={onClose}
-          title={name + " " + "Vitrinasiga yuborish"}
+          title={name + " " + "Витринасига юбориш"}
         >
           <AddProductVitrina
             onClose={onClose}
