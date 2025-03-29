@@ -77,7 +77,7 @@ const AddProductVitrina = ({
       ),
     },
     {
-      title: "Rasm",
+      title: "Расм",
       key: "image",
       width: 100,
       render: (_, record) => (
@@ -92,13 +92,13 @@ const AddProductVitrina = ({
       ),
     },
     {
-      title: "Artikul",
+      title: "Артикул",
       dataIndex: "article",
       key: "article",
       render: (text) => <span className="text-gray-100">{text}</span>,
     },
     {
-      title: "Partiya",
+      title: "Партия",
       dataIndex: "batch_number",
       key: "batch_number",
       render: (text) => (
@@ -108,7 +108,7 @@ const AddProductVitrina = ({
       ),
     },
     {
-      title: "Harakat",
+      title: "Харакат",
       key: "action",
       width: 80,
       render: (_, record) => (
@@ -129,7 +129,7 @@ const AddProductVitrina = ({
   return (
     <div className="p-4 bg-[#1a202c] rounded-lg">
       <h2 className="text-white text-lg font-semibold mb-4">
-        {warehouseName} vitrinasiga yuborish
+        {warehouseName} витринасига юбориш
       </h2>
       
       <Table
@@ -146,7 +146,7 @@ const AddProductVitrina = ({
         locale={{
           emptyText: (
             <div className="text-white py-4">
-              Tanlangan mahsulotlar mavjud emas
+              Танланган товарлар mavjud эмес
             </div>
           ),
         }}
@@ -154,7 +154,7 @@ const AddProductVitrina = ({
 
       <div className="text-center text-white mt-2 mb-4">
         <span>
-          Tanlangan tovarlar soni:{" "}
+          Танланган товарлар сони:{" "}
           <span className="font-bold">{selectedItems?.length}</span>
         </span>
       </div>
@@ -182,7 +182,7 @@ const AddProductVitrina = ({
               (e.currentTarget.style.backgroundColor = "#364153")
             }
           >
-            {isSending ? 'Jo`natilmoqda...' : 'Yuborish'}
+            {isSending ? 'Жунатиш...' : 'Юбориш'}
           </Button>
         </Col>
       </Row>

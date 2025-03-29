@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Button, List, Image, message } from "antd";
+import { Button, Table, Tag, Image, message, Row, Col } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
-import api from "@/services/api"; // Импортируем API на прямую
+import api from "@/services/api";
 
 const DeleteProductVitrina = ({
   onClose,
@@ -12,164 +12,179 @@ const DeleteProductVitrina = ({
   shopId,
 }) => {
   const [selectedItems, setSelectedItems] = useState([]);
-  const [isLoading, setIsLoading] = useState(false); // Добавляем состояние загрузки
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Преобразуем выбранные товары в нужный формат с уникальным ключом
   useEffect(() => {
     if (selectedProducts) {
       const preselectedItems = selectedProducts?.map((item, index) => ({
         ...item,
         key: `${item?.id}-${index}`,
-        quantity: 1, // Устанавливаем количество по умолчанию
+        quantity: 1,
       }));
       setSelectedItems(preselectedItems);
     }
   }, [selectedProducts]);
 
-  // Удаляем товар из списка по уникальному ключу
   const handleRemove = (key) => {
     setSelectedItems((prev) => {
-      const updatedItems = prev?.filter((item) => item.key !== key);
+      const updatedItems = prev?.filter((item) => item?.key !== key);
       if (updatedItems?.length === 0) {
-        if (onSuccess) onSuccess(); // Закрываем, если все товары удалены
+        if (onSuccess) onSuccess();
         onClose();
       }
       return updatedItems;
     });
   };
 
-  // Отправка данных - используем прямой API
   const onSubmit = async () => {
     if (selectedItems?.length === 0) {
-      toast.error("Мижозга етказиб бера олмаян маҳсулотлар танланмаган");
+      message.warning('Танланган товар йўқ');
       return;
     }
-
-    // Проверяем наличие ID магазина
+    
     if (!shopId) {
-      toast.error(
-        "ID магазина (shopId) не указан. Невозможно отправить товары."
-      );
+      message.error('ID магазина (shopId) не указан. Невозможно удалить товары.');
       return;
     }
-
-    // Формируем данные для отправки на бэкенд - только productIds, без shopId
-    const requestData = {
-      productIds: selectedItems?.map((item) => item.id), // Массив ID продуктов
-    };
-
+    
     try {
-      setIsLoading(true); // Начинаем загрузку
+      setIsLoading(true);
+      const requestData = {
+        productIds: selectedItems?.map(item => item.id),
+      };
 
-      // Отправляем DELETE запрос на прямую через API
-      const response = await api({
+      await api({
         url: `Storefront-product/${shopId}`,
         method: "DELETE",
         data: requestData,
       });
 
-      // Успешное завершение
-      toast.success("Товар муваффақиятли ўчирилди");
+      toast.success('Товар муваффақиятли ўчирилди!');
       if (onSuccess) onSuccess();
       onClose();
     } catch (error) {
-      toast.error(`Error: ${error.message || "Failed to delete products"}`);
+      toast.error(`Товар ўчиришда хатолик юз берди: ${error.message}`);
     } finally {
-      setIsLoading(false); // Завершаем загрузку
+      setIsLoading(false);
     }
   };
 
-  return (
-    <div className="flex flex-col h-full">
-      <div className="flex-grow overflow-auto p-4">
-        <div
-          className="mb-4"
-          style={{
-            maxHeight: "400px",
-            overflowY: "auto",
-            backgroundColor: "rgba(23, 33, 43, 0.7)",
-            borderRadius: "8px",
-            padding: "10px",
-          }}
-        >
-          <List
-            dataSource={selectedItems}
-            renderItem={(product) => (
-              <List.Item
-                key={product?.key}
-                style={{
-                  borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-                  padding: "10px 0",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <Image
-                    src={product?.image_url}
-                    alt={product?.article}
-                    width={50}
-                    height={50}
-                    crossOrigin="anonymous"
-                    className="object-cover"
-                    style={{ marginRight: "10px" }}
-                  />
-                  <div className="ml-2">
-                    <div className="text-white font-bold">
-                      {product?.article}
-                    </div>
-                    <div className="text-white">{product?.code}</div>
-                  </div>
-                </div>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <Button
-                    type="text"
-                    size="small"
-                    icon={<CloseOutlined />}
-                    onClick={() => handleRemove(product?.key)}
-                    style={{
-                      color: "#fff",
-                      backgroundColor: "#17212b",
-                      borderRadius: "4px",
-                      width: "28px",
-                      height: "28px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      transition: "background-color 0.2s ease",
-                      marginRight: "10px",
-                    }}
-                    className="hover:bg-red-600"
-                  />
-                </div>
-              </List.Item>
-            )}
-            pagination={{
-              pageSize: 3,
-              className: "custom-pagination",
-              hideOnSinglePage: true, // Скрыть пагинацию, если все элементы помещаются на одной странице
-            }}
-          />
-        </div>
-
-        {/* Количество товаров */}
-        <div className="text-center text-white mt-4">
-          <span>
-            Танланган товарлар сони:{" "}
-            <span className="font-bold">{selectedItems?.length}</span>
-          </span>
-        </div>
-
-        {/* Кнопка отправки */}
+  const columns = [
+    {
+      title: "№",
+      key: "index",
+      width: 50,
+      render: (_, __, index) => (
+        <span className="text-gray-100">{index + 1}</span>
+      ),
+    },
+    {
+      title: "Расм",
+      key: "image",
+      width: 100,
+      render: (_, record) => (
+        <Image
+          src={record?.image_url}
+          alt={record?.article}
+          width={50}
+          height={50}
+          crossOrigin="anonymous"
+          className="object-cover"
+        />
+      ),
+    },
+    {
+      title: "Артикул",
+      dataIndex: "article",
+      key: "article",
+      render: (text) => <span className="text-gray-100">{text}</span>,
+    },
+    {
+      title: "Партия",
+      dataIndex: "batch_number",
+      key: "batch_number",
+      render: (text) => <span className="text-gray-100">{text}</span>,
+    },
+    {
+      title: "Ҳаракат",
+      key: "action",
+      width: 80,
+      render: (_, record) => (
         <Button
-          type="primary"
-          danger
-          onClick={onSubmit}
-          loading={isLoading}
-          disabled={isLoading || selectedItems?.length === 0 || !shopId}
-          style={{ marginTop: 20, width: "100%" }}
-        >
-          {isLoading ? "Ўчириш..." : "Ўчириш"}
-        </Button>
+          type="text"
+          icon={<CloseOutlined />}
+          onClick={() => handleRemove(record.key)}
+          style={{
+            color: "#fff",
+            backgroundColor: "#17212b",
+          }}
+          className="hover:bg-red-600"
+        />
+      ),
+    },
+  ];
+
+  return (
+    <div className="p-4 bg-[#1a202c] rounded-lg">
+      <h2 className="text-white text-lg font-semibold mb-4">
+        {warehouseName} витринадан ўчириш
+      </h2>
+      
+      <Table
+        columns={columns}
+        dataSource={selectedItems}
+        pagination={false}
+        className="custom-table mb-4"
+        rowClassName={() => "custom-row"}
+        bordered
+        style={{
+          background: "rgba(255, 255, 255, 0.1)",
+          backdropFilter: "blur(10px)",
+        }}
+        locale={{
+          emptyText: (
+            <div className="text-white py-4">
+              Танланган маҳсулотлар мавжуд эмас
+            </div>
+          ),
+        }}
+      />
+
+      <div className="text-center text-white mt-2 mb-4">
+        <span>
+          Танланган товарлар сони:{" "}
+          <span className="font-bold">{selectedItems?.length}</span>
+        </span>
       </div>
+
+      <Row justify="end">
+        <Col>
+          <Button
+            type="primary"
+            danger
+            onClick={onSubmit}
+            loading={isLoading}
+            disabled={isLoading || selectedItems?.length === 0 || !shopId}
+            style={{
+              backgroundColor: "#ff4d4f",
+              color: "#fff",
+              fontWeight: "500",
+              padding: "10px 24px",
+              borderRadius: "6px",
+              fontSize: "16px",
+              transition: "background-color 0.3s ease",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.backgroundColor = "#ff7875")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.backgroundColor = "#ff4d4f")
+            }
+          >
+            {isLoading ? 'Ўчирилмоқда...' : 'Ўчириш'}
+          </Button>
+        </Col>
+      </Row>
     </div>
   );
 };

@@ -152,13 +152,13 @@ export default function ViewDetaliesTransferProducts() {
       ),
     },
     {
-      title: "Artikul",
+      title: "Артикул",
       dataIndex: "article",
       key: "article",
       render: (text) => <span className="text-gray-100">{text}</span>,
     },
     {
-      title: "Partiya",
+      title: "Партия",
       dataIndex: "batch_number",
       key: "batch_number",
       render: (text) => (
@@ -168,19 +168,19 @@ export default function ViewDetaliesTransferProducts() {
       ),
     },
     {
-      title: "Narxi ($)",
-      dataIndex: "price",
-      key: "price",
-      render: (text) => <span className="text-gray-100">{text} $</span>,
-    },
-    {
-      title: "Rulon soni",
+      title: "Рулона сони",
       dataIndex: "quantity",
       key: "quantity",
       render: (text) => <span className="text-gray-100">{text} ta</span>,
     },
     {
-      title: "Rasm",
+      title: "Нархи",
+      dataIndex: "price",
+      key: "price",
+      render: (text) => <span className="text-gray-100">{text} $</span>,
+    },
+    {
+      title: "Расм",
       dataIndex: "image_url",
       key: "image_url",
       render: (text) => (
@@ -224,12 +224,12 @@ export default function ViewDetaliesTransferProducts() {
             style={{ backgroundColor: '#17212b', color: '#fff' }}
             onClick={() => setIsWareHouseOpen(true)}
           >
-            Ombordigi mahsulotni ko'rish
+            Омборидиги маҳсулотларни кўrish
           </Button>
           
           <div className="flex items-center gap-2">
             <span className='bg-gray-700 py-1 px-3 text-white text-sm rounded-lg shadow-lg'>
-              Tanlangan: {selectedProducts.length}
+              Танланган: {selectedProducts.length}
             </span>
             <Button
               type="primary"
@@ -246,7 +246,7 @@ export default function ViewDetaliesTransferProducts() {
                 if (selectedProducts.length > 0) e.currentTarget.style.backgroundColor = "#364153";
               }}
             >
-              Yuborish
+              Юбориш
             </Button>
           </div>
         </div>

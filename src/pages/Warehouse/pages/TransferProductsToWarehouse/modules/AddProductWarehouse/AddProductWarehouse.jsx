@@ -76,7 +76,13 @@ const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess, warehouseId
 
   const columns = [
     {
-      title: "Rasm",
+      title: "No",
+      key: "index",
+      width: 50,
+      render: (text, record, index) => index + 1,
+    },
+    {
+      title: "Расм",
       dataIndex: "image_url",
       key: "image",
       width: 100,
@@ -91,14 +97,14 @@ const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess, warehouseId
       ),
     },
     {
-      title: "Artikul",
+      title: "Артикул",
       dataIndex: "article",
       key: "article",
       width: 150,
       render: (text) => <span className="text-gray-100">{text}</span>,
     },
     {
-      title: "Partiya",
+      title: "Партия",
       dataIndex: "batch_number",
       key: "batch_number",
       width: 120,
@@ -109,7 +115,7 @@ const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess, warehouseId
       ),
     },
     {
-      title: "Mavjud",
+      title: "Мавjud",
       key: "initialQuantity",
       width: 100,
       render: (_, record) => (
@@ -117,7 +123,7 @@ const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess, warehouseId
       ),
     },
     {
-      title: "Miqdor",
+      title: "Миқдор",
       key: "quantity",
       width: 180,
       render: (_, record) => (
@@ -126,11 +132,11 @@ const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess, warehouseId
             name={`quantity-${record.id}`}
             control={control}
             rules={{
-              required: "Son kiriting",
-              min: { value: 1, message: "Min 1" },
+              required: "Сонни киритинг",
+              min: { value: 1, message: "Мин 1" },
               max: {
                 value: record.initialQuantity,
-                message: `Max ${record.initialQuantity}`,
+                message: `Макс  ${record.initialQuantity}`,
               },
             }}
             render={({ field }) => (
@@ -169,7 +175,6 @@ const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess, warehouseId
         </div>
       ),
     }
-    
   ];
 
   return (
@@ -181,7 +186,6 @@ const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess, warehouseId
             dataSource={selectedItems}
             rowKey="id"
             pagination={false}
-            
             rowClassName={() => "custom-row"}
             bordered
             style={{
@@ -215,7 +219,7 @@ const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess, warehouseId
                 (e.currentTarget.style.backgroundColor = "#364153")
               }
             >
-              {isSending ? "Yuborish..." : "Yuborish"}
+              {isSending ? "Юбориш..." : "Юбориш"}
             </Button>
           </Col>
         </Row>
