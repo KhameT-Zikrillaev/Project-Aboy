@@ -128,8 +128,6 @@ const ReportDetailesSingle = () => {
     },
   ];
 
-  console.log(data?.data?.transactions[0].order?.items);
-  
 
   return (
     <div className="mt-[120px]">
