@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Table, Pagination, Tag, Button, Spin } from "antd";
+import { Table, Pagination, Tag, Button, Spin, Checkbox, message } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import "antd/dist/reset.css";
 import bgsklad from "../../../../assets/images/bg-sklad.png";
 import SearchForm from "@/components/SearchForm/SearchForm";
-import ModalComponent from "@/components/modal/Modal";
+import ModalComponentContent from "@/components/modal/ModalContent";
 import AddProduct from "./modules/AddProduct/AddProduct";
 import ImageModal from "@/components/modal/ImageModal";
 import useFetch from "@/hooks/useFetch";
@@ -14,13 +14,13 @@ export default function Warehouse() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [filteredData, setFilteredData] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedProducts, setSelectedProducts] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { user } = useUserStore();
   const id = user?.shop?.warehouse_id;
 
-  const { data, isLoading } = useFetch(
+  const { data, isLoading, refetch } = useFetch(
     id ? `warehouse-products/byWarehouse/${id}` : null,
     id ? `warehouse-products/byWarehouse/${id}` : null,
     {},
@@ -31,18 +31,26 @@ export default function Warehouse() {
 
   useEffect(() => {
     if (data?.data?.products) {
-      setFilteredData(data?.data?.products);
+      setFilteredData(
+        data?.data?.products?.map((item) => ({
+          ...item,
+          key: item.id,
+        }))
+      );
     }
   }, [data?.data?.products]);
 
-  const showModal = (product) => {
-    setSelectedProduct(product);
-    setIsModalOpen(true);
+  const showModal = () => {
+    if (selectedProducts.length > 0) {
+      setIsModalOpen(true);
+    } else {
+      message.warning('Hech qanday mahsulot tanlanmagan!');
+    }
   };
 
   const onClose = () => {
     setIsModalOpen(false);
-    setSelectedProduct(null);
+    setSelectedProducts([]);
   };
 
   const updateItemsPerPage = () => {
@@ -55,13 +63,51 @@ export default function Warehouse() {
     return () => window.removeEventListener("resize", updateItemsPerPage);
   }, []);
 
-  const currentData = filteredData?.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
   const handleSearchResults = (results) => {
-    setFilteredData(results);
+    if (Array.isArray(results)) {
+      setFilteredData(results);
+    } else if (results === null || results === undefined) {
+      if (data?.data?.products && Array.isArray(data?.data?.products)) {
+        setFilteredData(
+          data?.data?.products?.map((item) => ({
+            ...item,
+            key: item.id,
+          }))
+        );
+      } else {
+        setFilteredData([]);
+      }
+    } else {
+      setFilteredData([]);
+    }
+  };
+
+  const handleCheckboxChange = (item) => {
+    setSelectedProducts((prev) => {
+      const isSelected = prev.some((product) => product.id === item.id);
+      if (isSelected) {
+        return prev.filter((product) => product.id !== item.id);
+      } else {
+        return [...prev, item];
+      }
+    });
+  };
+
+  const handleSelectAll = () => {
+    if (selectedProducts.length === filteredData.length) {
+      setSelectedProducts([]);
+    } else {
+      setSelectedProducts([...filteredData]);
+    }
+  };
+
+  const resetSelection = () => {
+    setSelectedProducts([]);
+  };
+
+  const handleSuccessSubmit = () => {
+    resetSelection();
+    refetch();
   };
 
   const itemRender = (page, type, originalElement) => {
@@ -84,6 +130,23 @@ export default function Warehouse() {
 
   const columns = [
     {
+      title: (
+        <Checkbox
+          indeterminate={selectedProducts.length > 0 && selectedProducts.length < filteredData.length}
+          checked={selectedProducts.length === filteredData.length && filteredData.length > 0}
+          onChange={handleSelectAll}
+        />
+      ),
+      key: 'selection',
+      width: 50,
+      render: (_, record) => (
+        <Checkbox
+          checked={selectedProducts.some(item => item.id === record.id)}
+          onChange={() => handleCheckboxChange(record)}
+        />
+      ),
+    },
+    {
       title: "№",
       render: (_, __, index) => (
         <span className="text-gray-100 font-semibold">
@@ -93,7 +156,7 @@ export default function Warehouse() {
       width: 50,
     },
     {
-      title: "Artikul",
+      title: "Артикул",
       dataIndex: "article",
       key: "article",
       render: (text) => (
@@ -101,7 +164,7 @@ export default function Warehouse() {
       ),
     },
     {
-      title: "Partiya",
+      title: "Партия",
       dataIndex: "batch_number",
       key: "batch_number",
       render: (text) => (
@@ -111,15 +174,7 @@ export default function Warehouse() {
       ),
     },
     {
-      title: "Narxi ($)",
-      dataIndex: "price",
-      key: "price",
-      render: (text) => (
-        <span className="text-gray-100 font-semibold">{text}</span>
-      ),
-    },
-    {
-      title: "Rulon soni",
+      title: "Рулон сони",
       dataIndex: "quantity",
       key: "quantity",
       render: (text) => (
@@ -127,7 +182,15 @@ export default function Warehouse() {
       ),
     },
     {
-      title: "Rasm",
+      title: "Нархи",
+      dataIndex: "price",
+      key: "price",
+      render: (text) => (
+        <span className="text-gray-100 font-semibold">{text}</span>
+      ),
+    },
+    {
+      title: "Расм",
       dataIndex: "image_url",
       key: "image_url",
       render: (text) => (
@@ -144,32 +207,6 @@ export default function Warehouse() {
         </div>
       ),
       width: 100,
-    },
-    {
-      title: "Harakatlar",
-      key: "action",
-      render: (_, record) => (
-        user?.role === "seller" && (
-          <Button
-            type="primary"
-            onClick={() => showModal(record)}
-            style={{ 
-              backgroundColor: "#364153", 
-              borderColor: "#364153", 
-              fontSize: "12px",
-            }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor = "#2b3445")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.backgroundColor = "#364153")
-            }
-          >
-            Buyurtma berish
-          </Button>
-        )
-      ),
-      width: 150,
     },
   ];
 
@@ -188,7 +225,33 @@ export default function Warehouse() {
           onSearch={handleSearchResults}
         />
 
-        {/* Спиннер для загрузки данных */}
+        {user?.role === "seller" && (
+          <div className='w-full flex justify-end mb-4'>
+            <div className="flex items-center gap-2">
+              <span className='bg-gray-700 py-1 px-3 text-white text-sm rounded-lg shadow-lg'>
+                Танланган: {selectedProducts.length}
+              </span>
+              <Button
+                type="primary"
+                onClick={showModal}
+                disabled={selectedProducts.length === 0}
+                style={{
+                  backgroundColor: selectedProducts.length === 0 ? '#888' : '#364153',
+                  borderColor: '#364153',
+                }}
+                onMouseEnter={(e) => {
+                  if (selectedProducts.length > 0) e.currentTarget.style.backgroundColor = "#2b3445";
+                }}
+                onMouseLeave={(e) => {
+                  if (selectedProducts.length > 0) e.currentTarget.style.backgroundColor = "#364153";
+                }}
+              >
+                Буюртма бериш
+              </Button>
+            </div>
+          </div>
+        )}
+
         {isLoading ? (
           <div className="flex justify-center items-center h-64 w-full">
             <Spin size="large" />
@@ -196,12 +259,15 @@ export default function Warehouse() {
         ) : (
           <>
             {filteredData?.length === 0 ? (
-              <div className="text-white text-lg">Mahsulot topilmadi</div>
+              <div className="text-white text-lg">Маҳсулот топилмади</div>
             ) : (
               <div className="w-full px-2">
                 <Table
                   columns={columns}
-                  dataSource={currentData}
+                  dataSource={filteredData?.slice(
+                    (currentPage - 1) * itemsPerPage,
+                    currentPage * itemsPerPage
+                  )}
                   pagination={false}
                   className="custom-table"
                   rowClassName={() => "custom-row"}
@@ -219,13 +285,18 @@ export default function Warehouse() {
               onClose={() => setSelectedImage(null)}
               imageUrl={selectedImage}
             />
-            <ModalComponent
+            <ModalComponentContent
               isOpen={isModalOpen}
               onClose={onClose}
               title={"Омборга буюртма бериш"}
+              width={800}
             >
-              <AddProduct onClose={onClose} product={selectedProduct} />
-            </ModalComponent>
+              <AddProduct 
+                onClose={onClose} 
+                selectedProducts={selectedProducts} 
+                onSuccess={handleSuccessSubmit}
+              />
+            </ModalComponentContent>
             {filteredData?.length > 0 && (
               <div className="my-2 mb-12 md:mb-0 flex justify-center">
                 <Pagination

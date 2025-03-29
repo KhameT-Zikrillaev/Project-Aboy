@@ -1,143 +1,226 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { Input, Button, Form, message } from "antd";
+import { Button, Table, Tag, Input, Row, Col, message } from "antd";
+import { CloseOutlined } from "@ant-design/icons";
 import useApiMutation from "@/hooks/useApiMutation";
 import { toast } from "react-toastify";
 import useUserStore from "@/store/useUser";
 
-const AddProduct = ({ onClose, product }) => {
-  const {
-    handleSubmit,
-    control,
-    formState: { errors },
-    reset,
-    setValue,
-    watch,
-  } = useForm();
+const AddProduct = ({ onClose, selectedProducts, onSuccess }) => {
+  const [selectedItems, setSelectedItems] = useState([]);
   const { user } = useUserStore();
-  const quantity = watch("quantity"); // Следим за значением количества
-  const idWarehouse = user?.shop?.warehouse_id; // warehouseId
-  const idShop = user?.shop?.id; // shopID
+  const { handleSubmit, control, setValue } = useForm();
 
-  const { mutate, isLoading } = useApiMutation({
+  const { mutate, isLoading: isSending } = useApiMutation({
     url: "shop-request/send-request",
     method: "POST",
     onSuccess: () => {
-      reset(); // Formani tozalash
+      toast.success("Буюртма муваффақиятли юборилди!");
+      if (onSuccess) onSuccess();
       onClose();
-      toast.success("Буюртма берилди");
     },
     onError: () => {
-      toast.error("Буютма беришда хатолик!");
+      toast.error("Буюртма юборишда хатолик!");
     },
   });
 
-  const onSubmit = (data) => {
-    if (data?.quantity > product?.quantity) {
-      message.error(`Мах ${product?.quantity} та.`);
+  useEffect(() => {
+    if (selectedProducts) {
+      const preselectedItems = selectedProducts.map((item) => ({
+        ...item,
+        initialQuantity: item?.quantity || 0,
+        quantity: 1, // Default quantity set to 1
+      }));
+      setSelectedItems(preselectedItems);
+      preselectedItems.forEach((item) => {
+        setValue(`quantity-${item.id}`, 1);
+      });
+    }
+  }, [selectedProducts, setValue]);
+
+  const handleRemove = (id) => {
+    setSelectedItems((prev) => {
+      const updatedItems = prev.filter((item) => item.id !== id);
+      if (updatedItems.length === 0) onClose();
+      return updatedItems;
+    });
+  };
+
+  const handleQuantityChange = (id, value) => {
+    const newQuantity = parseInt(value) || 0;
+    const maxQuantity = selectedItems.find(item => item.id === id)?.initialQuantity || 0;
+    
+    const finalQuantity = Math.min(newQuantity, maxQuantity);
+    
+    setSelectedItems((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, quantity: finalQuantity } : item
+      )
+    );
+    setValue(`quantity-${id}`, finalQuantity);
+  };
+
+  const onSubmit = () => {
+    if (selectedItems.length === 0) {
+      message.warning("Ҳеч қандай маҳсулот танланмаган!");
       return;
     }
-  
-    const requestBody = {
-      shopId: idShop,
-      warehouseId: idWarehouse,
-      items: [
-        {
-          productId: product.id, // Предполагаем, что product.id это идентификатор продукта
-          quantity: data.quantity,
-          remarks: data.remarks || "" // Добавляем remarks, если они есть
-        }
-      ]
+
+    const requestData = {
+      shopId: user?.shop?.id,
+      warehouseId: user?.shop?.warehouse_id,
+      items: selectedItems.map((item) => ({
+        productId: item.id,
+        quantity: item.quantity,
+        remarks: ""
+      })),
     };
-    mutate(requestBody); // Отправляем запрос на бекенд
-  };
-  
 
-  const handleQuantityChange = (e) => {
-    const value = e.target.value.replace(/\D/g, ""); // Удаляем все символы, кроме цифр
-    const maxValue = product?.quantity; // Максимальное значение равно product.stock
-    const parsedValue = parseInt(value, 10);
-
-    if (parsedValue > maxValue) {
-      setValue("quantity", maxValue.toString());
-    } else if (value === "") {
-      setValue("quantity", "");
-    } else {
-      setValue("quantity", value);
-    }
+    mutate(requestData);
   };
 
-  return (
-    <div className="">
-      <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
-        {product && (
-          <Form.Item
-            label={
-              <span className="text-gray-100 font-semibold">Товар номи</span>
-            }
-          >
-            <img  crossOrigin="anonymous" className="h-48 w-full bg-cover cursor-pointer bg-center rounded-t-lg" src={product?.image_url} alt=""/>
-            <h3 className="text-gray-100 font-semibold">{product?.article}</h3>
-            <p className="text-gray-100 font-semibold">
-              {" "}
-              Партия:{" "}
-              <span className="text-red-500">{product?.batch_number}</span>
-            </p>
-            <span className="text-gray-100 font-semibold">
-              {product?.quantity} дона бор омборда
-            </span>
-          </Form.Item>
-        )}
-
-        <Form.Item
-          label={<span className="text-gray-100 font-semibold">Сони</span>}
-          validateStatus={errors.quantity ? "error" : ""}
-          help={
-            errors.quantity?.message ||
-            (quantity > product?.quantity && `Max ${product?.quantity} та.`)
-          }
-        >
+  const columns = [
+    {
+      title: "Расм",
+      dataIndex: "image_url",
+      key: "image",
+      width: 100,
+      render: (image) => (
+        <img 
+          crossOrigin="anonymous"
+          className="h-16 w-16 object-cover rounded"
+          src={image}
+          alt="product"
+          style={{ maxHeight: '64px', maxWidth: '64px' }}
+        />
+      ),
+    },
+    {
+      title: "Артикул",
+      dataIndex: "article",
+      key: "article",
+      width: 150,
+      render: (text) => <span className="text-gray-100">{text}</span>,
+    },
+    {
+      title: "Партия",
+      dataIndex: "batch_number",
+      key: "batch_number",
+      width: 120,
+      render: (text) => (
+        <Tag color="blue" className="text-gray-100">
+          {text}
+        </Tag>
+      ),
+    },
+    {
+      title: "Мавжуд",
+      key: "initialQuantity",
+      width: 100,
+      render: (_, record) => (
+        <span className="text-gray-100">{record.initialQuantity} дона</span>
+      ),
+    },
+    {
+      title: "Миқдор",
+      key: "quantity",
+      width: 180,
+      render: (_, record) => (
+        <div className="flex items-center gap-2">
           <Controller
-            name="quantity"
+            name={`quantity-${record.id}`}
             control={control}
             rules={{
               required: "Сонни киритинг",
+              min: { value: 1, message: "Мин 1" },
               max: {
-                value: product?.quantity, // Максимум product.stock
-                message: `Max ${product?.quantity} та.`,
-              },
-              min: {
-                value: 1,
-                message: "Мин 1 та.",
+                value: record.initialQuantity,
+                message: `Макс ${record.initialQuantity}`,
               },
             }}
             render={({ field }) => (
               <Input
-                placeholder="Соннини киритинг"
-                className="custom-input"
+                type="number"
                 {...field}
-                onChange={handleQuantityChange} // Обработчик для ограничения ввода
-                max={product?.quantity} // Максимальное значение
-                type="number" // Тип поля для мобильных устройств
+                value={record.quantity}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  handleQuantityChange(record.id, value);
+                  field.onChange(value);
+                }}
+                max={record.initialQuantity}
+                min={1}
+                style={{ width: '80px' }}
+                className="text-center"
               />
             )}
           />
-        </Form.Item>
+          <Button
+            type="text"
+            icon={<CloseOutlined />}
+            onClick={() => handleRemove(record.id)}
+            style={{
+              color: "#fff",
+              backgroundColor: "#17212b",
+              borderRadius: "4px",
+              width: "32px",
+              height: "32px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            className="hover:bg-red-600"
+          />
+        </div>
+      ),
+    },
+  ];
 
-        <Form.Item>
+  return (
+    <div className="p-4 bg-[#1a202c] rounded-lg">
+      <h2 className="text-white text-lg font-semibold mb-4">
+        Дўконга буюртма бериш
+      </h2>
+
+      <Table
+        columns={columns}
+        dataSource={selectedItems}
+        rowKey="id"
+        pagination={false}
+        scroll={{ x: true }}
+        rowClassName={() => "custom-row"}
+        bordered
+        style={{
+          background: "rgba(255, 255, 255, 0.05)",
+        }}
+        className="custom-table mb-4"
+        locale={{
+          emptyText: (
+            <div className="text-white py-4">
+              Танланган маҳсулотлар мавжуд эмас
+            </div>
+          ),
+        }}
+      />
+
+      <div className="text-center text-white mb-4">
+        Танланган маҳсулотлар сони: <span className="font-bold">{selectedItems.length}</span>
+      </div>
+
+      <Row justify="end">
+        <Col>
           <Button
             type="primary"
-            htmlType="submit"
-            disabled={quantity > product?.quantity}
-            loading={isLoading}
+            onClick={onSubmit}
+            loading={isSending}
+            disabled={isSending || selectedItems.length === 0}
             style={{
               backgroundColor: "#364153",
               color: "#f3f4f6",
               fontWeight: "500",
-              padding: "15px 20px",
-              borderRadius: "8px",
-              fontSize: "18px",
-              width: "100%",
+              padding: "10px 24px",
+              borderRadius: "6px",
+              fontSize: "16px",
               transition: "background-color 0.3s ease",
             }}
             onMouseEnter={(e) =>
@@ -147,10 +230,10 @@ const AddProduct = ({ onClose, product }) => {
               (e.currentTarget.style.backgroundColor = "#364153")
             }
           >
-            Буюртма бериш
+            {isSending ? "Юборилаётган..." : "Юбориш"}
           </Button>
-        </Form.Item>
-      </Form>
+        </Col>
+      </Row>
     </div>
   );
 };
