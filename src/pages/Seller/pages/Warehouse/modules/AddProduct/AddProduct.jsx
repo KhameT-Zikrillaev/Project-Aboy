@@ -81,6 +81,12 @@ const AddProduct = ({ onClose, selectedProducts, onSuccess }) => {
 
   const columns = [
     {
+      title: "№",
+      key: "index",
+      width: 50,
+      render: (text, record, index) => index + 1,
+    },
+    {
       title: "Расм",
       dataIndex: "image_url",
       key: "image",
@@ -187,7 +193,6 @@ const AddProduct = ({ onClose, selectedProducts, onSuccess }) => {
         dataSource={selectedItems}
         rowKey="id"
         pagination={false}
-        scroll={{ x: true }}
         rowClassName={() => "custom-row"}
         bordered
         style={{

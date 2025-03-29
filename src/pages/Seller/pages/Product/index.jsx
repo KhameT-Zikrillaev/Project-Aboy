@@ -77,7 +77,7 @@ export default function Vitrina() {
       width: 50,
     },
     {
-      title: "Artikul",
+      title: "Артикул",
       dataIndex: "article",
       key: "article",
       render: (text) => (
@@ -85,7 +85,7 @@ export default function Vitrina() {
       ),
     },
     {
-      title: "Partiya",
+      title: "Партия",
       dataIndex: "batch_number",
       key: "batch_number",
       render: (text) => (
@@ -95,7 +95,7 @@ export default function Vitrina() {
       ),
     },
     {
-      title: "Narxi ($)",
+      title: "Нархи",
       dataIndex: "price",
       key: "price",
       render: (text) => (
@@ -103,7 +103,7 @@ export default function Vitrina() {
       ),
     },
     {
-      title: "Rasm",
+      title: "Расм",
       dataIndex: "image_url",
       key: "image_url",
       render: (text) => (
@@ -153,7 +153,7 @@ export default function Vitrina() {
         ) : (
           <>
             {filteredData?.length === 0 ? (
-              <div className="text-white text-lg">Tovar topilmadi</div>
+              <div className="text-white text-lg">Товари топилмади</div>
             ) : (
               <div className="w-full px-2">
                 <Table

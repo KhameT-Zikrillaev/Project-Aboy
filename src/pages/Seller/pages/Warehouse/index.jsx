@@ -186,7 +186,7 @@ export default function Warehouse() {
       dataIndex: "price",
       key: "price",
       render: (text) => (
-        <span className="text-gray-100 font-semibold">{text}</span>
+        <span className="text-gray-100 font-semibold">{text} $</span>
       ),
     },
     {

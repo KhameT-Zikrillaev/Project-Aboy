@@ -76,6 +76,12 @@ const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess, warehouseId
 
   const columns = [
     {
+      title: "No",
+      key: "index",
+      width: 50,
+      render: (text, record, index) => index + 1,
+    },
+    {
       title: "Расм",
       dataIndex: "image_url",
       key: "image",
@@ -169,7 +175,6 @@ const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess, warehouseId
         </div>
       ),
     }
-    
   ];
 
   return (
@@ -181,7 +186,6 @@ const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess, warehouseId
             dataSource={selectedItems}
             rowKey="id"
             pagination={false}
-            
             rowClassName={() => "custom-row"}
             bordered
             style={{
