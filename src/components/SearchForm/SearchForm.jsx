@@ -11,6 +11,7 @@ const iconMap = {
   Витринаси: FaListAlt,
   Товарлар: FaBox,
   Товарлари: FaBox,
+  Махсулотлари: FaBox,
   Сотувчилар: FaUserTie,
   Омбори: FaWarehouse,
   Омборлар: FaWarehouse,

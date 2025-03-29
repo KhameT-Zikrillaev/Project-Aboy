@@ -155,7 +155,7 @@ export default function ViewWareHoustProducts({ idwarehouse }) {
       <SearchForm
         data={data?.data?.products || data?.products || []}
         onSearch={handleSearchResults}
-        title="Mahsulotlari"
+        title="Товарлар"
         showDatePicker={false}
         placeholder="Исм бойича кидириш!"
         loading={searchLoading}
