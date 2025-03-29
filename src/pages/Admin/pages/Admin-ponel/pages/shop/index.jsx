@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import { Table, Button, Space, Popconfirm, Pagination } from "antd";
-import { EditOutlined, DeleteOutlined, LeftOutlined, RightOutlined } from "@ant-design/icons";
-import { Input } from 'antd';
+import {
+  EditOutlined,
+  DeleteOutlined,
+  LeftOutlined,
+  RightOutlined,
+} from "@ant-design/icons";
+import { Input } from "antd";
 import ModalComponent from "@/components/modal/Modal";
 import AddShop from "./components/AddShop";
 import EditShop from "./components/EditShop";
@@ -10,33 +15,35 @@ import useApiMutation from "@/hooks/useApiMutation";
 import { toast } from "react-toastify";
 const { Search } = Input;
 
-
 const Seller = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sellerSingleData, setSellerSingleData] = useState(null);
   const [formType, setFormType] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
-    const [page, setPage] = useState(1);
-    const limit = 10;
+  const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const limit = 10;
 
-    const { data, isLoading, refetch } = useFetch('shop', 'shop', { limit, page, name: searchQuery || null });
+  const { data, isLoading, refetch } = useFetch("shop", "shop", {
+    limit,
+    page,
+    name: searchQuery || null,
+  });
 
-    const { mutate: deleteShop} = useApiMutation({
-        url: 'shop', // Asosiy API endpoint
-        method: 'DELETE',
-        onSuccess: () => {
-          refetch();
-          toast.success("Магазин муваффақиятли ўчирилди!");
-        },
-        onError: (error) => {
-          toast.error("Магазинни ўчиришда хатолик юз берди");
-        },
-      });
-    
-      const handleDelete = (id) => {
-        deleteShop({ id });
-      };
+  const { mutate: deleteShop } = useApiMutation({
+    url: "shop", // Asosiy API endpoint
+    method: "DELETE",
+    onSuccess: () => {
+      refetch();
+      toast.success("Магазин муваффақиятли ўчирилди!");
+    },
+    onError: (error) => {
+      toast.error("Магазинни ўчиришда хатолик юз берди");
+    },
+  });
 
+  const handleDelete = (id) => {
+    deleteShop({ id });
+  };
 
   const showModal = (type) => {
     setFormType(type);
@@ -47,7 +54,7 @@ const Seller = () => {
     setIsModalOpen(false);
     setSellerSingleData(null);
   };
-  
+
   const handleEdit = (record) => {
     setSellerSingleData(record);
     showModal("edit");
@@ -70,7 +77,7 @@ const Seller = () => {
             cursor: "pointer",
           }}
         >
-          <LeftOutlined /> 
+          <LeftOutlined />
         </button>
       );
     }
@@ -83,7 +90,7 @@ const Seller = () => {
             cursor: "pointer",
           }}
         >
-           <RightOutlined />
+          <RightOutlined />
         </button>
       );
     }
@@ -93,20 +100,28 @@ const Seller = () => {
   const columns = [
     {
       title: "№",
-      render: (_, __, index) => <span className="text-gray-100 font-semibold">{(page - 1) * limit + index + 1}</span>,
+      render: (_, __, index) => (
+        <span className="text-gray-100 font-semibold">
+          {(page - 1) * limit + index + 1}
+        </span>
+      ),
       width: 70,
     },
     {
       title: "Магазин номи",
       dataIndex: "name",
       key: "name",
-      render: (text) => <span className="text-gray-100 font-semibold">{text}</span>,
+      render: (text) => (
+        <span className="text-gray-100 font-semibold">{text}</span>
+      ),
     },
     {
       title: "Омбор номи",
       dataIndex: "warehouseName",
       key: "warehouseName",
-      render: (text) => <span className="text-gray-100 font-semibold">{text}</span>,
+      render: (text) => (
+        <span className="text-gray-100 font-semibold">{text}</span>
+      ),
     },
     {
       title: "Ҳаракатлар",
@@ -125,7 +140,12 @@ const Seller = () => {
             okText="Ҳа"
             cancelText="Йўқ"
           >
-            <Button type="primary" danger icon={<DeleteOutlined />} className="edit-btn" />
+            <Button
+              type="primary"
+              danger
+              icon={<DeleteOutlined />}
+              className="edit-btn"
+            />
           </Popconfirm>
         </Space>
       ),
@@ -137,22 +157,27 @@ const Seller = () => {
       <div className="flex justify-between items-center mb-5">
         <div className="text-3xl font-bold  text-gray-100">Магазинлар</div>
         <div className="flex gap-3 items-center">
-        <Search placeholder="Қидириш" onSearch={onSearch} enterButton className="custom-search"/>
-        <Button
-          type="primary"
-          style={{
-            backgroundColor: "#364153",
-            color: "#f3f4f6",
-            fontWeight: "500",
-            padding: "17px 20px",
-            borderRadius: "8px",
-            fontSize: "20px"
-          }}
-          className="hover:bg-[#0056b3] hover:border-[#004494] focus:bg-[#004494] "
-          onClick={() => showModal("add")}
-        >
-          Қўшиш
-        </Button>
+          <Search
+            placeholder="Қидириш"
+            onSearch={onSearch}
+            enterButton
+            className="custom-search"
+          />
+          <Button
+            type="primary"
+            style={{
+              backgroundColor: "#364153",
+              color: "#f3f4f6",
+              fontWeight: "500",
+              padding: "17px 20px",
+              borderRadius: "8px",
+              fontSize: "20px",
+            }}
+            className="hover:bg-[#0056b3] hover:border-[#004494] focus:bg-[#004494] "
+            onClick={() => showModal("add")}
+          >
+            Қўшиш
+          </Button>
         </div>
       </div>
       <div className="text-gray-100">
@@ -161,7 +186,7 @@ const Seller = () => {
           dataSource={data?.data?.shops}
           pagination={false}
           className="custom-table"
-          rowClassName={() => "custom-row"}
+          rowClassName={() => "custom-row "}
           bordered
           loading={isLoading}
         />
@@ -181,7 +206,15 @@ const Seller = () => {
         onClose={onClose}
         title={formType === "add" ? "Магазин қўшиш" : "Магазинни таҳрирлаш"}
       >
-       {formType === "add" ?<AddShop onClose={onClose} refetch={refetch}/> : <EditShop onClose={onClose} refetch={refetch} sellerSingleData={sellerSingleData}/>} 
+        {formType === "add" ? (
+          <AddShop onClose={onClose} refetch={refetch} />
+        ) : (
+          <EditShop
+            onClose={onClose}
+            refetch={refetch}
+            sellerSingleData={sellerSingleData}
+          />
+        )}
       </ModalComponent>
     </div>
   );

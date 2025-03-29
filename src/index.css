@@ -38,6 +38,16 @@ body {
   color: white !important;
 }
 
+
+.custom-row-click {
+  cursor: pointer !important; /* Qo‘lcha kursori */
+  /* transition: background 0.3s; */
+}
+
+.custom-row-click:hover {
+  background-color: #d9d9d9 !important; /* Hover effekti */
+}
+
 /* Edit tugmasi (yashil) */
 .edit-btn {
     background-color: transparent !important;
@@ -178,8 +188,7 @@ body {
   }
   
   
-  
-  
+
   
   .custom-input:focus .ant-input {
     border-color: rgb(0.967 0.003 264.542) !important;
@@ -299,6 +308,7 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
 
   
 

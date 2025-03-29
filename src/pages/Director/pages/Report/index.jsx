@@ -65,9 +65,9 @@ export default function Report() {
           {filteredBySearch?.slice(0, visibleDistricts)?.map((product) => (
             <Link
               key={product?.id}
-              state={{ warehouseId: product?.id }} 
-              to={`/director/report/${product?.id}`}
+              to={`/director/report/${product?.name}`}
               className="block bg-gray-800 text-white p-4 rounded-lg hover:bg-gray-700 transition"
+              onClick={() => sessionStorage.setItem("warehouseId", product?.id)}
             >
               <h4>{product?.name}</h4>
               <p>{product?.description}</p>

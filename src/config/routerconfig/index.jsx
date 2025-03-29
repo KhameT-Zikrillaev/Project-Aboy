@@ -49,7 +49,6 @@ const DirectorProduct = lazy(() => import("@/pages/Director/pages/Product"));
 const DirectorSeller = lazy(() => import("@/pages/Director/pages/Seller"));
 const DirectorReport = lazy(() => import("@/pages/Director/pages/Report"));
 const ProductDetails = lazy(() => import("@/pages/Director/pages/Product/components/ProductDetalies")) ;
-const DirectorReportDetailsSingle = lazy(() => import("@/pages/Director/pages/Report/components/ReportDetaliesSingle")) ;
 const DirectorReportDetailsSellers = lazy(() => import("@/pages/Director/pages/Report/components/ReportDetaliesSellers")) ;
 const getRoutesByRole = (role, isTrusted) => {
   if (!role) return null;
@@ -128,8 +127,7 @@ const getRoutesByRole = (role, isTrusted) => {
           <Route path="product-list" element={<DirectorProduct />} />
           <Route path="product-list/:name" element={<ProductDetails />} />
           <Route path="report" element={<DirectorReport />} />
-          <Route path="report/:name" element={<DirectorReportDetailsSellers />} />
-          <Route path="report/:id/:name" element={<DirectorReportDetailsSingle />} />      
+          <Route path="report/:name" element={<DirectorReportDetailsSellers />} />    
         </Route>
       );
   }

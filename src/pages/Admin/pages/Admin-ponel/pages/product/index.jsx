@@ -25,7 +25,7 @@ const Product = () => {
   const [formType, setFormType] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
-  const limit = 10;
+  const limit = 100;
   const navigate = useNavigate();
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState(null);
