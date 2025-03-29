@@ -277,7 +277,7 @@ export default function ViewDetaliesOrderProducts() {
         <ModalComponentContent
           isOpen={isModalOpen}
           onClose={onClose}
-          title={name + " " + "omboriga zakaz berish"}
+          title={`${name} обморига заказ бериш`}
         >
           <AddProductOrderWarehouse 
             onClose={onClose} 

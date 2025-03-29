@@ -223,7 +223,7 @@ export default function ViewDetaliesSendProducts() {
         <SearchForm 
           onSearch={handleSearchResults} 
           name={name + 'iga'} 
-          title="Omboridigi mahsulotlarni vitringa yuborish" 
+          title="Омборидиги маҳсулотларни витринга юбориш" 
           showDatePicker={false} 
         />
         

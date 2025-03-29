@@ -143,7 +143,7 @@ export default function ViewVitrinaProducts({ idwarehouse }) {
       <SearchForm
         data={data?.data} 
         onSearch={handleSearchResults}
-        title="Vitrina" 
+        title="Витринаси" 
         showDatePicker={false}
         placeholder="Поиск по названию, артикулу, партии"
         loading={searchLoading}

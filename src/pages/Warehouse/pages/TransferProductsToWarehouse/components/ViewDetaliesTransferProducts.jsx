@@ -299,7 +299,7 @@ export default function ViewDetaliesTransferProducts() {
         <ModalComponentContent
           isOpen={isModalOpen}
           onClose={onClose}
-          title={name + " " + "omboriga yuborish"}
+          title={`${name} обморига юбориш`}
           width={800}
         >
           <AddProductWarehouse 
