@@ -12,7 +12,7 @@ const AddProductWarehouse = ({ onClose, selectedProducts, onSuccess, warehouseId
   const { handleSubmit, control, setValue, formState: { errors } } = useForm();
 
   const { mutate, isLoading: isSending } = useApiMutation({
-    url: "warehouse-products",
+    url: "warehouse-products/transfer-products",
     method: "PATCH",
     onSuccess: () => {
       toast.success("Маҳсулот муваффақиятли ўтказилди");

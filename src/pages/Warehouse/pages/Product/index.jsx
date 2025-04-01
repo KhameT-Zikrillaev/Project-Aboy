@@ -3,9 +3,10 @@ import bgsklad from "@/assets/images/bg-sklad.png";
 import ImageModal from "@/components/modal/ImageModal";
 import useFetch from "@/hooks/useFetch";
 import useUserStore from "@/store/useUser";
-import SearchFormCustom from "@/components/SearchForm/SearchFormCustom";
+import SearchForm from "@/components/SearchForm/SearchForm";
 import { Pagination, Table } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+
 export default function Warehouse() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -14,16 +15,18 @@ export default function Warehouse() {
   const limit = 100;
 
   const { user } = useUserStore();
-
-  // Fetch data from API
   const id = user?.warehouse?.id;
+
   const { data, isLoading, refetch } = useFetch(
     `warehouse-products/all-products`,
     `warehouse-products/all-products`,
-    { page, limit, warehouseId: id, article: searchQuery || null },
-    {
-      enabled: !!id,
-    }
+    { 
+      page, 
+      limit, 
+      warehouseId: id, 
+      ...(searchQuery && { article: searchQuery })
+    },
+    { enabled: !!id }
   );
 
   const isOpenModal = (imageUrl) => {
@@ -41,31 +44,23 @@ export default function Warehouse() {
     refetch();
   };
 
-  const onSearch = (value) => setSearchQuery(value);
+  const onSearch = (searchParams) => {
+    const searchValue = searchParams.article || "";
+    setSearchQuery(searchValue);
+    setPage(1);
+  };
 
   const itemRender = (page, type, originalElement) => {
     if (type === "prev") {
       return (
-        <button
-          style={{
-            color: "white",
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
+        <button style={{ color: "white", border: "none", cursor: "pointer" }}>
           <LeftOutlined />
         </button>
       );
     }
     if (type === "next") {
       return (
-        <button
-          style={{
-            color: "white",
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
+        <button style={{ color: "white", border: "none", cursor: "pointer" }}>
           <RightOutlined />
         </button>
       );
@@ -149,7 +144,12 @@ export default function Warehouse() {
       <div className="absolute inset-0 bg-black/50 backdrop-blur-md z-0"></div>
 
       <div className="relative z-0 max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[120px]">
-        <SearchFormCustom title={"Маҳсулотлар"} onSearch={onSearch} />
+        <SearchForm 
+          title={"Маҳсулотлар"} 
+          showDatePicker={false} 
+          onSearch={onSearch}
+        />
+        
         <div className="text-gray-100 w-full">
           <Table
             columns={columns}
@@ -160,6 +160,7 @@ export default function Warehouse() {
             bordered
             loading={isLoading}
           />
+          
           <div className="flex justify-center mt-5">
             <Pagination
               className="custom-pagination"
@@ -171,7 +172,12 @@ export default function Warehouse() {
             />
           </div>
         </div>
-        <ImageModal isOpen={isImageModalOpen} onClose={onCloseModal} imageUrl={selectedImage}/>
+        
+        <ImageModal 
+          isOpen={isImageModalOpen} 
+          onClose={onCloseModal} 
+          imageUrl={selectedImage}
+        />
       </div>
     </div>
   );

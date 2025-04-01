@@ -24,7 +24,7 @@ export default function ViewDetaliesSendProducts() {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [warehouseId, setWarehouseId] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const { user } = useUserStore();
   const [isWareHouseOpen, setIsWareHouseOpen] = useState(false);
 
@@ -39,11 +39,11 @@ export default function ViewDetaliesSendProducts() {
   const { data: productsData, isLoading: productsLoading, refetch: refetchProducts } = useFetch(
     id ? "warehouse-products/all-products" : null,
     id ? "warehouse-products/all-products" : null,
-    {
+    { 
       warehouseId: id,
       page: currentPage,
       limit: itemsPerPage,
-      article: searchTerm || undefined
+      ...(searchQuery && { article: searchQuery })
     },
     {
       enabled: !!id,
@@ -61,10 +61,10 @@ export default function ViewDetaliesSendProducts() {
     }
   }, [productsData]);
 
-  const handleSearchResults = (searchValue) => {
-    setSearchTerm(searchValue);
-    setCurrentPage(1);
-    refetchProducts();
+  const onSearch = (searchParams) => {
+    const searchValue = searchParams.article || "";
+    setSearchQuery(searchValue);
+    setCurrentPage(1); // Сброс пагинации при новом поиске
   };
 
   const showModal = () => {
@@ -221,10 +221,11 @@ export default function ViewDetaliesSendProducts() {
       <div className="absolute inset-0 bg-black/50 backdrop-blur-md z-0"></div>
       <div className="relative z-0 max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[120px]">
         <SearchForm 
-          onSearch={handleSearchResults} 
+          onSearch={onSearch}
           name={name + 'iga'} 
-          title="Omboridigi mahsulotlarni vitringa yuborish" 
-          showDatePicker={false} 
+          title="Омборидиги маҳсулотларни витринга юбориш" 
+          showDatePicker={false}
+          searchBy="article" // Указываем, что поиск только по артикулу
         />
         
         <div className='w-full flex justify-between mb-4'>
@@ -328,7 +329,7 @@ export default function ViewDetaliesSendProducts() {
           onClose={onClose}
           title={name + " Витринаси"}
         >
-          <ViewWareHoustProducts idwarehouse={shopId} />
+          <ViewWareHoustProducts idshop={shopId} />
         </ModalComponentContent>
       </div>
     </div>

@@ -126,10 +126,6 @@ const DeleteProductVitrina = ({
 
   return (
     <div className="p-4 bg-[#1a202c] rounded-lg">
-      <h2 className="text-white text-lg font-semibold mb-4">
-        {warehouseName} витринадан ўчириш
-      </h2>
-      
       <Table
         columns={columns}
         dataSource={selectedItems}

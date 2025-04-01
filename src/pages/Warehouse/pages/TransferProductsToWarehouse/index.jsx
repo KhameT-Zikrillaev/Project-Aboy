@@ -8,47 +8,62 @@ import useUserStore from "@/store/useUser";
 export default function WarehouseTransferProducts() {
   const [visibleDistricts, setVisibleDistricts] = useState(12);
   const { user } = useUserStore();
-  const { data, isLoading  } = useFetch('warehouse', 'warehouse', {});
-  const [filteredData, setFilteredData] = useState([]);
-  const [filteredBySearch, setFilteredBySearch] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const limit = 12;
 
-  const loadMoreDistricts = () => {
-    setVisibleDistricts((prevVisibleDistricts) => prevVisibleDistricts + 12);
-  };
-  
+  const { data, isLoading, refetch } = useFetch(
+    'warehouse',
+    'warehouse',
+    {
+      page,
+      limit,
+      ...(searchQuery && { name: searchQuery })
+    }
+  );
+
+  const [filteredData, setFilteredData] = useState([]);
+
   useEffect(() => {
     if (data?.data?.warehouses && user?.warehouse?.id) {
-      const filtered = data?.data?.warehouses?.filter(warehouse => warehouse?.id != user?.warehouse?.id);
+      const filtered = data.data.warehouses.filter(
+        warehouse => warehouse?.id != user?.warehouse?.id
+      );
       setFilteredData(filtered);
-      setFilteredBySearch(filtered); 
     } else {
       setFilteredData(data?.data?.warehouses || []);
-      setFilteredBySearch(data?.data?.warehouses || []);
     }
-  }, [data, user?.name]);
+  }, [data, user?.warehouse?.id]);
 
-  const handleSearch = (searchResults) => {
-    setFilteredBySearch(searchResults);
+  const loadMoreDistricts = () => {
+    setPage(prevPage => prevPage + 1);
+  };
+
+  const onSearch = (searchParams) => {
+    const searchValue = searchParams.name || "";
+    setSearchQuery(searchValue);
+    setPage(1); // Сброс пагинации при новом поиске
+    setVisibleDistricts(12); // Сброс видимых элементов
   };
 
   return (
     <div className="WarehouseTransferProduct mt-[150px] p-4">
-      {/* Передаем отфильтрованные данные в компонент поиска */}
       <SearchForm 
-        data={filteredData} 
         name="" 
         title="Омборлар" 
-        showDatePicker={false} 
-        onSearch={handleSearch} 
+        showDatePicker={false}
+        searchBy="name" // Указываем, что поиск по названию склада
+        onSearch={onSearch}
+        placeholder="Омбор номи бўйича қидириш"
       />
       
       {isLoading ? (
         <div className="flex justify-center items-center h-[300px]">
           <Spin size="large" />
         </div>
-      ) : filteredBySearch?.length > 0 ? (
+      ) : filteredData?.length > 0 ? (
         <div className="grid grid-cols-2 gap-4">
-          {filteredBySearch?.slice(0, visibleDistricts)?.map((product) => (
+          {filteredData.slice(0, visibleDistricts).map((product) => (
             <Link
               key={product?.id}
               state={{ shopId: product?.id }} 
@@ -66,7 +81,7 @@ export default function WarehouseTransferProducts() {
         </div>
       )}
       
-      {visibleDistricts < filteredBySearch?.length && (
+      {data?.data?.warehouses?.length >= limit && (
         <div className="flex justify-center mt-4">
           <button
             onClick={loadMoreDistricts}

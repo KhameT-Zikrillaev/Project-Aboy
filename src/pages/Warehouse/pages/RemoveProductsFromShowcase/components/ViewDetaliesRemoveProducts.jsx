@@ -24,8 +24,8 @@ export default function ViewDetaliesRemoveProducts() {
   const [warehouseId, setWarehouseId] = useState("");
 
   const { data: productsData, isLoading: productsLoading, refetch: refetchProducts } = useFetch(
-    shopId ? `Storefront-product/${shopId}` : null,
-    shopId ? `Storefront-product/${shopId}` : null,
+    shopId ? `shop-product/all-products/${shopId}` : null,
+    shopId ? `shop-product/all-products/${shopId}` : null,
     {},
     {
       enabled: !!shopId,
@@ -202,7 +202,6 @@ export default function ViewDetaliesRemoveProducts() {
         <SearchForm 
           data={productsData?.data} 
           onSearch={handleSearchResults} 
-          name={name} 
           title={`${name} витринасини ўчириш `} 
           showDatePicker={false} 
         />
@@ -280,7 +279,7 @@ export default function ViewDetaliesRemoveProducts() {
         <ModalComponentContent
           isOpen={isModalOpen}
           onClose={onClose}
-          title={`${name} vitrinasidan o'chirish`}
+          title={`${name} витринасидан ўчириш`}
         >
           <DeleteProductVitrina
             onClose={onClose}

@@ -21,94 +21,46 @@ export default function ViewDetaliesOrderProducts() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const { user } = useUserStore();
 
   const id = user?.warehouse?.id;
   const { data, isLoading, refetch } = useFetch(
-    id ? `warehouse-products/byWarehouse/${idWarehouse}` : null,
-    id ? `warehouse-products/byWarehouse/${idWarehouse}` : null,
-    {},
+    "warehouse-products/all-products",
+    "warehouse-products/all-products",
     {
-      enabled: !!id,
+      page: currentPage,
+      limit: itemsPerPage,
+      warehouseId: idWarehouse,
+      ...(searchQuery && { article: searchQuery })
+    },
+    {
+      enabled: !!idWarehouse,
     }
   );
 
   useEffect(() => {
-    if (data?.data?.products) {
-      if (data?.data?.products && Array.isArray(data?.data?.products)) {
-        setFilteredData(data?.data?.products?.map(item => ({
-          ...item,
-          key: item.id
-        })));
-      } else {
-        setFilteredData([]);
-      }
+    if (data?.data?.data) {
+      setFilteredData(data.data.data);
     } else {
       setFilteredData([]);
     }
   }, [data]);
 
-  const handleSearchResults = (results) => {
-    if (Array.isArray(results)) {
-      setFilteredData(results);
-    } else if (results === null || results === undefined) {
-      if (data?.data?.products && Array.isArray(data?.data?.products)) {
-        setFilteredData(data?.data?.products?.map(item => ({
-          ...item,
-          key: item.id
-        })));
-      } else {
-        setFilteredData([]);
-      }
-    } else {
-      setFilteredData([]);
-    }
+  const onSearch = (searchParams) => {
+    setSearchQuery(searchParams.article || "");
+    setCurrentPage(1);
   };
-
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const onClose = () => {
-    setIsModalOpen(false);
-  };
-
-  const updateItemsPerPage = () => {
-    setItemsPerPage(window.innerWidth < 768 ? 5 : 10);
-  };
-
-  useEffect(() => {
-    updateItemsPerPage();
-    window.addEventListener('resize', updateItemsPerPage);
-    return () => window.removeEventListener('resize', updateItemsPerPage);
-  }, []);
 
   const handleCheckboxChange = (item) => {
     setSelectedProducts((prev) => {
       const isSelected = prev.some((product) => product.id === item.id);
-      if (isSelected) {
-        return prev.filter((product) => product.id !== item.id);
-      } else {
-        return [...prev, item];
-      }
+      return isSelected ? prev.filter((product) => product.id !== item.id) : [...prev, item];
     });
-  };
-  
-  const resetSelection = () => {
-    setSelectedProducts([]);
   };
 
   const handleSelectAll = () => {
-    if (selectedProducts.length === filteredData.length) {
-      setSelectedProducts([]);
-    } else {
-      setSelectedProducts([...filteredData]);
-    }
-  };
-
-  const handleSuccessSubmit = () => {
-    resetSelection();
-    refetch();
+    setSelectedProducts(selectedProducts.length === filteredData.length ? [] : [...filteredData]);
   };
 
   const columns = [
@@ -172,7 +124,7 @@ export default function ViewDetaliesOrderProducts() {
       dataIndex: "image_url",
       key: "image_url",
       render: (text) => (
-        <div 
+        <div
           className="max-h-[60px] max-w-[60px] cursor-pointer"
           onClick={() => setSelectedImage(text)}
         >
@@ -196,14 +148,14 @@ export default function ViewDetaliesOrderProducts() {
     <div className="min-h-screen bg-cover bg-center p-1 relative" style={{ backgroundImage: `url(${bgsklad})` }}>
       <div className="absolute inset-0 bg-black/50 backdrop-blur-md z-0"></div>
       <div className="relative z-0 max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[120px]">
-        <SearchForm 
-          data={data?.data?.products} 
-          onSearch={handleSearchResults} 
-          name={name +" " +'омборига'} 
-          title="заказ бериш" 
-          showDatePicker={false} 
+        <SearchForm
+          data={filteredData}
+          onSearch={onSearch}
+          name={`${name}ига`}
+          title="заказ бериш"
+          showDatePicker={false}
         />
-        
+
         <div className='w-full flex justify-end mb-4'>
           <div className="flex items-center gap-2">
             <span className='bg-gray-700 py-1 px-3 text-white text-sm rounded-lg shadow-lg'>
@@ -211,17 +163,17 @@ export default function ViewDetaliesOrderProducts() {
             </span>
             <Button
               type="primary"
-              onClick={showModal}
-              disabled={selectedProducts?.length === 0}
+              onClick={() => setIsModalOpen(true)}
+              disabled={!selectedProducts.length}
               style={{
-                backgroundColor: selectedProducts?.length === 0 ? '#888' : '#364153',
+                backgroundColor: selectedProducts.length === 0 ? '#888' : '#364153',
                 borderColor: '#364153',
               }}
               onMouseEnter={(e) => {
-                if (selectedProducts?.length > 0) e.currentTarget.style.backgroundColor = "#2b3445";
+                if (selectedProducts.length > 0) e.currentTarget.style.backgroundColor = "#2b3445";
               }}
               onMouseLeave={(e) => {
-                if (selectedProducts?.length > 0) e.currentTarget.style.backgroundColor = "#364153";
+                if (selectedProducts.length > 0) e.currentTarget.style.backgroundColor = "#364153";
               }}
             >
               Заказ бериш
@@ -254,11 +206,11 @@ export default function ViewDetaliesOrderProducts() {
           </div>
         )}
 
-        {filteredData?.length > 0 && (
+        {filteredData.length > 0 && (
           <div className="my-2 mb-12 md:mb-0 flex justify-center">
             <Pagination
               current={currentPage}
-              total={filteredData?.length}
+              total={filteredData.length}
               pageSize={itemsPerPage}
               onChange={(page) => setCurrentPage(page)}
               showSizeChanger={false}
@@ -276,13 +228,13 @@ export default function ViewDetaliesOrderProducts() {
 
         <ModalComponentContent
           isOpen={isModalOpen}
-          onClose={onClose}
-          title={name + " " + "omboriga zakaz berish"}
+          onClose={() => setIsModalOpen(false)}
+          title={`${name} обморига заказ бериш`}
         >
-          <AddProductOrderWarehouse 
-            onClose={onClose} 
-            selectedProducts={selectedProducts} 
-            onSuccess={handleSuccessSubmit} 
+          <AddProductOrderWarehouse
+            onClose={() => setIsModalOpen(false)}
+            selectedProducts={selectedProducts}
+            onSuccess={refetch}
             warehouseName={name}
             idWarehouse={idWarehouse}
           />

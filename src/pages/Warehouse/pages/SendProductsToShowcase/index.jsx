@@ -24,7 +24,7 @@ export default function WarehouseProducts() {
       enabled: !!warehouseId,
     }
   );
-
+console.log(data);
   useEffect(() => {
     if (data) {
       setFilteredData(data?.data?.shops || []);

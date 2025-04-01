@@ -8,56 +8,35 @@ export default function ViewWareHoustProducts({ idwarehouse }) {
   const [filteredData, setFilteredData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [searchLoading, setSearchLoading] = useState(false);
-  const pageSize = 10; // Фиксированное количество элементов
+  const [searchQuery, setSearchQuery] = useState("");
+  const pageSize = 10;
 
   const { data, isLoading, refetch } = useFetch(
-    `warehouse-products/byWarehouse/${idwarehouse}`,
-    `warehouse-products/byWarehouse/${idwarehouse}`,
-    {},
+    "warehouse-products/all-products",
+    "warehouse-products/all-products",
+    {
+      page: currentPage,
+      limit: pageSize,
+      warehouseId: idwarehouse,
+      ...(searchQuery && { article: searchQuery })
+    },
     {
       enabled: !!idwarehouse,
-      staleTime: 0,
-      cacheTime: 0,
     }
   );
 
   useEffect(() => {
-    if (idwarehouse) {
-      setFilteredData([]);
-      setCurrentPage(1);
-      refetch();
-    }
-  }, [idwarehouse, refetch]);
-
-  useEffect(() => {
-    if (data?.data?.products) {
-      setFilteredData(data.data.products);
-    } else if (data?.products) {
-      setFilteredData(data.products);
+    if (data?.data?.data) {
+      setFilteredData(data.data.data);
     } else {
       setFilteredData([]);
     }
   }, [data]);
 
-  const handleSearchResults = (results) => {
-    setSearchLoading(true);
-    setTimeout(() => {
-      if (Array.isArray(results)) {
-        setFilteredData(results);
-      } else if (results === null || results === undefined) {
-        if (data?.data?.products && Array.isArray(data.data.products)) {
-          setFilteredData(data.data.products);
-        } else if (data?.products && Array.isArray(data.products)) {
-          setFilteredData(data.products);
-        } else {
-          setFilteredData([]);
-        }
-      } else {
-        setFilteredData([]);
-      }
-      setSearchLoading(false);
-    }, 500);
+  const onSearch = (searchParams) => {
+    const searchValue = searchParams.article || "";
+    setSearchQuery(searchValue);
+    setCurrentPage(1);
   };
 
   const handlePageChange = (page) => {
@@ -143,6 +122,10 @@ export default function ViewWareHoustProducts({ idwarehouse }) {
             src={text}
             crossOrigin="anonymous"
             alt="product"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = 'placeholder-image-url';
+            }}
           />
         </div>
       ),
@@ -153,15 +136,14 @@ export default function ViewWareHoustProducts({ idwarehouse }) {
   return (
     <div className="p-4 w-full">
       <SearchForm
-        data={data?.data?.products || data?.products || []}
-        onSearch={handleSearchResults}
-        title="Mahsulotlari"
+        title="Товарлар"
         showDatePicker={false}
-        placeholder="Исм бойича кидириш!"
-        loading={searchLoading}
+        searchBy="article"
+        onSearch={onSearch}
+        placeholder="Артикул бўйича қидириш"
       />
       
-      {(isLoading || searchLoading) ? (
+      {isLoading ? (
         <div className="flex justify-center items-center h-64">
           <Spin size="large" />
         </div>
@@ -169,7 +151,7 @@ export default function ViewWareHoustProducts({ idwarehouse }) {
         <>
           {filteredData.length === 0 ? (
             <div className="flex flex-col items-center text-white justify-center h-64">
-              <Empty style={{ color: 'white' }} description="Tovar topilmadi" />
+              <Empty style={{ color: 'white' }} description="Товар топилмади" />
             </div>
           ) : (
             <div className="w-full px-4">
@@ -190,12 +172,12 @@ export default function ViewWareHoustProducts({ idwarehouse }) {
         </>
       )}
 
-      {!isLoading && !searchLoading && filteredData.length > 0 && (
+      {!isLoading && data?.data?.total > 0 && (
         <div className="flex justify-center mt-4">
           <Pagination
             current={currentPage}
             pageSize={pageSize}
-            total={filteredData.length}
+            total={data?.data?.total}
             onChange={handlePageChange}
             showSizeChanger={false}
             className="custom-pagination"

@@ -184,10 +184,6 @@ const AddProductOrderWarehouse = ({
 
   return (
     <div className="p-4 bg-[#1a202c] rounded-lg">
-      <h2 className="text-white text-lg font-semibold mb-4">
-        {warehouseName} омборига буюртма
-      </h2>
-      
       {loading ? (
         <div className="flex justify-center items-center h-40">
           <Spin size="large" />

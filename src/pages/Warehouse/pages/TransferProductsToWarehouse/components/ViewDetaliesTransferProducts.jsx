@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
-import { Table, Pagination, Tag, Button, Spin, Checkbox } from 'antd';
+import { Table, Pagination, Tag, Button, Spin, Checkbox, message } from 'antd';
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import 'antd/dist/reset.css';
 import bgsklad from '@/assets/images/bg-sklad.png';
 import SearchForm from '@/components/SearchForm/SearchForm';
@@ -15,60 +16,49 @@ export default function ViewDetaliesTransferProducts() {
   const { name } = useParams();
   const location = useLocation();
   const shopId = location.state?.shopId;
-
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(50);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const { user } = useUserStore();
   const [isWareHouseOpen, setIsWareHouseOpen] = useState(false);
 
   const id = user?.warehouse?.id;
+
   const { data, isLoading, refetch } = useFetch(
-    id ? `warehouse-products/byWarehouse/${id}` : null,
-    id ? `warehouse-products/byWarehouse/${id}` : null,
-    {},
+    'warehouse-products/all-products',
+    'warehouse-products/all-products',
+    {
+      page: currentPage,
+      limit: itemsPerPage,
+      warehouseId: id,
+      ...(searchQuery && { article: searchQuery })
+    },
     {
       enabled: !!id,
     }
   );
 
   useEffect(() => {
-    if (data?.data?.products) {
-      if (data?.data?.products && Array.isArray(data?.data?.products)) {
-        setFilteredData(
-          data?.data?.products?.map((item) => ({
-            ...item,
-            key: item.id,
-          }))
-        );
-      } else {
-        setFilteredData([]);
-      }
+    if (data?.data?.data) {
+      setFilteredData(
+        data.data.data.map((item) => ({
+          ...item,
+          key: item.id,
+        }))
+      );
     } else {
       setFilteredData([]);
     }
   }, [data]);
 
-  const handleSearchResults = (results) => {
-    if (Array.isArray(results)) {
-      setFilteredData(results);
-    } else if (results === null || results === undefined) {
-      if (data?.data?.products && Array.isArray(data?.data?.products)) {
-        setFilteredData(
-          data?.data?.products?.map((item) => ({
-            ...item,
-            key: item.id,
-          }))
-        );
-      } else {
-        setFilteredData([]);
-      }
-    } else {
-      setFilteredData([]);
-    }
+  const onSearch = (searchParams) => {
+    const searchValue = searchParams.article || "";
+    setSearchQuery(searchValue);
+    setCurrentPage(1);
   };
 
   const showModal = () => {
@@ -121,6 +111,24 @@ export default function ViewDetaliesTransferProducts() {
   const handleSuccessSubmit = () => {
     resetSelection();
     refetch();
+  };
+
+  const itemRender = (page, type, originalElement) => {
+    if (type === "prev") {
+      return (
+        <button style={{ color: "white", border: "none", cursor: "pointer" }}>
+          <LeftOutlined />
+        </button>
+      );
+    }
+    if (type === "next") {
+      return (
+        <button style={{ color: "white", border: "none", cursor: "pointer" }}>
+          <RightOutlined />
+        </button>
+      );
+    }
+    return originalElement;
   };
 
   const columns = [
@@ -212,11 +220,12 @@ export default function ViewDetaliesTransferProducts() {
       <div className="absolute inset-0 bg-black/50 backdrop-blur-md z-0"></div>
       <div className="relative z-0 max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[120px]">
         <SearchForm
-          data={data?.data?.products}
-          onSearch={handleSearchResults}
-          name={name + " " + "омборига"}
+          name={name + " омборига"}
           title="Омборидиги маҳсулотларни юбориш"
           showDatePicker={false}
+          searchBy="article"
+          onSearch={onSearch}
+          placeholder="Артикул бўйича қидириш"
         />
         
         <div className='w-full flex justify-between mb-4'>
@@ -224,7 +233,7 @@ export default function ViewDetaliesTransferProducts() {
             style={{ backgroundColor: '#17212b', color: '#fff' }}
             onClick={() => setIsWareHouseOpen(true)}
           >
-            Омборидиги маҳсулотларни кўrish
+            Омборидиги маҳсулотларни кўриш
           </Button>
           
           <div className="flex items-center gap-2">
@@ -271,20 +280,23 @@ export default function ViewDetaliesTransferProducts() {
                 }}
               />
             ) : (
-              <div className="text-center text-white text-xl py-10">Malumot topilmadi</div>
+              <div className="text-center text-white text-xl py-10">Малумот топилмади</div>
             )}
           </div>
         )}
 
-        {filteredData?.length > 0 && (
+        {data?.data?.total > 0 && (
           <div className="my-2 mb-12 md:mb-0 flex justify-center">
             <Pagination
               current={currentPage}
-              total={filteredData?.length}
+              total={data?.data?.total}
               pageSize={itemsPerPage}
-              onChange={(page) => setCurrentPage(page)}
+              onChange={(page) => {
+                setCurrentPage(page);
+              }}
               showSizeChanger={false}
               className="custom-pagination"
+              itemRender={itemRender}
             />
           </div>
         )}
@@ -299,7 +311,7 @@ export default function ViewDetaliesTransferProducts() {
         <ModalComponentContent
           isOpen={isModalOpen}
           onClose={onClose}
-          title={name + " " + "omboriga yuborish"}
+          title={`${name} омборига юбориш`}
           width={800}
         >
           <AddProductWarehouse 

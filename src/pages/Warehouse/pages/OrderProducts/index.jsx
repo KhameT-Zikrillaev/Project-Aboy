@@ -9,16 +9,28 @@ import useUserStore from "@/store/useUser";
 export default function WarehouseOrderProducts() {
   const { user } = useUserStore();
   const [visibleDistricts, setVisibleDistricts] = useState(12); // Добавили состояние для кнопки "Yana"
-  const [filteredData, setFilteredData] = useState([]); // Данные после фильтрации
-  const [filteredBySearch, setFilteredBySearch] = useState([]); // Данные после поиска
-  const { data, isLoading } = useFetch('warehouse', 'warehouse', {});
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredData, setFilteredData] = useState([]);
+  const [page, setPage] = useState(1);
+  const limit = 12;
+  const { data, isLoading, refetch } = useFetch(
+    'warehouse',
+    'warehouse',
+    {
+      page,
+      limit,
+      ...(searchQuery && { name: searchQuery })
+    }
+  );
 
   useEffect(() => {
-    if (data) {
-      // Фильтруем данные, исключая текущий склад пользователя
-      const newData = data?.data?.warehouses?.filter(item => item?.id !== user?.warehouse?.id);
-      setFilteredData(newData || []);
-      setFilteredBySearch(newData || []); // Инициализируем filteredBySearch
+    if (data?.data?.warehouses && user?.warehouse?.id) {
+      const filtered = data.data.warehouses.filter(
+        warehouse => warehouse?.id != user?.warehouse?.id
+      );
+      setFilteredData(filtered);
+    } else {
+      setFilteredData(data?.data?.warehouses || []);
     }
   }, [data, user?.warehouse?.id]);
 
@@ -30,26 +42,34 @@ export default function WarehouseOrderProducts() {
 
   // Функция для кнопки "Yana"
   const loadMoreDistricts = () => {
-    setVisibleDistricts((prevVisibleDistricts) => prevVisibleDistricts + 12);
+    setPage(prevPage => prevPage + 1);
+  };
+
+  const onSearch = (searchParams) => {
+    const searchValue = searchParams.name || "";
+    setSearchQuery(searchValue);
+    setPage(1); // Сброс пагинации при новом поиске
+    setVisibleDistricts(12); // Сброс видимых элементов
   };
 
   return (
     <div className="DirectorProduct mt-[150px] p-4">
       {/* Передаем filteredData в SearchForm для поиска */}
-      <SearchForm
-        data={filteredData}
-        name=""
-        title="Омборлар рўйхати"
+      <SearchForm 
+        name="" 
+        title="Омборлар" 
         showDatePicker={false}
-        onSearch={handleSearch}
+        searchBy="name" // Указываем, что поиск по названию склада
+        onSearch={onSearch}
+        placeholder="Омбор номи бўйича қидириш"
       />
       {isLoading ? (
         <div className="flex justify-center items-center h-64">
           <Spin size="large" />
         </div>
-      ) : (
+      ) : filteredData?.length > 0 ? (
         <div className="grid grid-cols-2 gap-4">
-          {filteredBySearch?.slice(0, visibleDistricts)?.map((product) => (
+          {filteredData?.slice(0, visibleDistricts)?.map((product) => (
             <Link
               key={product.id}
               to={`/warehouse/order-products/${product.name}`}
@@ -60,9 +80,13 @@ export default function WarehouseOrderProducts() {
             </Link>
           ))}
         </div>
+      ) : (
+        <div className="flex justify-center items-center h-[300px] text-gray-400">
+          Омбор топилмади
+        </div>
       )}
       {/* Кнопка "Yana" */}
-      {visibleDistricts < filteredBySearch?.length && (
+      {data?.data?.warehouses?.length >= limit && (
         <div className="flex justify-center mt-4">
           <button
             onClick={loadMoreDistricts}
