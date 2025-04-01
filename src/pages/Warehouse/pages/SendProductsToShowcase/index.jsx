@@ -3,84 +3,126 @@ import { Link } from "react-router-dom";
 import SearchForm from "@/components/SearchForm/SearchForm";
 import useFetch from "@/hooks/useFetch";
 import useUserStore from "@/store/useUser";
-import { Spin } from "antd";
+import { Spin, Pagination } from "antd";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ТОВАР ВИТРИНАГА ЖОНАТИШ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 export default function WarehouseProducts() {
-  const [visibleDistricts, setVisibleDistricts] = useState(12);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(12);
   const [filteredData, setFilteredData] = useState([]);
-  const [filteredBySearch, setFilteredBySearch] = useState([]);
-  const loadMoreDistricts = () => {
-    setVisibleDistricts((prevVisibleDistricts) => prevVisibleDistricts + 12);
-  };
+  const [searchQuery, setSearchQuery] = useState("");
   const { user } = useUserStore();
   const warehouseId = user?.warehouse?.id;
 
   const { data, isLoading, refetch } = useFetch(
-    warehouseId ? `warehouse/${warehouseId}` : null,
-    warehouseId ? `warehouse/${warehouseId}` : null,
-    {},
+    warehouseId ? `shop/all-shops/${warehouseId}` : null,
+    warehouseId ? `shop/all-shops/${warehouseId}` : null,
+    {
+      page: currentPage,
+      limit: itemsPerPage,
+      ...(searchQuery && { name: searchQuery })
+    },
     {
       enabled: !!warehouseId,
     }
   );
-console.log(data);
+
   useEffect(() => {
-    if (data) {
-      setFilteredData(data?.data?.shops || []);
-      setFilteredBySearch(data?.data?.shops || []);
+    if (data?.data?.shops) {
+      setFilteredData(data.data.shops);
+    } else {
+      setFilteredData([]);
     }
   }, [data]);
 
-  const handleSearch = (searchResults) => {
-    setFilteredBySearch(searchResults);
+  const onSearch = (searchParams) => {
+    const searchValue = searchParams.name || "";
+    setSearchQuery(searchValue);
+    setCurrentPage(1);
+  };
+
+  const updateItemsPerPage = () => {
+    setItemsPerPage(window.innerWidth < 768 ? 6 : 12);
+  };
+
+  useEffect(() => {
+    updateItemsPerPage();
+    window.addEventListener("resize", updateItemsPerPage);
+    return () => window.removeEventListener("resize", updateItemsPerPage);
+  }, []);
+
+  const itemRender = (page, type, originalElement) => {
+    if (type === "prev") {
+      return (
+        <button style={{ color: "white", border: "none", cursor: "pointer" }}>
+          <LeftOutlined />
+        </button>
+      );
+    }
+    if (type === "next") {
+      return (
+        <button style={{ color: "white", border: "none", cursor: "pointer" }}>
+          <RightOutlined />
+        </button>
+      );
+    }
+    return originalElement;
   };
 
   return (
     <div className="DirectorProduct mt-[150px] p-4">
       <SearchForm
-        data={filteredData}
-        name=""
         title="Сотувчилар"
         showDatePicker={false}
-        onSearch={handleSearch}
+        searchBy="name"
+        onSearch={onSearch}
+        placeholder="Номи бўйича қидириш"
       />
+      
       {isLoading ? (
         <div className="flex justify-center items-center h-[300px]">
           <Spin size="large" />
         </div>
       ) : (
         <>
-        {filteredBySearch?.length > 0 ? (
-          <div className="grid grid-cols-2 gap-4">
-            {filteredBySearch?.slice(0, visibleDistricts)?.map((product) => (
-              <Link
-                key={product?.id}
-                state={{ shopId: product?.id }}
-                to={`/warehouse/send-to-showcase/${product?.name}`}
-                className="block bg-gray-800 text-white p-4 rounded-lg hover:bg-gray-700 transition"
-              >
-                <h4>{product?.name}</h4>
-                <p>{product?.description}</p>
-              </Link>
-            ))}
-          </div>
-        ) : (
-          <div className="flex justify-center items-center h-[100px] text-xl text-gray-500">
-            Товар топилмади
-          </div>
-        )}
-      </>
-      )}
-      {visibleDistricts < filteredBySearch?.length && (
-        <div className="flex justify-center mt-4">
-          <button
-            onClick={loadMoreDistricts}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-          >
-            Яна
-          </button>
-        </div>
+          {filteredData.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {filteredData.map((shop) => (
+                  <Link
+                    key={shop?.id}
+                    state={{ shopId: shop?.id }}
+                    to={`/warehouse/send-to-showcase/${shop?.name}`}
+                    className="block bg-gray-800 text-white p-4 rounded-lg hover:bg-gray-700 transition"
+                  >
+                    <h4 className="text-lg font-medium">{shop?.name}</h4>
+                    <p className="text-gray-300">
+                      {shop?.description || "Тавсиф мавжуд эмас"}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+
+              {data?.data?.total > itemsPerPage && (
+                <div className="flex justify-center mt-6">
+                  <Pagination
+                    current={currentPage}
+                    total={data?.data?.total}
+                    pageSize={itemsPerPage}
+                    onChange={(page) => setCurrentPage(page)}
+                    showSizeChanger={false}
+                    className="custom-pagination"
+                    itemRender={itemRender}
+                  />
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="flex justify-center items-center h-[100px] text-xl text-gray-500">
+              Сотувчилар топилмади
+            </div>
+          )}
+        </>
       )}
     </div>
   );

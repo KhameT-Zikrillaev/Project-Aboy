@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { DatePicker, Input, Button, message, List, Tag, Modal } from "antd";
+import { DatePicker, Input, Button, message, List, Tag, Modal, Spin } from "antd";
 import { FaPencilAlt } from "react-icons/fa";
 import SearchForm from "@/components/SearchForm/SearchForm";
 import useFetch from "@/hooks/useFetch";
@@ -13,20 +13,25 @@ export default function Seller() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form, setForm] = useState({ date: null, comment: "", price: "" });
   const [errors, setErrors] = useState({});
-  const [searchParams, setSearchParams] = useState({});
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const { data: usersData, isLoading: usersLoading } = useFetch(
+  const { data: usersData, isLoading: usersLoading, refetch: refetchUsers } = useFetch(
     "users",
     "users",
-    { page: currentPage, limit: 12, role: "seller", name: searchParams.name || "" }
+    { 
+      page: currentPage, 
+      limit: 12, 
+      role: "seller", 
+      ...(searchQuery && { name: searchQuery }) 
+    }
   );
 
   const { data: debtorsData, refetch: refetchDebtors } = useFetch("debtors", "debtors", {});
   const users = usersData?.data?.users || [];
 
   const debtsMap = debtorsData?.data?.reduce((acc, debtor) => {
-    if (debtor.seller_id && debtor.debts?.length) {
-      acc[debtor.seller_id] = debtor.debts;
+    if (debtor?.seller_id && debtor?.debts?.length) {
+      acc[debtor?.seller_id] = debtor?.debts;
     }
     return acc;
   }, {}) || {};
@@ -111,39 +116,42 @@ export default function Seller() {
     resetForm();
   };
 
+  const onSearch = (searchParams) => {
+    const searchValue = searchParams.name || "";
+    setSearchQuery(searchValue);
+    setCurrentPage(1);
+  };
+
   return (
     <div className="DirectorSeller pt-[150px] p-4">
       <SearchForm
-        data={users}
-        onSearch={(params) => {
-          setSearchParams({ name: params.name });
-          setCurrentPage(1);
-        }}
         title="Сотувчилар"
-        searchFields={["name", "phone"]}
-        searchByNameOnly={true}
+        showDatePicker={false}
+        searchBy="name"
+        onSearch={onSearch}
+        placeholder="Сотувчи номи бўйича қидириш"
       />
 
-      {users.length === 0 && !usersLoading && (
+      {users?.length === 0 && !usersLoading && (
         <div className="text-center text-gray-400">Сотувчилар топилмади</div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 md:grid-cols-3 gap-4" style={{ gridAutoRows: "1fr" }}>
-        {users.map((user) => {
+        {users?.map((user) => {
           const userDebts = debtsMap[user.id] || [];
           const totalDebt = calculateTotalDebt(userDebts);
 
           return (
             <div 
-              key={user.id} 
+              key={user?.id} 
               className="bg-gray-800 text-white p-4 rounded-lg transition flex flex-col"
               style={{ minHeight: "100%" }}
             >
               <div className="flex justify-between items-center">
                 <div className="flex flex-col gap-2">
-                  <h4 className="text-lg font-semibold">{user.name}</h4>
-                  <p className="text-sm text-gray-300">{user.phone}</p>
-                  {userDebts.length > 0 && (
+                  <h4 className="text-lg font-semibold">{user?.name}</h4>
+                  <p className="text-sm text-gray-300">{user?.phone}</p>
+                  {userDebts?.length > 0 && (
                     <Tag>Ҳамма қарзи: <span className="text-red-500">{totalDebt}</span> $</Tag>
                   )}
                 </div>
@@ -156,13 +164,13 @@ export default function Seller() {
                 </button>
               </div>
 
-              <div className="flex-grow overflow-y-auto max-h-40 my-2">
+              <div className="flex-grow overflow-y-auto max-h-40 my-1">
                 {userDebts.length > 0 ? (
                   <List
                     dataSource={userDebts}
                     renderItem={(debt) => (
-                      <List.Item className="bg-gray-600 mt-2 rounded-lg mb-2">
-                        <div className="w-full p-2 gap-2 flex flex-col text-white justify-between">
+                      <List.Item className="bg-gray-600 mt-1 rounded-lg mb-1">
+                        <div className="w-full p-1 gap-1 flex flex-col text-white justify-between">
                           <div className="flex rounded-lg justify-between border border-b-1  border-white/20 p-1 items-center">
                           <span >
                             {debt.price} $
@@ -172,14 +180,14 @@ export default function Seller() {
                           </span>
                           </div>
                        
-                         <div className="flex justify-between items-center gap-2">
+                         <div className="flex justify-between items-center gap-1">
                          <span className="p-1 rounded-lg">
                             {debt.comment || "Без комментария"}
                           </span>
                           <span className="text-green-500">{debt?.isSent ? "Огоҳлантирилди" : ""}</span>
                          </div>
                       
-                          <div className="flex justify-end w-full gap-4">
+                          <div className="flex justify-end w-full gap-1">
                             <Button
                               type="primary"
                               size="small"

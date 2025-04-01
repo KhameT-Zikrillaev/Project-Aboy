@@ -15,7 +15,7 @@ const AddProductVitrina = ({
   const [selectedItems, setSelectedItems] = useState([]);
 
   const { mutate, isLoading: isSending } = useApiMutation({
-    url: 'Storefront-product',
+    url: 'shop-product',
     method: 'POST',
     onSuccess: (data) => {
       toast.success('Товар муваффақиятли қўшилди!');
