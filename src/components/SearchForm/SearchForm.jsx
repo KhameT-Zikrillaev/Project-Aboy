@@ -88,7 +88,7 @@ const SearchForm = ({
           />
         )}
         
-        <div className="flex items-center gap-2 w-full">
+        <div className="flex items-center gap-2 w-full justify-center">
           <Search
             placeholder={placeholder}
             onChange={(e) => setSearchTerm(e.target.value)}

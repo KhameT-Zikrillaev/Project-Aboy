@@ -1,25 +1,25 @@
 import React, { useState } from "react";
-import { Pagination, Table } from "antd";
-import "antd/dist/reset.css";
+import { Pagination, Table, Spin } from "antd";
 import { useLocation } from "react-router-dom";
 import useFetch from "@/hooks/useFetch";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
-import SearchFormCustom from "@/components/SearchForm/SearchFormCustom";
+import SearchForm from "@/components/SearchForm/SearchForm";
+
 export default function ProductDetalies() {
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
-  const limit = 100;
+  const limit = 10;
   const location = useLocation();
   const warehouseId = location.state?.warehouseId;
-  // Fetch data from API
-  const { data, isLoading } = useFetch(
+
+  const { data, isLoading, refetch } = useFetch(
     `warehouse-products/all-Products`,
     `warehouse-products/all-Products`,
     {
       page,
       limit,
       warehouseId,
-      article: searchQuery || null,
+      ...(searchQuery && { article: searchQuery })
     },
     {
       enabled: !!warehouseId,
@@ -28,34 +28,25 @@ export default function ProductDetalies() {
 
   const handlePageChange = (page) => {
     setPage(page);
-    refetch();
   };
 
-  const onSearch = (value) => setSearchQuery(value);
+  const onSearch = (searchParams) => {
+    const searchValue = searchParams.article || "";
+    setSearchQuery(searchValue);
+    setPage(1);
+  };
 
   const itemRender = (page, type, originalElement) => {
     if (type === "prev") {
       return (
-        <button
-          style={{
-            color: "white",
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
+        <button className="text-white border-none cursor-pointer bg-transparent">
           <LeftOutlined />
         </button>
       );
     }
     if (type === "next") {
       return (
-        <button
-          style={{
-            color: "white",
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
+        <button className="text-white border-none cursor-pointer bg-transparent">
           <RightOutlined />
         </button>
       );
@@ -86,7 +77,7 @@ export default function ProductDetalies() {
       dataIndex: "batch_number",
       key: "batch_number",
       render: (text) => (
-        <span className="text-gray-100 font-semibold">{text}</span>
+        <span className="text-gray-100 font-semibold">{text || "-"}</span>
       ),
     },
     {
@@ -102,7 +93,9 @@ export default function ProductDetalies() {
       dataIndex: "price",
       key: "price",
       render: (text) => (
-        <span className="text-gray-100 font-semibold">{text}</span>
+        <span className="text-gray-100 font-semibold">
+          {text ? `${text} сум` : "-"}
+        </span>
       ),
     },
     {
@@ -110,44 +103,69 @@ export default function ProductDetalies() {
       dataIndex: "image_url",
       key: "image_url",
       render: (text) => (
-        <div
-          className="max-h-[80px] max-w-[80px]"
-          onClick={() => isOpenModal(text)}
-        >
-          <img
-            className="h-auto w-full"
-            src={`${text}`}
-            crossOrigin="anonymous"
-          />
+        <div className="max-h-[80px] max-w-[80px]">
+          {text ? (
+            <img
+              className="h-auto w-full object-cover"
+              src={text}
+              alt="product"
+              crossOrigin="anonymous"
+            />
+          ) : (
+            <span className="text-gray-400">-</span>
+          )}
         </div>
       ),
     },
   ];
 
   return (
-    <div className="p-5 mt-30">
-      <SearchFormCustom onSearch={onSearch} title="Қидириш"></SearchFormCustom>
-      <div className="text-gray-100">
-        <Table
-          columns={columns}
-          dataSource={data?.data?.data}
-          pagination={false}
-          className="custom-table"
-          rowClassName={() => "custom-row"}
-          bordered
-          loading={isLoading}
-        />
-        <div className="flex justify-center mt-5">
-          <Pagination
-            className="custom-pagination"
-            current={page}
-            total={data?.total}
-            pageSize={limit}
-            onChange={handlePageChange}
-            itemRender={itemRender}
-          />
+    <div className="p-5 mt-[120px]">
+      <SearchForm
+        title="Маҳсулотлар"
+        showDatePicker={false}
+        searchBy="article"
+        onSearch={onSearch}
+        placeholder="Артикул бўйича қидириш"
+      />
+
+      {isLoading ? (
+        <div className="flex justify-center items-center h-[300px]">
+          <Spin size="large" />
         </div>
-      </div>
+      ) : (
+        <>
+          <Table
+            columns={columns}
+            dataSource={data?.data?.data || []}
+            pagination={false}
+            className="custom-table bg-gray-800 rounded-lg overflow-hidden"
+            rowClassName={() => "bg-gray-700 hover:bg-gray-600"}
+            bordered
+            loading={isLoading}
+            locale={{
+              emptyText: (
+                <div className="text-gray-400 py-10">
+                  Маҳсулотлар топилмади
+                </div>
+              )
+            }}
+          />
+          
+          {data?.data?.total > 0 && (
+            <div className="flex justify-center mt-5">
+              <Pagination
+                current={page}
+                total={data?.data?.total}
+                pageSize={limit}
+                onChange={handlePageChange}
+                itemRender={itemRender}
+                className="custom-pagination"
+              />
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }

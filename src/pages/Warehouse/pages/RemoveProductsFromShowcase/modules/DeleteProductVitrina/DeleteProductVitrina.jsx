@@ -54,7 +54,7 @@ const DeleteProductVitrina = ({
       };
 
       await api({
-        url: `Storefront-product/${shopId}`,
+        url: `shop-product/remove-products/${shopId}`,
         method: "DELETE",
         data: requestData,
       });

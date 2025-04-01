@@ -21,20 +21,25 @@ export default function ViewDetaliesRemoveProducts() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [warehouseId, setWarehouseId] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const { user } = useUserStore();
 
   const { data: productsData, isLoading: productsLoading, refetch: refetchProducts } = useFetch(
     shopId ? `shop-product/all-products/${shopId}` : null,
     shopId ? `shop-product/all-products/${shopId}` : null,
-    {},
+    {
+      page: currentPage,
+      limit: itemsPerPage,
+      ...(searchQuery && { article: searchQuery })
+    },
     {
       enabled: !!shopId,
     }
   );
 
   useEffect(() => {
-    if (productsData?.data) {
-      setFilteredData(productsData.data.map(item => ({
+    if (productsData?.data?.data) {
+      setFilteredData(productsData.data.data.map(item => ({
         ...item,
         key: item.id
       })));
@@ -43,8 +48,16 @@ export default function ViewDetaliesRemoveProducts() {
     }
   }, [productsData]);
 
+  const onSearch = (searchParams) => {
+    const searchValue = searchParams.article || "";
+    setSearchQuery(searchValue);
+    setCurrentPage(1);
+  };
+
   const showModal = () => {
-    setIsModalOpen(true);
+    if (selectedProducts.length > 0) {
+      setIsModalOpen(true);
+    }
   };
 
   const onClose = () => {
@@ -87,20 +100,6 @@ export default function ViewDetaliesRemoveProducts() {
   const handleSuccessSubmit = () => {
     resetSelection();
     refetchProducts();
-  };
-
-  const handleSearchResults = (results) => {
-    if (Array.isArray(results)) {
-      setFilteredData(results);
-    } else if (results === null || results === undefined) {
-      if (productsData?.data && Array.isArray(productsData.data)) {
-        setFilteredData(productsData.data);
-      } else {
-        setFilteredData([]);
-      }
-    } else {
-      setFilteredData([]);
-    }
   };
 
   const itemRender = (page, type, originalElement) => {
@@ -185,6 +184,10 @@ export default function ViewDetaliesRemoveProducts() {
             src={text}
             crossOrigin="anonymous"
             alt="product"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = 'placeholder-image-url';
+            }}
           />
         </div>
       ),
@@ -200,10 +203,11 @@ export default function ViewDetaliesRemoveProducts() {
       <div className="absolute inset-0 bg-black/50 backdrop-blur-md z-0"></div>
       <div className="relative z-0 max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[120px]">
         <SearchForm 
-          data={productsData?.data} 
-          onSearch={handleSearchResults} 
-          title={`${name} витринасини ўчириш `} 
-          showDatePicker={false} 
+          title={`${name} витринасини ўчириш`}
+          showDatePicker={false}
+          searchBy="article"
+          onSearch={onSearch}
+          placeholder="Артикул бўйича қидириш"
         />
         
         <div className='w-full flex justify-between mb-4'>
@@ -256,11 +260,11 @@ export default function ViewDetaliesRemoveProducts() {
           </div>
         )}
 
-        {filteredData.length > 0 && (
+        {productsData?.data?.total > 0 && (
           <div className="my-2 mb-12 md:mb-0 flex justify-center">
             <Pagination
               current={currentPage}
-              total={filteredData.length}
+              total={productsData?.data?.total}
               pageSize={itemsPerPage}
               onChange={(page) => setCurrentPage(page)}
               showSizeChanger={false}
@@ -269,11 +273,12 @@ export default function ViewDetaliesRemoveProducts() {
             />
           </div>
         )}
+        
         <ImageModal
           isOpen={!!selectedImage}
           onClose={() => setSelectedImage(null)}
           imageUrl={selectedImage}
-          idWarehouse={warehouseId}
+          idWarehouse={shopId}
         />
 
         <ModalComponentContent

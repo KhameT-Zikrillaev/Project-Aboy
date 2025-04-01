@@ -1,64 +1,55 @@
 import React, { useState, useEffect } from "react";
 import useFetch from "@/hooks/useFetch";
-import { Table, Spin, Empty, Tag, Pagination } from "antd";
+import { Table, Spin, Empty, Tag, Pagination, Button } from "antd";
 import SearchForm from "@/components/SearchForm/SearchForm";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 
 export default function ViewVitrinaProducts({ idshop }) {
   const [filteredData, setFilteredData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [searchLoading, setSearchLoading] = useState(false);
-  const pageSize = 10; // Фиксированное количество элементов
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { data, isLoading, refetch } = useFetch(
     `shop-product/all-products/${idshop}`,
     `shop-product/all-products/${idshop}`,
-    {},
+    {
+      page: currentPage,
+      limit: itemsPerPage,
+      ...(searchQuery && { article: searchQuery })
+    },
     {
       enabled: !!idshop,
-      staleTime: 0,
-      cacheTime: 0,
     }
   );
 
   useEffect(() => {
-    if (idshop) {
-      setFilteredData([]);
-      setCurrentPage(1);
-      refetch();
-    }
-  }, [idshop, refetch]);
-
-  useEffect(() => {
-    if (data?.data) {
-      setFilteredData(data.data);
+    if (data?.data?.data) {
+      setFilteredData(data.data.data.map(item => ({
+        ...item,
+        key: item.id
+      })));
     } else {
       setFilteredData([]);
     }
   }, [data]);
 
-  const handleSearchResults = (results) => {
-    setSearchLoading(true);
-    setTimeout(() => {
-      if (Array.isArray(results)) {
-        setFilteredData(results);
-      } else if (results === null || results === undefined) {
-        if (data?.data && Array.isArray(data.data)) {
-          setFilteredData(data.data);
-        } else {
-          setFilteredData([]);
-        }
-      } else {
-        setFilteredData([]);
-      }
-      setSearchLoading(false);
-    }, 500);
+  const onSearch = (searchParams) => {
+    const searchValue = searchParams.article || "";
+    setSearchQuery(searchValue);
+    setCurrentPage(1);
   };
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
+  const updateItemsPerPage = () => {
+    setItemsPerPage(window.innerWidth < 768 ? 5 : 10);
   };
+
+  useEffect(() => {
+    updateItemsPerPage();
+    window.addEventListener("resize", updateItemsPerPage);
+    return () => window.removeEventListener("resize", updateItemsPerPage);
+  }, []);
 
   const itemRender = (page, type, originalElement) => {
     if (type === "prev") {
@@ -85,7 +76,7 @@ export default function ViewVitrinaProducts({ idshop }) {
       width: 50,
       render: (_, __, index) => (
         <span className="text-gray-100">
-          {(currentPage - 1) * pageSize + index + 1}
+          {(currentPage - 1) * itemsPerPage + index + 1}
         </span>
       ),
     },
@@ -131,6 +122,10 @@ export default function ViewVitrinaProducts({ idshop }) {
             src={text}
             crossOrigin="anonymous"
             alt="product"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = 'placeholder-image-url';
+            }}
           />
         </div>
       ),
@@ -141,51 +136,46 @@ export default function ViewVitrinaProducts({ idshop }) {
   return (
     <div className="p-4 w-full">
       <SearchForm
-        data={data?.data} 
-        onSearch={handleSearchResults}
-        title="Витринаси" 
+        title="Витринаси"
         showDatePicker={false}
-        placeholder="Поиск по названию, артикулу, партии"
-        loading={searchLoading}
+        searchBy="article"
+        onSearch={onSearch}
+        placeholder="Артикул бўйича қидириш"
       />
       
-      {(isLoading || searchLoading) ? (
-        <div className="flex justify-center items-center h-64">
+      {isLoading ? (
+        <div className="flex justify-center items-center h-[300px]">
           <Spin size="large" />
         </div>
       ) : (
-        <>
-          {filteredData.length === 0 ? (
-            <div className="flex flex-col items-center text-white justify-center h-64">
-              <Empty style={{ color: 'white' }} description="Tovar topilmadi" />
-            </div>
+        <div className="w-full px-4">
+          {filteredData.length > 0 ? (
+            <Table
+              columns={columns}
+              dataSource={filteredData}
+              pagination={false}
+              className="custom-table"
+              rowClassName={() => "custom-row"}
+              bordered
+              style={{
+                background: "rgba(255, 255, 255, 0.1)",
+                backdropFilter: "blur(10px)",
+              }}
+            />
           ) : (
-            <div className="w-full px-4">
-              <Table
-                columns={columns}
-                dataSource={filteredData}
-                pagination={false}
-                className="custom-table"
-                rowClassName={() => "custom-row"}
-                bordered
-                style={{
-                  background: "rgba(255, 255, 255, 0.1)",
-                  backdropFilter: "blur(10px)",
-                }}
-              />
-            </div>
+            <div className="text-center text-white text-xl py-10">Маълумот топилмади</div>
           )}
-        </>
+        </div>
       )}
 
-      {!isLoading && !searchLoading && filteredData.length > 0 && (
-        <div className="flex justify-center mt-4">
+      {data?.data?.total > 0 && (
+        <div className="my-2 mb-12 md:mb-0 flex justify-center">
           <Pagination
             current={currentPage}
-            pageSize={pageSize}
-            total={filteredData.length}
-            onChange={handlePageChange}
-            showSizeChanger={false} // Отключен выбор количества элементов
+            total={data?.data?.total}
+            pageSize={itemsPerPage}
+            onChange={(page) => setCurrentPage(page)}
+            showSizeChanger={false}
             className="custom-pagination"
             itemRender={itemRender}
           />
