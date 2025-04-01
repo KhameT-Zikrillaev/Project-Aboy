@@ -150,13 +150,11 @@ export default function ReportWarehouseSend() {
       style={{ backgroundImage: `url(${bgsklad})` }}
     >
       <div className="absolute inset-0 bg-black/50 backdrop-blur-md z-0"></div>
-
       <div className="w-full max-w-[1440px] mx-auto flex flex-col  mt-[110px]">
         <SearchFormStartEnd
           title={`${user?.warehouse?.name} ҳисоботлари`}
           onSearch={handleDateSearch}
         />
-
         <Table
           columns={columns}
           dataSource={data?.data?.transfers}
