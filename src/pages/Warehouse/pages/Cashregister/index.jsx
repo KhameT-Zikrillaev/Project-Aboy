@@ -29,7 +29,7 @@ export default function CashRegister() {
   };
 
   return (
-    <div className="DirectorProduct pt-[150px] p-4">
+    <div className="DirectorProduct pt-[150px] p-4 max-w-[1440px] mx-auto">
       <SearchForm 
         name=""
         title="Сотувчилар" 

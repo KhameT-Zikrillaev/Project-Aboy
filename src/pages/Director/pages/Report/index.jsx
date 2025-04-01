@@ -12,7 +12,7 @@ export default function Report() {
   const [page, setPage] = useState(1);
   const limit = 12;
 
-  const { data, isLoading, refetch } = useFetch(
+  const { data, isLoading } = useFetch(
     'warehouse',
     'warehouse',
     {

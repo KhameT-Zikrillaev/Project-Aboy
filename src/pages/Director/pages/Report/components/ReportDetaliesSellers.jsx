@@ -15,8 +15,6 @@ export default function ReportDetaliesSellers() {
   // const isFetchEnabled = !!(shopId && startDate && endDate);
   const warehouseId = sessionStorage.getItem("warehouseId");
 
-  
-
  const { data, isLoading, refetch } = useFetch(
      `cash-register/warehouse/${warehouseId}`,
      `cash-register/warehouse/${warehouseId}`,
