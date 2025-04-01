@@ -1,71 +1,146 @@
-import React, { useState, useEffect } from "react";
-import { Pagination, Spin, Empty } from "antd";
+import React, { useState} from "react";
+import { Pagination, Table } from "antd";
 import "antd/dist/reset.css";
 import bgsklad from "@/assets/images/bg-sklad.png";
 import SearchFormStartEnd from "@/components/SearchFormStartEnd/SearchFormStartEnd";
 import useFetch from "@/hooks/useFetch";
 import useUserStore from "@/store/useUser";
-import ReportCard from "@/components/reportCard";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 export default function ReportWarehouseSend() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(9);
-  const [filteredData, setFilteredData] = useState([]);
-  const {user} = useUserStore()
+  const [selectedDates, setSelectedDates] = useState({ from: null, to: null });
+  const [page, setPage] = useState(1);
+  const limit = 100;
+  const { user } = useUserStore();
+  const [expandedRowKeys, setExpandedRowKeys] = useState([]);
 
-  const { data, isLoading } = useFetch(`warehouse-transfers/${user?.warehouse?.id}`, `warehouse-transfers/${user?.warehouse?.id}`, {});
-  
-  useEffect(() => {
-    if (data && data?.data?.length > 0) {
-      setFilteredData(data?.data);
-    }
-  }, [data]);
-  
-  useEffect(() => {
-    const updateItemsPerPage = () => {
-      if (window.innerWidth < 768) {
-        setItemsPerPage(4); // For mobile devices
-      } else {
-        setItemsPerPage(9); // For desktop
-      }
-    };
-    updateItemsPerPage(); // Call immediately when component mounts
-    window.addEventListener("resize", updateItemsPerPage);
+  const startDate = selectedDates?.from;
+  const endDate = selectedDates?.to;
+  const isFetchEnabled = !!(startDate && endDate);
 
-    return () => window.removeEventListener("resize", updateItemsPerPage);
-  }, []);
-
-  const currentData = filteredData?.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+  const { data, isLoading, refetch } = useFetch(
+    `warehouse-transfers/transfer/${user?.warehouse?.id}`,
+    `warehouse-transfers/transfer/${user?.warehouse?.id}`,
+    { fromDate: startDate, toDate: endDate, page, limit },
+    { enabled: isFetchEnabled }
   );
 
-  const handleSearch = (startDate, endDate) => {
-    if (data?.data && data?.data.length > 0) {
-      if (!startDate && !endDate) {
-        setFilteredData(data?.data);
-        setCurrentPage(1);
-        return;
-      }
-      
-      let filtered = [...data?.data];
-      
-      if (startDate && endDate) {
-        const start = new Date(startDate);
-        start.setHours(0, 0, 0, 0);
-        
-        const end = new Date(endDate);
-        end.setHours(23, 59, 59, 999);
-        
-        filtered = filtered.filter(item => {
-          if (!item.createdAt) return false;
-          
-          const itemDate = new Date(item.createdAt);
-          return itemDate >= start && itemDate <= end;
-        });
-      }
-      
-      setFilteredData(filtered);
-      setCurrentPage(1);
+  console.log(data?.data);
+  
+
+  const handleDateSearch = (from, to) => {
+    setSelectedDates({ from, to });
+    setPage(1);
+  };
+
+
+  const handlePageChange = (page) => {
+    setPage(page);
+    refetch();
+  };
+
+  const itemRender = (page, type, originalElement) => {
+    if (type === "prev") {
+      return (
+        <button
+          style={{
+            color: "white",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          <LeftOutlined />
+        </button>
+      );
+    }
+    if (type === "next") {
+      return (
+        <button
+          style={{
+            color: "white",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          <RightOutlined />
+        </button>
+      );
+    }
+    return originalElement;
+  };
+
+  const columns = [
+    {
+      title: "№",
+      render: (_, __, index) => (
+        <span className="text-gray-100 font-semibold">
+          {(page - 1) * limit + index + 1}
+        </span>
+      ),
+      width: 70,
+    },
+    {
+      title: "Юборган омбор",
+      dataIndex: "sourceWarehouse",
+      render: (text) => (
+        <span className="text-gray-100 font-semibold">{text?.name}</span>
+      ),
+    },
+    {
+      title: "Қабул қилган омбор",
+      dataIndex: "destinationWarehouse",
+      render: (text) => (
+        <span className="text-gray-100 font-semibold">
+          {text?.name}
+        </span>
+      ),
+    },
+    {
+      title: "Сана",
+      dataIndex: "createdAt",
+      render: (text) => (
+        <span className="text-gray-100 font-semibold">{text}</span>
+      ),
+    },
+  ];
+
+  const columnsNested = [
+    {
+      title: "№",
+      render: (_, __, index) => (
+        <span className="text-gray-100 font-semibold">
+          {(page - 1) * limit + index + 1}
+        </span>
+      ),
+      width: 70,
+    },
+    {
+      title: "Артикле",
+      dataIndex: "product",
+      render: (text) => (
+        <span className="text-gray-100 font-semibold">{text?.article}</span>
+      ),
+    },
+    {
+      title: "Партия",
+      dataIndex: "product",
+      render: (text) => (
+        <span className="text-gray-100 font-semibold">{text.batch_number}</span>
+      ),
+    },
+    {
+      title: "Рулон  сони",
+      dataIndex: "quantity",
+      render: (text) => (
+        <span className="text-gray-100 font-semibold">{text}</span>
+      ),
+    },
+  ];
+
+  const handleExpand = (expanded, record) => {
+    if (expanded) {
+      setExpandedRowKeys([record.id]); // Faqat bitta qator ochiladi
+    } else {
+      setExpandedRowKeys([]); // Barchasini yopish
     }
   };
 
@@ -76,48 +151,44 @@ export default function ReportWarehouseSend() {
     >
       <div className="absolute inset-0 bg-black/50 backdrop-blur-md z-0"></div>
 
-      <div className="relative max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[110px]">
-  
+      <div className="w-full max-w-[1440px] mx-auto flex flex-col  mt-[110px]">
         <SearchFormStartEnd
-          data={data?.data} 
-          name="" 
-          title="Ҳисоботлар омборлар" 
-          showDatePicker={true} 
-          onSearch={handleSearch} 
-          className="w-full mb-6"
+          title={`${user?.warehouse?.name} ҳисоботлари`}
+          onSearch={handleDateSearch}
         />
-        
-        {isLoading ? (
-          <div className="flex justify-center items-center h-64 w-full">
-            <Spin size="large" />
-          </div>
-        ) : filteredData.length === 0 ? (
-          <Empty 
-            description={
-              <span className="text-white">Маълумот топилмади</span>
-            } 
-            className="my-12"
-          />
-        ) : (
-          <div className="grid grid-cols-1 mb-4 sm:grid-cols-2 lg:grid-cols-3 gap-2 w-full px-4">
-            {currentData.map((item) => (
-              <ReportCard key={item?.id} item={item} />
-            ))}
-          </div>
-        )}
 
-        {filteredData.length > 0 && (
-          <div className="my-0 mb-12 md:mb-2 flex justify-center">
-            <Pagination
-              current={currentPage}
-              total={filteredData.length}
-              pageSize={itemsPerPage}
-              onChange={(page) => setCurrentPage(page)}
-              showSizeChanger={false}
-              className="custom-pagination"
-            />
-          </div>
-        )}
+        <Table
+          columns={columns}
+          dataSource={data?.data?.transfers}
+          pagination={false}
+          rowKey="id"
+          className="custom-table custom-table-inner"
+          rowClassName={() => "custom-row"}
+          bordered
+          loading={isLoading}
+          expandable={{
+            expandedRowKeys,
+            onExpand: handleExpand,
+            expandedRowRender: (record) =>
+              record?.items && record?.items.length > 0 ? (
+                <Table
+                  columns={columnsNested}
+                  dataSource={record?.items || []}
+                  pagination={false}
+                />
+              ) : null,
+          }}
+        />
+        <div className="flex justify-center mt-5">
+          <Pagination
+            className="custom-pagination"
+            current={page}
+            total={data?.data?.total || 0}
+            pageSize={limit}
+            onChange={handlePageChange}
+            itemRender={itemRender}
+          />
+        </div>
       </div>
     </div>
   );

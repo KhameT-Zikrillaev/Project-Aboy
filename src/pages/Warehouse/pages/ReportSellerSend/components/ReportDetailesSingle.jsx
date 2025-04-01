@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import useFetch from "@/hooks/useFetch";
-import { Pagination, Spin, Table } from "antd";
-import RepordCardShop from "@/components/reportCardShop/RepordCardShop";
+import { Pagination, Table } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 
 const ReportDetailesSingle = () => {
@@ -11,7 +10,6 @@ const ReportDetailesSingle = () => {
   const [page, setPage] = useState(1);
   const limit = 100;
   const [expandedRowKeys, setExpandedRowKeys] = useState([]);
-  console.log(expandedRowKeys);
 
   const { data, isLoading } = useFetch(
     `cash-register/date/${date}/shop/${shopId}`,
@@ -25,6 +23,8 @@ const ReportDetailesSingle = () => {
       setExpandedRowKeys([]); // Barchasini yopish
     }
   };
+
+ 
 
   const handlePageChange = (page) => {
     setPage(page);
@@ -128,7 +128,6 @@ const ReportDetailesSingle = () => {
     },
   ];
 
-
   return (
     <div className="mt-[120px]">
       <div className="text-gray-100 w-full px-4">
@@ -137,8 +136,8 @@ const ReportDetailesSingle = () => {
           dataSource={data?.data?.transactions}
           pagination={false}
           rowKey="id"
-          className="custom-table"
-          rowClassName={() => "custom-row custom-row-click"}
+          className="custom-table custom-table-inner"
+          rowClassName={() => "custom-row"}
           bordered
           loading={isLoading}
           expandable={{
@@ -158,7 +157,7 @@ const ReportDetailesSingle = () => {
           <Pagination
             className="custom-pagination"
             current={page}
-            total={data?.data?.transactions?.length || 0}
+            total={data?.data?.totalTransactions || 0}
             pageSize={limit}
             onChange={handlePageChange}
             itemRender={itemRender}
