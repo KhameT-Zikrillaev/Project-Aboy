@@ -6,10 +6,7 @@ import { Spin } from "antd";
 import useUserStore from "@/store/useUser";
 
 export default function CashRegister() {
-  const [visibleShops, setVisibleShops] = useState(12);
   const [searchQuery, setSearchQuery] = useState("");
-  const [page, setPage] = useState(1);
-  const limit = 12;
   const { user } = useUserStore();
   const warehouseId = user?.warehouse?.id;
 
@@ -17,18 +14,12 @@ export default function CashRegister() {
     warehouseId ? `shop/all-shops/${warehouseId}` : null,
     warehouseId ? `shop/all-shops/${warehouseId}` : null,
     {
-      page,
-      limit,
       ...(searchQuery && { name: searchQuery })
     },
     {
       enabled: !!warehouseId
     }
   );
-
-  const loadMoreShops = () => {
-    setPage(prevPage => prevPage + 1);
-  };
 
   const onSearch = (searchParams) => {
     const searchValue = searchParams.name || "";
@@ -54,7 +45,7 @@ export default function CashRegister() {
         </div>
       ) : shops?.data?.shops?.length > 0 ? (
         <div className="grid grid-cols-2 gap-4">
-          {shops.data.shops.slice(0, visibleShops).map((shop) => (
+          {shops?.data?.shops.map((shop) => (
             <Link
               key={shop.id}
               to={`/warehouse/cash-register/${shop.name}`}
@@ -69,17 +60,6 @@ export default function CashRegister() {
       ) : (
         <div className="flex justify-center items-center h-[300px] text-gray-400">
           Сотувчилар топилмади
-        </div>
-      )}
-      
-      {shops?.data?.shops?.length >= limit && (
-        <div className="flex justify-center mt-4">
-          <button
-            onClick={loadMoreShops}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-          >
-            Яна
-          </button>
         </div>
       )}
     </div>

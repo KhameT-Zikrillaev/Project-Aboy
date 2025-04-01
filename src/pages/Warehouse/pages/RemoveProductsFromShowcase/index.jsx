@@ -9,7 +9,6 @@ import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 export default function WarehouseProducts() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(12);
-  const [filteredData, setFilteredData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const { user } = useUserStore();
   const warehouseId = user?.warehouse?.id;
@@ -26,13 +25,6 @@ export default function WarehouseProducts() {
       enabled: !!warehouseId,
     }
   );
-  useEffect(() => {
-    if (data?.data?.shops) {
-      setFilteredData(data.data.shops);
-    } else {
-      setFilteredData([]);
-    }
-  }, [data]);
 
   const onSearch = (searchParams) => {
     const searchValue = searchParams.name || "";
@@ -85,7 +77,7 @@ export default function WarehouseProducts() {
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {filteredData.map((shop) => (
+            {data?.data?.shops?.map((shop) => (
               <Link
                 key={shop?.id}
                 state={{ shopId: shop?.id }}
