@@ -24,8 +24,8 @@ export default function ViewDetaliesRemoveProducts() {
   const [warehouseId, setWarehouseId] = useState("");
 
   const { data: productsData, isLoading: productsLoading, refetch: refetchProducts } = useFetch(
-    shopId ? `Storefront-product/${shopId}` : null,
-    shopId ? `Storefront-product/${shopId}` : null,
+    shopId ? `shop-product/all-products/${shopId}` : null,
+    shopId ? `shop-product/all-products/${shopId}` : null,
     {},
     {
       enabled: !!shopId,

@@ -4,7 +4,7 @@ import { Table, Spin, Empty, Tag, Pagination } from "antd";
 import SearchForm from "@/components/SearchForm/SearchForm";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 
-export default function ViewVitrinaProducts({ idwarehouse }) {
+export default function ViewVitrinaProducts({ idshop }) {
   const [filteredData, setFilteredData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -12,23 +12,23 @@ export default function ViewVitrinaProducts({ idwarehouse }) {
   const pageSize = 10; // Фиксированное количество элементов
 
   const { data, isLoading, refetch } = useFetch(
-    `Storefront-product/${idwarehouse}`,
-    `Storefront-product/${idwarehouse}`,
+    `shop-product/all-products/${idshop}`,
+    `shop-product/all-products/${idshop}`,
     {},
     {
-      enabled: !!idwarehouse,
+      enabled: !!idshop,
       staleTime: 0,
       cacheTime: 0,
     }
   );
 
   useEffect(() => {
-    if (idwarehouse) {
+    if (idshop) {
       setFilteredData([]);
       setCurrentPage(1);
       refetch();
     }
-  }, [idwarehouse, refetch]);
+  }, [idshop, refetch]);
 
   useEffect(() => {
     if (data?.data) {

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Input, DatePicker, Button } from 'antd'; 
+import { Input, DatePicker, Button } from 'antd';
 import { FaWarehouse, FaChartLine, FaListAlt, FaBox, FaUserTie } from "react-icons/fa";
 import { TbShoppingCartCheck } from "react-icons/tb";
-import { CloseCircleOutlined } from '@ant-design/icons'; 
+import { CloseCircleOutlined } from '@ant-design/icons';
 
 const { Search } = Input;
 
@@ -30,69 +30,35 @@ const iconMap = {
 };
 
 const SearchForm = ({ 
-  name, 
-  title, 
-  showDatePicker = true, 
-  onDateChange, 
-  onSearch, // Функция для обработки поиска
-  searchParam = 'article', // Параметр поиска по умолчанию
-  placeholder = "Qidirish",
+  name = '',
+  title = '',
+  showDatePicker = true,
+  onDateChange,
+  onSearch,
+  searchBy = 'article', // 'article' | 'name'
+  placeholder = "Кидириш",
   showClearButton = true
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [date, setDate] = useState(null);
 
-  // Улучшенный обработчик поиска
   const handleSearch = (value) => {
     setSearchTerm(value);
-
-    if (typeof onSearch === 'function') {
-      // Если поиск только по имени
-      if (searchByNameOnly) {
-        onSearch({ name: value || '' });
-      } else {
-        // Обычный поиск по нескольким параметрам
-        if (!value || value.trim() === '') {
-          onSearch(data?.products || data);
-          return;
-        }
-        const dataToFilter = data?.products || data;
-        if (!dataToFilter || !Array.isArray(dataToFilter)) {
-          return;
-        }
-        const filteredData = dataToFilter.filter(item => {
-          const articleMatch = item?.article && item?.article.toLowerCase().includes(value.toLowerCase());
-          const nameMatch = item?.name && item?.name.toLowerCase().includes(value.toLowerCase());
-          const descriptionMatch = item?.description && item?.description.toLowerCase().includes(value.toLowerCase());
-          return articleMatch || nameMatch || descriptionMatch;
-        });
-        onSearch(filteredData);
-      }
+    if (onSearch) {
+      onSearch({ [searchBy]: value || null });
     }
   };
 
-  // Изменение даты
   const handleDateChange = (dateValue) => {
     setDate(dateValue);
     if (onDateChange) onDateChange(dateValue);
-
-    if (typeof onSearch === 'function' && !searchByNameOnly) {
-      setTimeout(() => {
-        onSearch(searchTerm, dateValue ? dateValue.toDate() : null);
-      }, 0);
-    }
   };
 
-  // Очистка поиска
   const handleClear = () => {
     setSearchTerm('');
     setDate(null);
-    if (onSearch) {
-      onSearch(''); // Отправляем пустую строку для сброса поиска
-    }
-    if (onDateChange) {
-      onDateChange(null);
-    }
+    if (onSearch) onSearch({ [searchBy]: null });
+    if (onDateChange) onDateChange(null);
   };
 
   const shouldShowClearButton = showClearButton && (searchTerm.length > 0 || date !== null);
@@ -124,13 +90,12 @@ const SearchForm = ({
         
         <div className="flex items-center gap-2 w-full">
           <Search
-            placeholder="Қидириш"
+            placeholder={placeholder}
             onChange={(e) => setSearchTerm(e.target.value)}
             value={searchTerm}
             enterButton
             className="custom-search max-w-md"
             onSearch={handleSearch}
-         
             onPressEnter={(e) => handleSearch(e.target.value)}
           />
           
