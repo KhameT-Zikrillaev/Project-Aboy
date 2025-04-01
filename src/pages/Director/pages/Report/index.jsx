@@ -46,7 +46,6 @@ export default function Report() {
         const isUserWarehouse = userName.includes(warehouseName);
         return !isUserWarehouse;
       });
-      
       setFilteredData(filtered);
     } else {
       setFilteredData(allWarehouses);
@@ -54,7 +53,7 @@ export default function Report() {
   }, [allWarehouses, user?.name]);
 
   const loadMoreDistricts = () => {
-    setPage(prevPage => prevPage + 1);
+    setPage(prevPage);
     setVisibleDistricts(prev => prev + 12); // Увеличиваем количество отображаемых элементов
   };
 
