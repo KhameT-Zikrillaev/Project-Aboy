@@ -16,7 +16,7 @@ export default function WarehouseProducts() {
   const { user } = useUserStore();
   const warehouseId = user?.warehouse?.id;
 
-  const { data, isLoading, refetch } = useFetch(
+  const { data, isLoading } = useFetch(
     warehouseId ? `warehouse/${warehouseId}` : null,
     warehouseId ? `warehouse/${warehouseId}` : null,
     {},

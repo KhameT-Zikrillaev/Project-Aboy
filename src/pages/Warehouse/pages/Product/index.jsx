@@ -24,7 +24,7 @@ export default function Warehouse() {
       page, 
       limit, 
       warehouseId: id, 
-      ...(searchQuery && { article: searchQuery })
+      article: searchQuery || null
     },
     { enabled: !!id }
   );
@@ -166,6 +166,7 @@ export default function Warehouse() {
               className="custom-pagination"
               current={page}
               total={data?.data?.total}
+              showSizeChanger={false}
               pageSize={limit}
               onChange={handlePageChange}
               itemRender={itemRender}

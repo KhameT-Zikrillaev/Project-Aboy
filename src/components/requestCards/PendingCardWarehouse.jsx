@@ -10,39 +10,9 @@ const PendingCardWarehouse = ({ item, fetchRequests }) => {
   const { user } = useUserStore();
   const formatDate = (date) => (date ? format(new Date(date), "dd.MM.yyyy HH:mm") : "Номаълум сана");
 
-  const updateStatus = async (status) => {
-    try {
-      const endpoint = item?.shop ? `shop-request/change-status/${item?.id}` : `warehouse-requests/change-status/${item?.id}`;
-      await api.patch(endpoint, { status });
-      
-      if (status === "approved" && item?.shop) {
-        const { quantity = 0, product } = item?.items[0] || {};
-        await api.post("order", {
-          shop_id: item.shop.id,
-          warehouse_id: user?.warehouse?.id,
-          seller_id: item.shop.sellers[0]?.id,
-          total_amount: product?.price * quantity,
-          payment_method: "cash",
-          items: [{
-            productId: product?.id,
-            orderId: item?.id,
-            price: product?.price,
-            quantity,
-            total: product?.price * quantity,
-          }],
-        });
-      }
-
-      fetchRequests();
-      toast.success(status === "approved" ? "Маҳсулот муваффақиятли берилди" : "Сўров бекор қилинди");
-    } catch (error) {
-      toast.error(error?.response?.status === 404 ? "Маҳсулот етарли эмас" : "Хатолик юз берди");
-    }
-  };
-
   const deleteRequest = async () => {
     try {
-      const endpoint = item?.shop ? `shop-request/remove-request/${item?.id}` : `warehouse-requests/remove-request/${item?.id}`;
+      const endpoint = item?.shop ? `shop-requests/remove-request/${item?.id}` : `warehouse-requests/remove-request/${item?.id}`;
       await api.delete(endpoint);
       fetchRequests();
       toast.success("Сўров муваффақиятли ўчирилди");
@@ -159,29 +129,11 @@ const PendingCardWarehouse = ({ item, fetchRequests }) => {
           )}
         </div>
 
-        {item?.status !== "pending" ? (
           <div className="flex justify-end gap-2 mt-3">
             <Button type="primary"  onClick={deleteRequest}>
             Ўқидим
               </Button>
           </div>
-        ) : (
-          <>
-            {" "}
-            <div className="flex justify-end gap-2 mt-3">
-              <Button
-                type="primary"
-                danger
-                onClick={() => updateStatus("rejected")}
-              >
-                Рад этиш
-              </Button>
-              <Button type="primary" onClick={() => updateStatus("approved")}>
-              Қабул қилиш
-              </Button>
-            </div>
-          </>
-        )}
       </div>
     </Card>
   );

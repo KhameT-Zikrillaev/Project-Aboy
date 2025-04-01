@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { FaArrowLeft } from "react-icons/fa"; 
-import logo from "@/assets/images/logo.png"; 
+import { FaArrowLeft } from "react-icons/fa";
+import logo from "@/assets/images/logo.png";
 import useUserStore from "@/store/useUser";
 import { TbBellRinging2Filled } from "react-icons/tb";
 import { Badge } from "antd";
 import PendingCardWarehouse from "../requestCards/PendingCardWarehouse";
-import useFetch from "@/hooks/useFetch";  
+import useFetch from "@/hooks/useFetch";
 import Cookies from "js-cookie";
 const Navbar = () => {
   const navigate = useNavigate();
@@ -24,54 +24,40 @@ const Navbar = () => {
     }
   };
 
-  const { data: warehouseRequests, refetch: refetchWarehouseRequests } = useFetch(
-    "warehouse-requests",
-    `warehouse-requests/pending-requests/${user?.warehouse?.id}`,
-    {},
-    { enabled: user?.role === "staff" }
-  );
+  const { data: warehouseRequests, refetch: refetchWarehouseRequests } =
+    useFetch(
+      "warehouse-requests",
+      `warehouse-requests/all-requests`,
+      {sourceWarehouseId: user?.warehouse?.id},
+      { enabled: user?.role === "staff" }
+    );
 
   const { data: shopRequests, refetch: refetchShopRequests } = useFetch(
     "shop-requests",
-    `shop-request/pending-requests/${user?.warehouse?.id}`,
+    `shop-requests/all-requests/byWarehouse/${user?.warehouse?.id}`,
     {},
     { enabled: user?.role === "staff" }
   );
 
-  const { data: orderRequests, refetch: refetchOrderRequests } = useFetch(
-    "order-requests",
-    `warehouse-requests/all-requests/${user?.warehouse?.id}`,
-    {},
-    { enabled: user?.role === "staff" }
-  );
+  const requests = [
+    ...(warehouseRequests?.data || []),
+    ...(shopRequests?.data || []),
+  ];
 
-  const { data: sellerRequests, refetch: refetchSellerRequests } = useFetch(
-    "seller-requests",
-    `shop-request/all-requests/byShop/${user?.shop?.id}`,
-    {},
-    { enabled: user?.role === "seller" }
-  ); 
+  const fetchRequests = () => {
+    if (user?.role === "staff") {
+      refetchWarehouseRequests();
+      refetchShopRequests();
+    }
+  };
 
-  const requests = user?.role === "staff"
-    ? [...(warehouseRequests?.data || []), ...(shopRequests?.data || []), ...(orderRequests?.data || [])]
-    : user?.role === "seller"
-    ? [...(sellerRequests?.data || [])]
-    : [];
-
-    const fetchRequests = () => {
-      if (user?.role === "staff") {
-        refetchWarehouseRequests();
-        refetchShopRequests();
-        refetchOrderRequests();
-      } else if (user?.role === "seller") {
-        refetchSellerRequests();
-      }
-    };
-
-    useEffect(() => {
-      const intervalId = setInterval(fetchRequests, 60000);
-      return () => clearInterval(intervalId);
-    }, [refetchWarehouseRequests, refetchShopRequests, refetchOrderRequests, refetchSellerRequests]);
+  useEffect(() => {
+    const intervalId = setInterval(fetchRequests, 60000);
+    return () => clearInterval(intervalId);
+  }, [
+    refetchWarehouseRequests,
+    refetchShopRequests
+  ]);
 
   const handleOutsideClick = (e) => {
     if (openNotification) {
@@ -82,7 +68,7 @@ const Navbar = () => {
     director: "Директор",
     seller: "Сотувчи",
     staff: "Омборчи",
-    admin: "Админ"
+    admin: "Админ",
   };
   return (
     <div className="w-full h-[105px] left-0 top-0 flex justify-between fixed z-10 items-center mb-6 md:mb-10 py-6 px-6 md:px-6 bg-[#17212b] rounded-lg shadow-xl">
@@ -102,7 +88,7 @@ const Navbar = () => {
         </div>
       </div>
       <div className="right-content flex items-center space-x-4">
-        {(user?.role === "staff" || user?.role === "seller") && (
+        {(user?.role === "staff") && (
           <div
             className="text-gray-100 text-[30px] mr-5 cursor-pointer"
             onClick={(e) => {
@@ -115,18 +101,18 @@ const Navbar = () => {
             </Badge>
           </div>
         )}
-      <div className="text-right">
-  <h2 className="text-sm md:text-lg font-semibold text-white">
-    {user?.name} <br />{" "}
-    <span className="text-blue-600">
-      {roleTranslations[user?.role] || user?.role}
-    </span>
-  </h2>
-</div>
+        <div className="text-right">
+          <h2 className="text-sm md:text-lg font-semibold text-white">
+            {user?.name} <br />{" "}
+            <span className="text-blue-600">
+              {roleTranslations[user?.role] || user?.role}
+            </span>
+          </h2>
+        </div>
         <Link
           to="/"
           onClick={() => {
-            Cookies.remove("authToken");;
+            Cookies.remove("authToken");
           }}
           className="flex items-center bg-gradient-to-r from-yellow-400 to-yellow-700 hover:scale-105 text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 ease-in-out border border-white/20 hover:border-white/30"
         >
@@ -151,21 +137,29 @@ const Navbar = () => {
           onClick={handleOutsideClick}
         ></div>
       )}
-      <div
-        className={`p-2 absolute h-screen w-[400px] z-[100000000]  top-0 ${
-          openNotification ? "right-0" : "-right-full"
-        } bg-[#17212b] transition-all duration-300 ease-in-out overflow-y-scroll`}
-      >
-        <div className="flex flex-col gap-2">
-        {requests?.length === 0 ? (
-            <p className="text-gray-100 text-center mt-10">Хабарлар мавжуд эмас</p>
-          ) : (
-            requests?.map((request) => (
-              <PendingCardWarehouse fetchRequests={fetchRequests} key={request?.id} item={request} />
-            ))
-          )}
+      {user?.role === "staff" && (
+        <div
+          className={`p-2 absolute h-screen w-[400px] z-[100000000]  top-0 ${
+            openNotification ? "right-0" : "-right-full"
+          } bg-[#17212b] transition-all duration-300 ease-in-out overflow-y-scroll`}
+        >
+          <div className="flex flex-col gap-2">
+            {requests?.length === 0 ? (
+              <p className="text-gray-100 text-center mt-10">
+                Хабарлар мавжуд эмас
+              </p>
+            ) : (
+              requests?.map((request) => (
+                <PendingCardWarehouse
+                  fetchRequests={fetchRequests}
+                  key={request?.id}
+                  item={request}
+                />
+              ))
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

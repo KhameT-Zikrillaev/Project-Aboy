@@ -38,26 +38,14 @@ const ReportDetailes = () => {
   const itemRender = (page, type, originalElement) => {
     if (type === "prev") {
       return (
-        <button
-          style={{
-            color: "white",
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
+        <button style={{ color: "white", border: "none", cursor: "pointer" }}>
           <LeftOutlined />
         </button>
       );
     }
     if (type === "next") {
       return (
-        <button
-          style={{
-            color: "white",
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
+        <button style={{ color: "white", border: "none", cursor: "pointer" }}>
           <RightOutlined />
         </button>
       );
@@ -105,23 +93,26 @@ const ReportDetailes = () => {
     },
   ];
 
+  const totalPrice = data?.data?.totalPrice || 0;
+  const totalQuantity = data?.data?.totalQuantity || 0;
+
   return (
     <div className="mt-[120px] px-2">
       <div className="relative max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[110px]">
-        <SearchFormStartEnd
-          title={`${name} ҳисоботлари`}
-          onSearch={handleDateSearch}
-        />
-
+        <SearchFormStartEnd title={`${name} ҳисоботлари`} onSearch={handleDateSearch} />
         {!startDate || !endDate ? (
           <p className="text-center text-gray-500 text-[20px] pt-14">
             Илтимос, санани танланг
           </p>
         ) : (
           <div className="text-gray-100 w-full px-4">
+            <div className="flex justify-between bg-gray-800 p-4 rounded-lg mb-4">
+              <p className="text-lg font-semibold">Жами сўмма: ${totalPrice}</p>
+              <p className="text-lg font-semibold">Жами миқдор: {totalQuantity}</p>
+            </div>
             <Table
               columns={columns}
-              dataSource={data?.data[0]}
+              dataSource={data?.data?.registers}
               pagination={false}
               className="custom-table"
               rowClassName={() => "custom-row custom-row-click"}
@@ -138,7 +129,7 @@ const ReportDetailes = () => {
               <Pagination
                 className="custom-pagination"
                 current={page}
-                total={data?.data[1] || 0}
+                total={data?.data?.total || 0}
                 pageSize={limit}
                 onChange={handlePageChange}
                 itemRender={itemRender}

@@ -24,12 +24,11 @@ const ReportDetailesSingle = () => {
     }
   };
 
- 
-
   const handlePageChange = (page) => {
     setPage(page);
     refetch();
   };
+  
   const itemRender = (page, type, originalElement) => {
     if (type === "prev") {
       return (
@@ -130,7 +129,7 @@ const ReportDetailesSingle = () => {
 
   return (
     <div className="mt-[120px]">
-      <div className="text-gray-100 w-full px-4">
+      <div className="text-gray-100 w-full px-4 max-w-[1440px] mx-auto">
         <Table
           columns={columns}
           dataSource={data?.data?.transactions}

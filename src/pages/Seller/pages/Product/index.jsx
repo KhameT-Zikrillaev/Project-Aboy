@@ -9,43 +9,22 @@ import useFetch from "@/hooks/useFetch";
 import useUserStore from "@/store/useUser";
 
 export default function Vitrina() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(8);
-  const [filteredData, setFilteredData] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const { user } = useUserStore();
+  const [page, setPage] = useState(1);
+  const limit = 100;
 
   // Fetch data from API
   const id = user?.shop?.id;
   const { data, isLoading } = useFetch(
-    id ? `Storefront-product/${id}` : null, 
-    id ? `Storefront-product/${id}` : null, 
-    {},
+    id ? `shop-product/all-products/${id}` : null,
+    id ? `shop-product/all-products/${id}` : null,
+    { page, limit, article: searchQuery || null },
     { enabled: !!id }
   );
 
-  // Update filteredData when data changes
-  useEffect(() => {
-    if (data?.data) {
-      setFilteredData(data?.data);
-    }
-  }, [data?.data]);
-
-  // Адаптивность количества элементов на странице
-  useEffect(() => {
-    const updateItemsPerPage = () => {
-      setItemsPerPage(window.innerWidth < 768 ? 4 : 8);
-    };
-
-    updateItemsPerPage();
-    window.addEventListener("resize", updateItemsPerPage);
-    return () => window.removeEventListener("resize", updateItemsPerPage);
-  }, []);
-
-  // Функция для обработки результатов поиска
-  const handleSearchResults = (results) => {
-    setFilteredData(results);
-  };
+  console.log(data?.data);
 
   // Кастомный рендер пагинации
   const itemRender = (page, type, originalElement) => {
@@ -71,7 +50,7 @@ export default function Vitrina() {
       title: "№",
       render: (_, __, index) => (
         <span className="text-gray-100 font-semibold">
-          {(currentPage - 1) * itemsPerPage + index + 1}
+          {(page - 1) * limit + index + 1}
         </span>
       ),
       width: 50,
@@ -99,7 +78,9 @@ export default function Vitrina() {
       dataIndex: "price",
       key: "price",
       render: (text) => (
-        <span className="text-gray-100 font-semibold">{text || "No price"} $</span>
+        <span className="text-gray-100 font-semibold">
+          {text || "No price"} $
+        </span>
       ),
     },
     {
@@ -107,7 +88,7 @@ export default function Vitrina() {
       dataIndex: "image_url",
       key: "image_url",
       render: (text) => (
-        <div 
+        <div
           className="max-h-[60px] max-w-[60px] cursor-pointer"
           onClick={() => setSelectedImage(text)}
         >
@@ -123,12 +104,16 @@ export default function Vitrina() {
     },
   ];
 
-  // Логика пагинации
-  const currentData = filteredData?.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const handlePageChange = (page) => {
+    setPage(page);
+    refetch();
+  };
 
+  const onSearch = (searchParams) => {
+    const searchValue = searchParams.article || "";
+    setSearchQuery(searchValue);
+    setPage(1);
+  };
   return (
     <div
       className="min-h-screen bg-cover bg-center p-1 relative"
@@ -138,62 +123,48 @@ export default function Vitrina() {
 
       <div className="relative z-0 max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[120px]">
         <SearchForm
-          data={data?.data}
           name=""
           title="Витрина"
           showDatePicker={false}
-          onSearch={handleSearchResults}
+          onSearch={onSearch}
         />
-        
+
         {/* Loader while data is loading */}
-        {isLoading ? (
-          <div className="flex justify-center items-center h-64">
-            <Spin size="large" />
-          </div>
-        ) : (
-          <>
-            {filteredData?.length === 0 ? (
-              <div className="text-white text-lg">Товари топилмади</div>
-            ) : (
-              <div className="w-full px-2">
-                <Table
-                  columns={columns}
-                  dataSource={currentData}
-                  pagination={false}
-                  className="custom-table"
-                  rowClassName={() => "custom-row"}
-                  bordered
-                  style={{
-                    background: "rgba(255, 255, 255, 0.1)",
-                    backdropFilter: "blur(10px)",
-                  }}
+
+        <>
+          <div className="w-full px-2">
+            <Table
+              columns={columns}
+              dataSource={data?.data}
+              pagination={false}
+              className="custom-table"
+              rowClassName={() => "custom-row"}
+              bordered
+              // style={{
+              //   background: "rgba(255, 255, 255, 0.1)",
+              //   backdropFilter: "blur(10px)",
+              // }}
+            />
+              <div className="my-4 flex justify-center">
+                <Pagination
+                  current={page}
+                  total={data?.data.length}
+                  pageSize={limit}
+                  onChange={handlePageChange}
+                  itemRender={itemRender}
+                  showSizeChanger={false}
+                  className="custom-pagination"
                 />
               </div>
-            )}
-          </>
-        )}
-        
+          </div>
+        </>
+
         {/* Image Modal */}
         <ImageModal
           isOpen={!!selectedImage}
           onClose={() => setSelectedImage(null)}
           imageUrl={selectedImage}
         />
-
-        {/* Pagination */}
-        {filteredData?.length > 0 && !isLoading && (
-          <div className="my-4 flex justify-center">
-            <Pagination
-              current={currentPage}
-              total={filteredData?.length}
-              pageSize={itemsPerPage}
-              onChange={(page) => setCurrentPage(page)}
-              showSizeChanger={false}
-              className="custom-pagination"
-              itemRender={itemRender}
-            />
-          </div>
-        )}
       </div>
     </div>
   );

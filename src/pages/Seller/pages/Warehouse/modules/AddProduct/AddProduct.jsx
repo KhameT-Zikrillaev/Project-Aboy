@@ -9,10 +9,10 @@ import useUserStore from "@/store/useUser";
 const AddProduct = ({ onClose, selectedProducts, onSuccess }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const { user } = useUserStore();
-  const { handleSubmit, control, setValue } = useForm();
+  const { handleSubmit,  control, setValue } = useForm();
 
   const { mutate, isLoading: isSending } = useApiMutation({
-    url: "shop-request/send-request",
+    url: "shop-requests/send-request",
     method: "POST",
     onSuccess: () => {
       toast.success("Буюртма муваффақиятли юборилди!");
@@ -68,7 +68,6 @@ const AddProduct = ({ onClose, selectedProducts, onSuccess }) => {
 
     const requestData = {
       shopId: user?.shop?.id,
-      warehouseId: user?.shop?.warehouse_id,
       items: selectedItems.map((item) => ({
         productId: item.id,
         quantity: item.quantity,

@@ -11,75 +11,35 @@ import useFetch from "@/hooks/useFetch";
 import useUserStore from "@/store/useUser";
 
 export default function Warehouse() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [filteredData, setFilteredData] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const limit = 100;
   const { user } = useUserStore();
   const id = user?.shop?.warehouse_id;
 
   const { data, isLoading, refetch } = useFetch(
-    id ? `warehouse-products/byWarehouse/${id}` : null,
-    id ? `warehouse-products/byWarehouse/${id}` : null,
-    {},
+    id ? `warehouse-products/all-products` : null,
+    id ? `warehouse-products/all-products` : null,
+    { warehouseId: id, page, limit, article: searchQuery || null },
     {
       enabled: !!id,
     }
   );
 
-  useEffect(() => {
-    if (data?.data?.products) {
-      setFilteredData(
-        data?.data?.products?.map((item) => ({
-          ...item,
-          key: item.id,
-        }))
-      );
-    }
-  }, [data?.data?.products]);
-
   const showModal = () => {
     if (selectedProducts.length > 0) {
       setIsModalOpen(true);
     } else {
-      message.warning('Hech qanday mahsulot tanlanmagan!');
+      message.warning("Hech qanday mahsulot tanlanmagan!");
     }
   };
 
   const onClose = () => {
     setIsModalOpen(false);
     setSelectedProducts([]);
-  };
-
-  const updateItemsPerPage = () => {
-    setItemsPerPage(window.innerWidth < 768 ? 5 : 10);
-  };
-
-  useEffect(() => {
-    updateItemsPerPage();
-    window.addEventListener("resize", updateItemsPerPage);
-    return () => window.removeEventListener("resize", updateItemsPerPage);
-  }, []);
-
-  const handleSearchResults = (results) => {
-    if (Array.isArray(results)) {
-      setFilteredData(results);
-    } else if (results === null || results === undefined) {
-      if (data?.data?.products && Array.isArray(data?.data?.products)) {
-        setFilteredData(
-          data?.data?.products?.map((item) => ({
-            ...item,
-            key: item.id,
-          }))
-        );
-      } else {
-        setFilteredData([]);
-      }
-    } else {
-      setFilteredData([]);
-    }
   };
 
   const handleCheckboxChange = (item) => {
@@ -110,6 +70,17 @@ export default function Warehouse() {
     refetch();
   };
 
+  const handlePageChange = (page) => {
+    setPage(page);
+    refetch();
+  };
+
+  const onSearch = (searchParams) => {
+    const searchValue = searchParams.article || "";
+    setSearchQuery(searchValue);
+    setPage(1);
+  };
+
   const itemRender = (page, type, originalElement) => {
     if (type === "prev") {
       return (
@@ -132,16 +103,22 @@ export default function Warehouse() {
     {
       title: (
         <Checkbox
-          indeterminate={selectedProducts.length > 0 && selectedProducts.length < filteredData.length}
-          checked={selectedProducts.length === filteredData.length && filteredData.length > 0}
+          indeterminate={
+            selectedProducts?.length > 0 &&
+            selectedProducts?.length < data?.data?.length
+          }
+          checked={
+            selectedProducts?.length === data?.data?.length &&
+            filteredData.length > 0
+          }
           onChange={handleSelectAll}
         />
       ),
-      key: 'selection',
+      key: "selection",
       width: 50,
       render: (_, record) => (
         <Checkbox
-          checked={selectedProducts.some(item => item.id === record.id)}
+          checked={selectedProducts.some((item) => item.id === record.id)}
           onChange={() => handleCheckboxChange(record)}
         />
       ),
@@ -150,7 +127,7 @@ export default function Warehouse() {
       title: "№",
       render: (_, __, index) => (
         <span className="text-gray-100 font-semibold">
-          {(currentPage - 1) * itemsPerPage + index + 1}
+          {(page - 1) * limit + index + 1}
         </span>
       ),
       width: 50,
@@ -194,7 +171,7 @@ export default function Warehouse() {
       dataIndex: "image_url",
       key: "image_url",
       render: (text) => (
-        <div 
+        <div
           className="max-h-[60px] max-w-[60px] cursor-pointer"
           onClick={() => setSelectedImage(text)}
         >
@@ -218,32 +195,33 @@ export default function Warehouse() {
       <div className="absolute inset-0 bg-black/50 backdrop-blur-md z-0"></div>
       <div className="relative z-0 max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[120px]">
         <SearchForm
-          data={data?.data?.products}
-          name=""
           title="Омборхона"
           showDatePicker={false}
-          onSearch={handleSearchResults}
+          onSearch={onSearch}
         />
 
         {user?.role === "seller" && (
-          <div className='w-full flex justify-end mb-4'>
+          <div className="w-full flex justify-end mb-4">
             <div className="flex items-center gap-2">
-              <span className='bg-gray-700 py-1 px-3 text-white text-sm rounded-lg shadow-lg'>
-                Танланган: {selectedProducts.length}
+              <span className="bg-gray-700 py-1 px-3 text-white text-sm rounded-lg shadow-lg">
+                Танланган: {selectedProducts?.length}
               </span>
               <Button
                 type="primary"
                 onClick={showModal}
                 disabled={selectedProducts.length === 0}
                 style={{
-                  backgroundColor: selectedProducts.length === 0 ? '#888' : '#364153',
-                  borderColor: '#364153',
+                  backgroundColor:
+                    selectedProducts.length === 0 ? "#888" : "#364153",
+                  borderColor: "#364153",
                 }}
                 onMouseEnter={(e) => {
-                  if (selectedProducts.length > 0) e.currentTarget.style.backgroundColor = "#2b3445";
+                  if (selectedProducts.length > 0)
+                    e.currentTarget.style.backgroundColor = "#2b3445";
                 }}
                 onMouseLeave={(e) => {
-                  if (selectedProducts.length > 0) e.currentTarget.style.backgroundColor = "#364153";
+                  if (selectedProducts.length > 0)
+                    e.currentTarget.style.backgroundColor = "#364153";
                 }}
               >
                 Буюртма бериш
@@ -252,66 +230,47 @@ export default function Warehouse() {
           </div>
         )}
 
-        {isLoading ? (
-          <div className="flex justify-center items-center h-64 w-full">
-            <Spin size="large" />
-          </div>
-        ) : (
-          <>
-            {filteredData?.length === 0 ? (
-              <div className="text-white text-lg">Маҳсулот топилмади</div>
-            ) : (
-              <div className="w-full px-2">
-                <Table
-                  columns={columns}
-                  dataSource={filteredData?.slice(
-                    (currentPage - 1) * itemsPerPage,
-                    currentPage * itemsPerPage
-                  )}
-                  pagination={false}
-                  className="custom-table"
-                  rowClassName={() => "custom-row"}
-                  bordered
-                  style={{
-                    background: "rgba(255, 255, 255, 0.1)",
-                    backdropFilter: "blur(10px)",
-                  }}
-                />
-              </div>
-            )}
+        <div className="text-gray-100 w-full">
+          <Table
+            columns={columns}
+            dataSource={data?.data?.data}
+            pagination={false}
+            className="custom-table"
+            rowClassName={() => "custom-row"}
+            bordered
+            loading={isLoading}
+          />
 
-            <ImageModal
-              isOpen={!!selectedImage}
-              onClose={() => setSelectedImage(null)}
-              imageUrl={selectedImage}
+          <div className="flex justify-center mt-5">
+            <Pagination
+              className="custom-pagination"
+              current={page}
+              total={data?.data?.total}
+              showSizeChanger={false}
+              pageSize={limit}
+              onChange={handlePageChange}
+              itemRender={itemRender}
             />
-            <ModalComponentContent
-              isOpen={isModalOpen}
-              onClose={onClose}
-              title={"Омборга буюртма бериш"}
-              width={800}
-            >
-              <AddProduct 
-                onClose={onClose} 
-                selectedProducts={selectedProducts} 
-                onSuccess={handleSuccessSubmit}
-              />
-            </ModalComponentContent>
-            {filteredData?.length > 0 && (
-              <div className="my-2 mb-12 md:mb-0 flex justify-center">
-                <Pagination
-                  current={currentPage}
-                  total={filteredData?.length}
-                  pageSize={itemsPerPage}
-                  onChange={(page) => setCurrentPage(page)}
-                  showSizeChanger={false}
-                  className="custom-pagination"
-                  itemRender={itemRender}
-                />
-              </div>
-            )}
-          </>
-        )}
+          </div>
+        </div>
+
+        <ImageModal
+          isOpen={!!selectedImage}
+          onClose={() => setSelectedImage(null)}
+          imageUrl={selectedImage}
+        />
+        <ModalComponentContent
+          isOpen={isModalOpen}
+          onClose={onClose}
+          title={"Омборга буюртма бериш"}
+          width={800}
+        >
+          <AddProduct
+            onClose={onClose}
+            selectedProducts={selectedProducts}
+            onSuccess={handleSuccessSubmit}
+          />
+        </ModalComponentContent>
       </div>
     </div>
   );
