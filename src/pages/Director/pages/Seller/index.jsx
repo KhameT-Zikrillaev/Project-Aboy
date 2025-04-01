@@ -132,94 +132,77 @@ export default function Seller() {
         placeholder="Сотувчи номи бўйича қидириш"
       />
 
-      {users?.length === 0 && !usersLoading && (
-        <div className="text-center text-gray-400">Сотувчилар топилмади</div>
-      )}
+{usersLoading ? (
+  <div className="flex justify-center items-center h-[300px]">
+    <Spin size="large" />
+  </div>
+) : (
+  <>
+    {users?.length === 0 && (
+      <div className="text-center text-gray-400">Сотувчилар топилмади</div>
+    )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 md:grid-cols-3 gap-4" style={{ gridAutoRows: "1fr" }}>
-        {users?.map((user) => {
-          const userDebts = debtsMap[user.id] || [];
-          const totalDebt = calculateTotalDebt(userDebts);
+    <div className="grid grid-cols-1 lg:grid-cols-2 md:grid-cols-3 gap-4" style={{ gridAutoRows: "1fr" }}>
+      {users?.map((user) => {
+        const userDebts = debtsMap[user.id] || [];
+        const totalDebt = calculateTotalDebt(userDebts);
 
-          return (
-            <div 
-              key={user?.id} 
-              className="bg-gray-800 text-white p-4 rounded-lg transition flex flex-col"
-              style={{ minHeight: "100%" }}
-            >
-              <div className="flex justify-between items-center">
-                <div className="flex flex-col gap-2">
-                  <h4 className="text-lg font-semibold">{user?.name}</h4>
-                  <p className="text-sm text-gray-300">{user?.phone}</p>
-                  {userDebts?.length > 0 && (
-                    <Tag>Ҳамма қарзи: <span className="text-red-500">{totalDebt}</span> $</Tag>
-                  )}
-                </div>
-                <button
-                  onClick={() => showModal(user)}
-                  className="flex p-2 bg-gray-700 hover:bg-gray-600 rounded-xl items-center gap-2"
-                >
-                  <FaPencilAlt />
-                  <span>Белгилаш</span>
-                </button>
+        return (
+          <div key={user?.id} className="bg-gray-800 text-white p-4 rounded-lg transition flex flex-col" style={{ minHeight: "100%" }}>
+            <div className="flex justify-between items-center">
+              <div className="flex flex-col gap-2">
+                <h4 className="text-lg font-semibold">{user?.name}</h4>
+                <p className="text-sm text-gray-300">{user?.phone}</p>
+                {userDebts?.length > 0 && (
+                  <Tag>Ҳамма қарзи: <span className="text-red-500">{totalDebt}</span> $</Tag>
+                )}
               </div>
+              <button onClick={() => showModal(user)} className="flex p-2 bg-gray-700 hover:bg-gray-600 rounded-xl items-center gap-2">
+                <FaPencilAlt />
+                <span>Белгилаш</span>
+              </button>
+            </div>
 
-              <div className="flex-grow overflow-y-auto max-h-40 my-1">
-                {userDebts.length > 0 ? (
-                  <List
-                    dataSource={userDebts}
-                    renderItem={(debt) => (
-                      <List.Item className="bg-gray-600 mt-1 rounded-lg mb-1">
-                        <div className="w-full p-1 gap-1 flex flex-col text-white justify-between">
-                          <div className="flex rounded-lg justify-between border border-b-1  border-white/20 p-1 items-center">
-                          <span >
-                            {debt.price} $
-                          </span>
-                          <span >
-                            {formatDate(debt.deadline)}
-                          </span>
-                          </div>
-                       
-                         <div className="flex justify-between items-center gap-1">
-                         <span className="p-1 rounded-lg">
+            <div className="flex-grow overflow-y-auto max-h-40 my-1">
+              {userDebts.length > 0 ? (
+                <List
+                  dataSource={userDebts}
+                  renderItem={(debt) => (
+                    <List.Item className="bg-gray-600 mt-1 rounded-lg mb-1">
+                      <div className="w-full p-1 gap-1 flex flex-col text-white justify-between">
+                        <div className="flex rounded-lg justify-between border border-b-1  border-white/20 p-1 items-center">
+                          <span>{debt.price} $</span>
+                          <span>{formatDate(debt.deadline)}</span>
+                        </div>
+                        <div className="flex justify-between items-center gap-1">
+                          <span className="p-1 rounded-lg">
                             {debt.comment || "Без комментария"}
                           </span>
                           <span className="text-green-500">{debt?.isSent ? "Огоҳлантирилди" : ""}</span>
-                         </div>
-                      
-                          <div className="flex justify-end w-full gap-1">
-                            <Button
-                              type="primary"
-                              size="small"
-                              onClick={() => handleConfirm(debt.id, user.id)}
-                              loading={isDeleting}
-                            >
-                              Эслатнома Хабар юбориш
-                            </Button>
-
-                            <Button
-                              type="primary"
-                              className="w-32"
-                              danger
-                              size="small"
-                              onClick={() => handleDelete(debt.id)}
-                              loading={isDeleting}
-                            >
-                              Ўчириш
-                            </Button>
-                          </div>
                         </div>
-                      </List.Item>
-                    )}
-                  />
-                ) : (
-                  <div className="text-gray-400 text-center">Қарзи йўқ</div>
-                )}
-              </div>
+                        <div className="flex justify-end w-full gap-1">
+                          <Button type="primary" size="small" onClick={() => handleConfirm(debt.id, user.id)} loading={isDeleting}>
+                            Эслатнома Хабар юбориш
+                          </Button>
+
+                          <Button type="primary" className="w-32" danger size="small" onClick={() => handleDelete(debt.id)} loading={isDeleting}>
+                            Ўчириш
+                          </Button>
+                        </div>
+                      </div>
+                    </List.Item>
+                  )}
+                />
+              ) : (
+                <div className="text-gray-400 text-center">Қарзи йўқ</div>
+              )}
             </div>
-          );
-        })}
-      </div>
+          </div>
+        );
+      })}
+    </div>
+  </>
+)}
 
       {/* Модальное окно для добавления долга */}
       <Modal
