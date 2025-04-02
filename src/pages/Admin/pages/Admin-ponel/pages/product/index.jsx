@@ -246,16 +246,16 @@ const Product = () => {
       dataIndex: "image_url",
       key: "image_url",
       render: (text) => (
-        <div
-          className="max-h-[80px] max-w-[80px]"
-          onClick={() => isOpenModal(text)}
-        >
-          <img
-            className="h-auto w-full"
-            src={`${text}`}
-            crossOrigin="anonymous"
-          />
-        </div>
+        text ? <div
+        className="max-h-[80px] max-w-[80px]"
+        onClick={() => isOpenModal(text)}
+      >
+        <img
+          className="h-auto w-full"
+          src={`${text}`}
+          crossOrigin="anonymous"
+        />
+      </div> : <span className="text-gray-100 font-semibold">-</span>
       ),
     },
     {
