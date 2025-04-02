@@ -94,7 +94,7 @@ export default function ProductDetalies() {
       key: "price",
       render: (text) => (
         <span className="text-gray-100 font-semibold">
-          {text ? `${text} сум` : "-"}
+          {text ? `${text} $` : "-"}
         </span>
       ),
     },
