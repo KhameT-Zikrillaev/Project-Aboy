@@ -4,6 +4,7 @@ import SearchFormStartEnd from "@/components/SearchFormStartEnd/SearchFormStartE
 import { Pagination, Table } from "antd";
 import useFetch from "@/hooks/useFetch";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import Total from "@/components/total/Total";
 
 const ReportDetailes = () => {
   const [selectedDates, setSelectedDates] = useState({ from: null, to: null });
@@ -106,10 +107,7 @@ const ReportDetailes = () => {
           </p>
         ) : (
           <div className="text-gray-100 w-full px-4">
-            <div className="flex justify-between bg-gray-800 p-4 rounded-lg mb-4">
-              <p className="text-lg font-semibold">Жами сўмма: ${totalPrice}</p>
-              <p className="text-lg font-semibold">Жами миқдор: {totalQuantity}</p>
-            </div>
+            <Total totalPrice={totalPrice} totalQuantity={totalQuantity}/>
             <Table
               columns={columns}
               dataSource={data?.data?.registers}

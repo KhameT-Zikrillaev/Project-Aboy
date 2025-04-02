@@ -5,6 +5,7 @@ import { Pagination, Table } from "antd";
 import useFetch from "@/hooks/useFetch";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import useUserStore from "@/store/useUser";
+import Total from "@/components/total/Total";
 
 const ReportDetailes = () => {
   const [selectedDates, setSelectedDates] = useState({ from: null, to: null });
@@ -104,6 +105,9 @@ const ReportDetailes = () => {
     },
   ];
 
+  const totalPrice = data?.data?.totalPrice
+  const totalQuantity = data?.data?.totalQuantity
+
   return (
     <div className="mt-[120px] px-2">
       <div className="relative max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[110px]">
@@ -115,9 +119,10 @@ const ReportDetailes = () => {
           </p>
         ) : (
           <div className="text-gray-100 w-full px-4">
+            <Total totalPrice={totalPrice} totalQuantity={totalQuantity}/>
             <Table
               columns={columns}
-              dataSource={data?.data[0]}
+              dataSource={data?.data?.registers}
               pagination={false}
               className="custom-table"
               rowClassName={() => "custom-row custom-row-click"}
@@ -131,7 +136,7 @@ const ReportDetailes = () => {
               <Pagination
                 className="custom-pagination"
                 current={page}
-                total={data?.data[1] || 0}
+                total={data?.data?.total || 0}
                 pageSize={limit}
                 onChange={handlePageChange}
                 itemRender={itemRender}

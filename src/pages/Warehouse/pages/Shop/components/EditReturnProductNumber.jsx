@@ -16,123 +16,102 @@ const EditReturnProduct = ({ onClose, product, refetch }) => {
   } = useForm();
   const { user } = useUserStore();
 
-
-  const quantity = watch("quantity"); // Следим за значением количества
-
   const { mutate, isLoading } = useApiMutation({
-      url: `order/${product?.id}/return`,
-      method: "POST",
-      onSuccess: () => {
-        reset(); // Formani tozalash
-        onClose();
-        refetch();
-        toast.success("Маҳсулот муваффақиятли қайтарилди!");
-      },
-      onError: () => {
-        toast.error("Маҳсулотни қайтаришда хатолик юз берди");
-      },
-    });
-  const onSubmit = (data) => {
+    url: `order/${product?.id}/return`,
+    method: "POST",
+    onSuccess: () => {
+      reset();
+      onClose();
+      refetch();
+      toast.success("Маҳсулот муваффақиятли қайтарилди!");
+    },
+    onError: () => {
+      toast.error("Маҳсулотни қайтаришда хатолик юз берди");
+    },
+  });
 
+  const onSubmit = (data) => {
     const newData = {
-      items: [
-        {
-          productId: product?.items[0]?.productId,
-          quantity: data.quantity
-        }
-      ],
-      userId: user?.id
-    }
+      items: product?.items.map((item) => ({
+        productId: item.productId,
+        quantity: +data[`quantity_${item.productId}`] || 0,
+      })).filter((item) => item.quantity > 0),
+      userId: user?.id,
+    };
+
     mutate(newData);
-   
   };
 
-  // Функция для ограничения ввода только цифрами от 1 до product.quantity
-  const handleQuantityChange = (e) => {
-    const value = e.target.value.replace(/\D/g, ""); // Удаляем все символы, кроме цифр
-    const maxValue = Math.floor(product?.items[0]?.quantity); // Максимальное значение равно product.quantity
+  const handleQuantityChange = (e, productId, maxQuantity) => {
+    const value = e.target.value.replace(/\D/g, "");
     const parsedValue = parseInt(value, 10);
 
-    // Если значение больше максимального, устанавливаем максимальное значение
-    if (parsedValue > maxValue) {
-      setValue("quantity", maxValue.toString());
+    if (parsedValue > maxQuantity) {
+      setValue(`quantity_${productId}`, maxQuantity.toString());
     } else if (value === "") {
-      setValue("quantity", ""); // Позволяем очистить поле
+      setValue(`quantity_${productId}`, "");
     } else {
-      setValue("quantity", value); // Устанавливаем значение в форму
+      setValue(`quantity_${productId}`, value);
     }
   };
 
   return (
-    <div className="">
+    <div>
       <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
-        {/* Отображение названия товара */}
-        {product && (
-          <Form.Item
-           
-          >
+        {product?.items.map((item) => (
+          <Form.Item key={item.productId}>
             <p className="text-gray-100 font-semibold">
-              {" "}
-              Артикле: <span className="text-red-500">{(product?.items[0]?.product?.article)}</span>
+              Артикле: <span className="text-red-500">{item.product?.article}</span>
             </p>
             <p className="text-gray-100 font-semibold">
-              {" "}
-              Нархи: <span className="text-red-500">{Math.floor(product?.items[0]?.price).toLocaleString()} $</span>
+              Нархи: <span className="text-red-500">{Math.floor(item.price).toLocaleString()} $</span>
             </p>
             <p className="text-gray-100 font-semibold">
-              {" "}
-              Сони: <span className="text-red-500">{Math.floor(product?.items[0]?.quantity)} ta</span>
+              Сони: <span className="text-red-500">{Math.floor(item.quantity)} та</span>
             </p>
             <p className="text-gray-100 font-semibold">
-              {" "}
-              Жами нархи: <span className="text-red-500">{Math.floor(product?.items[0]?.total).toLocaleString()} $</span>
+              Жами нархи: <span className="text-red-500">{Math.floor(item.total).toLocaleString()} $</span>
             </p>
-          </Form.Item>
-        )}
-
-        {/* Поле для ввода количества */}
-        <Form.Item
-          label={<span className="text-gray-100 font-semibold">Қайтариладиган маҳсулот сони:</span>}
-          validateStatus={errors.quantity ? "error" : ""}
-          help={
-            errors.quantity?.message ||
-            (quantity > Math.floor(product?.items[0]?.quantity) && `Max ${Math.floor(product?.items[0]?.quantity)} та`)
-          }
-        >
-          <Controller
-            name="quantity"
-            control={control}
-            rules={{
-              required: "Сонни киритинг",
-              max: {
-                value: Math.floor(product?.items[0]?.quantity), // Максимум product.quantity
-                message: `Max ${Math.floor(product?.items[0]?.quantity)} та продукт киритинг`,
-              },
-              min: {
-                value: 1,
-                message: "Мин 1 а",
-              },
-            }}
-            render={({ field }) => (
-              <Input
-                placeholder="Соннини киритинг"
-                className="custom-input"
-                defaultValue={Math.floor(product?.items[0]?.quantity)}
-                {...field}
-                onChange={handleQuantityChange} // Обработчик для ограничения ввода
-                max={Math.floor(product?.items[0]?.quantity)} // Максимальное значение
-                type="number" // Тип поля для мобильных устройств
+            <Form.Item
+              label={<span className="text-gray-100 font-semibold">Қайтариладиган маҳсулот сони:</span>}
+              validateStatus={errors[`quantity_${item.productId}`] ? "error" : ""}
+              help={
+                errors[`quantity_${item.productId}`]?.message ||
+                (watch(`quantity_${item.productId}`) > Math.floor(item.quantity) && `Max ${Math.floor(item.quantity)} та`)
+              }
+            >
+              <Controller
+                name={`quantity_${item.productId}`}
+                control={control}
+                rules={{
+                  required: false,
+                  max: {
+                    value: Math.floor(item.quantity),
+                    message: `Max ${Math.floor(item.quantity)} та продукт киритинг`,
+                  },
+                  min: {
+                    value: 1,
+                    message: "Мин 1 та",
+                  },
+                }}
+                render={({ field }) => (
+                  <Input
+                    placeholder="Соннини киритинг"
+                    className="custom-input"
+                    {...field}
+                    onChange={(e) => handleQuantityChange(e, item.productId, Math.floor(item.quantity))}
+                    type="number"
+                  />
+                )}
               />
-            )}
-          />
-        </Form.Item>
+            </Form.Item>
+          </Form.Item>
+        ))}
 
-        {/* Кнопка "Заказать" */}
         <Form.Item>
           <Button
             type="primary"
             htmlType="submit"
-            disabled={quantity > Math.floor(product?.items[0]?.quantity)}
             loading={isLoading}
             style={{
               backgroundColor: "#364153",
@@ -144,12 +123,8 @@ const EditReturnProduct = ({ onClose, product, refetch }) => {
               width: "100%",
               transition: "background-color 0.3s ease",
             }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor = "#2b3445")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.backgroundColor = "#364153")
-            }
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#2b3445")}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#364153")}
           >
             Маҳсулотни қайтариш
           </Button>

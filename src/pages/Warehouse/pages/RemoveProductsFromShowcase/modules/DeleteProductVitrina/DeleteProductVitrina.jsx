@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Table, Tag, Image, message, Row, Col } from "antd";
+import { Button, Table, Image, message, Row, Col } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
 import api from "@/services/api";
@@ -8,7 +8,6 @@ const DeleteProductVitrina = ({
   onClose,
   selectedProducts,
   onSuccess,
-  warehouseName,
   shopId,
 }) => {
   const [selectedItems, setSelectedItems] = useState([]);

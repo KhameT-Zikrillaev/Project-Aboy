@@ -16,13 +16,12 @@ export default function ViewDetaliesRemoveProducts() {
   const location = useLocation();
   const shopId = location.state?.shopId;
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(100);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const { user } = useUserStore();
 
   const { data: productsData, isLoading: productsLoading, refetch: refetchProducts } = useFetch(
     shopId ? `shop-product/all-products/${shopId}` : null,
@@ -65,7 +64,7 @@ export default function ViewDetaliesRemoveProducts() {
   };
 
   const updateItemsPerPage = () => {
-    setItemsPerPage(window.innerWidth < 768 ? 5 : 10);
+    setItemsPerPage(window.innerWidth < 768 ? 50 : 100);
   };
 
   useEffect(() => {

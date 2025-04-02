@@ -43,7 +43,7 @@ export default function ViewDetaliesSendProducts() {
 
   useEffect(() => {
     if (productsData?.data) {
-      setFilteredData(productsData?.data?.map(item => ({
+      setFilteredData(productsData?.data?.data?.map(item => ({
         ...item,
         key: item.id
       })));

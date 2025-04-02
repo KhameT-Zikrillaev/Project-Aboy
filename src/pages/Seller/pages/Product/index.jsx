@@ -114,6 +114,8 @@ export default function Vitrina() {
     setSearchQuery(searchValue);
     setPage(1);
   };
+  
+  
   return (
     <div
       className="min-h-screen bg-cover bg-center p-1 relative"
@@ -128,18 +130,16 @@ export default function Vitrina() {
           showDatePicker={false}
           onSearch={onSearch}
         />
-
-        {/* Loader while data is loading */}
-
         <>
           <div className="w-full px-2">
             <Table
               columns={columns}
-              dataSource={data?.data}
+              dataSource={data?.data?.data}
               pagination={false}
               className="custom-table"
               rowClassName={() => "custom-row"}
               bordered
+              loading={isLoading}
               // style={{
               //   background: "rgba(255, 255, 255, 0.1)",
               //   backdropFilter: "blur(10px)",
