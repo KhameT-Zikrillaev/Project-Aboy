@@ -4,13 +4,17 @@ import ImageModal from "@/components/modal/ImageModal";
 import useFetch from "@/hooks/useFetch";
 import useUserStore from "@/store/useUser";
 import SearchForm from "@/components/SearchForm/SearchForm";
-import { Pagination, Table } from "antd";
+import { Button, Pagination, Table } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import Total from "@/components/total/Total";
+import { RiFileExcel2Line } from "react-icons/ri";
+import api from "@/services/api";
 
 export default function Warehouse() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [excelLoading, setExcelLoading] = useState(false);
   const [page, setPage] = useState(1);
   const limit = 100;
 
@@ -20,14 +24,35 @@ export default function Warehouse() {
   const { data, isLoading, refetch } = useFetch(
     `warehouse-products/all-products`,
     `warehouse-products/all-products`,
-    { 
-      page, 
-      limit, 
-      warehouseId: id, 
-      article: searchQuery || null
+    {
+      page,
+      limit,
+      warehouseId: id,
+      article: searchQuery || null,
     },
     { enabled: !!id }
   );
+
+  const handleDownloadExcel = async () => {
+    try {
+      setExcelLoading(true);
+      const response = await api.get(`warehouse-products/export-excel/${user?.warehouse?.id}`, {
+        responseType: "blob", // Fayl sifatida yuklab olish
+      });
+      
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "data.xlsx"); // Fayl nomi
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Excel yuklab olishda xatolik:", error);
+    }finally{
+      setExcelLoading(false);
+    }
+  };
 
   const isOpenModal = (imageUrl) => {
     setSelectedImage(imageUrl);
@@ -136,6 +161,9 @@ export default function Warehouse() {
     },
   ];
 
+  const totalPrice = data?.data?.total_price;
+  const totalQuantity = data?.data?.total_quantity;
+
   return (
     <div
       className="min-h-screen bg-cover bg-center p-1 relative"
@@ -144,13 +172,21 @@ export default function Warehouse() {
       <div className="absolute inset-0 bg-black/50 backdrop-blur-md z-0"></div>
 
       <div className="relative z-0 max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[120px]">
-        <SearchForm 
-          title={"Маҳсулотлар"} 
-          showDatePicker={false} 
+        <SearchForm
+          title={"Маҳсулотлар"}
+          showDatePicker={false}
           onSearch={onSearch}
         />
-        
-        <div className="text-gray-100 w-full">
+
+        <div className="text-gray-100 w-full flex flex-col">
+          {data?.data?.total > 0 && (
+            <>
+              <Total totalPrice={totalPrice} totalQuantity={totalQuantity} />
+              <Button onClick={handleDownloadExcel} loading={excelLoading} className="flex self-end items-center " style={{ background: "oklch(0.627 0.194 149.214)", border: "none", color: "white", fontSize: "18px", marginBottom: "15px" }}>
+                <RiFileExcel2Line size={18} /> Excel орқали юклаб олиш
+              </Button>
+            </>
+          )}
           <Table
             columns={columns}
             dataSource={data?.data?.data}
@@ -160,7 +196,7 @@ export default function Warehouse() {
             bordered
             loading={isLoading}
           />
-          
+
           <div className="flex justify-center mt-5">
             <Pagination
               className="custom-pagination"
@@ -173,10 +209,10 @@ export default function Warehouse() {
             />
           </div>
         </div>
-        
-        <ImageModal 
-          isOpen={isImageModalOpen} 
-          onClose={onCloseModal} 
+
+        <ImageModal
+          isOpen={isImageModalOpen}
+          onClose={onCloseModal}
           imageUrl={selectedImage}
         />
       </div>

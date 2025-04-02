@@ -5,6 +5,7 @@ import useFetch from "@/hooks/useFetch";
 import { Spin } from "antd";
 import useUserStore from "@/store/useUser";
 
+
 export default function DirectorProduct() {
   const [visibleWarehouses, setVisibleWarehouses] = useState(12);
   const [searchQuery, setSearchQuery] = useState("");
@@ -12,7 +13,7 @@ export default function DirectorProduct() {
   const limit = 12;
   const { user } = useUserStore();
 
-  const { data, isLoading, refetch } = useFetch(
+  const { data, isLoading } = useFetch(
     'warehouse',
     'warehouse',
     {

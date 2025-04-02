@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Card, DatePicker, Pagination, Spin, Table, Tag } from "antd";
+import { Button, DatePicker, Pagination, Table} from "antd";
 import "antd/dist/reset.css";
 import { useParams } from "react-router-dom";
 import bgsklad from "@/assets/images/bg-sklad.png";

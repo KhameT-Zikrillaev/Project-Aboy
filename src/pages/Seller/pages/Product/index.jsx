@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Table, Pagination, Tag, Spin } from "antd";
+import React, { useState } from "react";
+import { Table, Pagination, Tag, Button } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import "antd/dist/reset.css";
 import bgsklad from "../../../../assets/images/bg-sklad.png";
@@ -7,12 +7,15 @@ import SearchForm from "@/components/SearchForm/SearchForm";
 import ImageModal from "@/components/modal/ImageModal";
 import useFetch from "@/hooks/useFetch";
 import useUserStore from "@/store/useUser";
+import { RiFileExcel2Line } from "react-icons/ri";
+import api from "@/services/api";
 
 export default function Vitrina() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const { user } = useUserStore();
   const [page, setPage] = useState(1);
+  const [excelLoading, setExcelLoading] = useState(false);
   const limit = 100;
 
   // Fetch data from API
@@ -24,7 +27,26 @@ export default function Vitrina() {
     { enabled: !!id }
   );
 
-  console.log(data?.data);
+  const handleDownloadExcel = async () => {
+      try {
+        setExcelLoading(true);
+        const response = await api.get(`shop-product/export-excel/${user?.shop?.id}`, {
+          responseType: "blob", // Fayl sifatida yuklab olish
+        });
+        
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "data.xlsx"); // Fayl nomi
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      } catch (error) {
+        console.error("Excel yuklab olishda xatolik:", error);
+      }finally{
+        setExcelLoading(false);
+      }
+    };
 
   // Кастомный рендер пагинации
   const itemRender = (page, type, originalElement) => {
@@ -114,8 +136,7 @@ export default function Vitrina() {
     setSearchQuery(searchValue);
     setPage(1);
   };
-  
-  
+
   return (
     <div
       className="min-h-screen bg-cover bg-center p-1 relative"
@@ -130,34 +151,42 @@ export default function Vitrina() {
           showDatePicker={false}
           onSearch={onSearch}
         />
-        <>
-          <div className="w-full px-2">
-            <Table
-              columns={columns}
-              dataSource={data?.data?.data}
-              pagination={false}
-              className="custom-table"
-              rowClassName={() => "custom-row"}
-              bordered
-              loading={isLoading}
-              // style={{
-              //   background: "rgba(255, 255, 255, 0.1)",
-              //   backdropFilter: "blur(10px)",
-              // }}
+        <Button
+          onClick={handleDownloadExcel}
+          loading={excelLoading}
+          className="flex self-end items-center "
+          style={{
+            background: "oklch(0.627 0.194 149.214)",
+            border: "none",
+            color: "white",
+            fontSize: "18px",
+            marginBottom: "15px",
+          }}
+        >
+          <RiFileExcel2Line size={18} /> Excel орқали юклаб олиш
+        </Button>
+        <div className="w-full px-2">
+          <Table
+            columns={columns}
+            dataSource={data?.data?.data}
+            pagination={false}
+            className="custom-table"
+            rowClassName={() => "custom-row"}
+            bordered
+            loading={isLoading}
+          />
+          <div className="my-4 flex justify-center">
+            <Pagination
+              current={page}
+              total={data?.data.length}
+              pageSize={limit}
+              onChange={handlePageChange}
+              itemRender={itemRender}
+              showSizeChanger={false}
+              className="custom-pagination"
             />
-              <div className="my-4 flex justify-center">
-                <Pagination
-                  current={page}
-                  total={data?.data.length}
-                  pageSize={limit}
-                  onChange={handlePageChange}
-                  itemRender={itemRender}
-                  showSizeChanger={false}
-                  className="custom-pagination"
-                />
-              </div>
           </div>
-        </>
+        </div>
 
         {/* Image Modal */}
         <ImageModal

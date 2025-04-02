@@ -9,6 +9,8 @@ import AddProduct from "./modules/AddProduct/AddProduct";
 import ImageModal from "@/components/modal/ImageModal";
 import useFetch from "@/hooks/useFetch";
 import useUserStore from "@/store/useUser";
+import api from "@/services/api";
+import { RiFileExcel2Line } from "react-icons/ri";
 
 export default function Warehouse() {
   const [selectedProducts, setSelectedProducts] = useState([]);
@@ -16,6 +18,7 @@ export default function Warehouse() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
+  const [excelLoading, setExcelLoading] = useState(false);
   const limit = 100;
   const { user } = useUserStore();
   const id = user?.shop?.warehouse_id;
@@ -28,6 +31,26 @@ export default function Warehouse() {
       enabled: !!id,
     }
   );
+
+  const handleDownloadExcel = async () => {
+    try {
+      setExcelLoading(true);
+      const response = await api.get(`warehouse-products/export-excel/${id}`, {
+        responseType: "blob", // Fayl sifatida yuklab olish
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "data.xlsx"); // Fayl nomi
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Excel yuklab olishda xatolik:", error);
+    } finally {
+      setExcelLoading(false);
+    }
+  };
 
   const showModal = () => {
     if (selectedProducts.length > 0) {
@@ -203,7 +226,20 @@ export default function Warehouse() {
         {user?.role === "seller" && (
           <div className="w-full flex justify-end mb-4">
             <div className="flex items-center gap-2">
-              <span className="bg-gray-700 py-1 px-3 text-white text-sm rounded-lg shadow-lg">
+              <Button
+                onClick={handleDownloadExcel}
+                loading={excelLoading}
+                className="flex self-end mb-3 items-center "
+                style={{
+                  background: "oklch(0.627 0.194 149.214)",
+                  border: "none",
+                  color: "white",
+                  fontSize: "14px",
+                }}
+              >
+                <RiFileExcel2Line size={18} /> Excel орқали юклаб олиш
+              </Button>
+              <span className="bg-gray-700 py-[6px] px-3 text-white text-sm rounded-lg shadow-lg">
                 Танланган: {selectedProducts?.length}
               </span>
               <Button

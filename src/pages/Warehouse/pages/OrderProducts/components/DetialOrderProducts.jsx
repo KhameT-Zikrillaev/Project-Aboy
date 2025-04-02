@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, useLocation } from "react-router-dom";
 import { Table, Pagination, Tag, Button, Spin, Checkbox } from 'antd';
 import 'antd/dist/reset.css';
@@ -9,6 +9,7 @@ import AddProductOrderWarehouse from "../modules/AddProductOrderWarehouse/AddPro
 import ImageModal from "@/components/modal/ImageModal";
 import useFetch from "@/hooks/useFetch";
 import useUserStore from "@/store/useUser";
+import Total from "@/components/total/Total";
 
 export default function ViewDetaliesOrderProducts() {
   const { name } = useParams();
@@ -16,8 +17,7 @@ export default function ViewDetaliesOrderProducts() {
   const idWarehouse = location.state?.idWarehouse;
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [filteredData, setFilteredData] = useState([]);
+  const [itemsPerPage, setItemsPerPage] = useState(100);
   const [selectedImage, setSelectedImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState([]);
@@ -39,14 +39,6 @@ export default function ViewDetaliesOrderProducts() {
     }
   );
 
-  useEffect(() => {
-    if (data?.data?.data) {
-      setFilteredData(data.data.data);
-    } else {
-      setFilteredData([]);
-    }
-  }, [data]);
-
   const onSearch = (searchParams) => {
     setSearchQuery(searchParams.article || "");
     setCurrentPage(1);
@@ -60,15 +52,15 @@ export default function ViewDetaliesOrderProducts() {
   };
 
   const handleSelectAll = () => {
-    setSelectedProducts(selectedProducts.length === filteredData.length ? [] : [...filteredData]);
+    setSelectedProducts(selectedProducts.length === data?.data?.data?.length ? [] : [...data?.data?.data]);
   };
 
   const columns = [
     {
       title: (
         <Checkbox
-          indeterminate={selectedProducts.length > 0 && selectedProducts.length < filteredData.length}
-          checked={selectedProducts.length === filteredData.length && filteredData.length > 0}
+          indeterminate={selectedProducts.length > 0 && selectedProducts.length < data?.data?.data.length}
+          checked={selectedProducts.length === data?.data?.data.length && data?.data?.data.length > 0}
           onChange={handleSelectAll}
         />
       ),
@@ -144,17 +136,20 @@ export default function ViewDetaliesOrderProducts() {
     },
   ];
 
+  const totalPrice = data?.data?.total_price
+  const totalQuantity = data?.data?.total_quantity
+
   return (
     <div className="min-h-screen bg-cover bg-center p-1 relative" style={{ backgroundImage: `url(${bgsklad})` }}>
       <div className="absolute inset-0 bg-black/50 backdrop-blur-md z-0"></div>
       <div className="relative z-0 max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[120px]">
         <SearchForm
-          data={filteredData}
           onSearch={onSearch}
           name={`${name}ига`}
           title="заказ бериш"
           showDatePicker={false}
         />
+        <Total totalPrice={totalPrice} totalQuantity={totalQuantity} />
 
         <div className='w-full flex justify-end mb-4'>
           <div className="flex items-center gap-2">
@@ -187,10 +182,10 @@ export default function ViewDetaliesOrderProducts() {
           </div>
         ) : (
           <div className="w-full px-2">
-            {filteredData.length > 0 ? (
+            {data?.data?.data?.length > 0 ? (
               <Table
                 columns={columns}
-                dataSource={filteredData}
+                dataSource={data?.data?.data}
                 pagination={false}
                 className="custom-table"
                 rowClassName={() => "custom-row"}
@@ -206,11 +201,11 @@ export default function ViewDetaliesOrderProducts() {
           </div>
         )}
 
-        {filteredData.length > 0 && (
+        {data?.data?.data?.length > 0 && (
           <div className="my-2 mb-12 md:mb-0 flex justify-center">
             <Pagination
               current={currentPage}
-              total={filteredData.length}
+              total={data?.data?.total}
               pageSize={itemsPerPage}
               onChange={(page) => setCurrentPage(page)}
               showSizeChanger={false}

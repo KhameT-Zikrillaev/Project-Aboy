@@ -3,6 +3,8 @@ import useFetch from "@/hooks/useFetch";
 import { Table, Spin, Empty, Tag, Pagination, Button } from "antd";
 import SearchForm from "@/components/SearchForm/SearchForm";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import api from "@/services/api";
+import { RiFileExcel2Line } from "react-icons/ri";
 
 export default function ViewVitrinaProducts({ idshop }) {
   const [filteredData, setFilteredData] = useState([]);
@@ -10,14 +12,15 @@ export default function ViewVitrinaProducts({ idshop }) {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedImage, setSelectedImage] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [excelLoading, setExcelLoading] = useState(false);
 
-  const { data, isLoading, refetch } = useFetch(
+  const { data, isLoading } = useFetch(
     `shop-product/all-products/${idshop}`,
     `shop-product/all-products/${idshop}`,
     {
       page: currentPage,
       limit: itemsPerPage,
-      ...(searchQuery && { article: searchQuery })
+      ...(searchQuery && { article: searchQuery }),
     },
     {
       enabled: !!idshop,
@@ -26,14 +29,36 @@ export default function ViewVitrinaProducts({ idshop }) {
 
   useEffect(() => {
     if (data?.data?.data) {
-      setFilteredData(data.data.data.map(item => ({
-        ...item,
-        key: item.id
-      })));
+      setFilteredData(
+        data.data.data.map((item) => ({
+          ...item,
+          key: item.id,
+        }))
+      );
     } else {
       setFilteredData([]);
     }
   }, [data]);
+
+  const handleDownloadExcel = async () => {
+    try {
+      setExcelLoading(true);
+      const response = await api.get(`shop-product/export-excel/${idshop}`, {
+        responseType: "blob", // Fayl sifatida yuklab olish
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "data.xlsx"); // Fayl nomi
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Excel yuklab olishda xatolik:", error);
+    } finally {
+      setExcelLoading(false);
+    }
+  };
 
   const onSearch = (searchParams) => {
     const searchValue = searchParams.article || "";
@@ -86,7 +111,7 @@ export default function ViewVitrinaProducts({ idshop }) {
       key: "article",
       render: (text, record) => (
         <span className="text-gray-100">
-          {text || record?.name || 'Без названия'}
+          {text || record?.name || "Без названия"}
         </span>
       ),
     },
@@ -96,7 +121,7 @@ export default function ViewVitrinaProducts({ idshop }) {
       key: "batch_number",
       render: (text) => (
         <Tag color="blue" className="text-gray-100">
-          {text || 'N/A'}
+          {text || "N/A"}
         </Tag>
       ),
     },
@@ -104,16 +129,14 @@ export default function ViewVitrinaProducts({ idshop }) {
       title: "Narxi ($)",
       dataIndex: "price",
       key: "price",
-      render: (text) => (
-        <span className="text-gray-100">{text || 0} $</span>
-      ),
+      render: (text) => <span className="text-gray-100">{text || 0} $</span>,
     },
     {
       title: "Rasm",
       dataIndex: "image_url",
       key: "image_url",
       render: (text) => (
-        <div 
+        <div
           className="max-h-[60px] max-w-[60px] cursor-pointer"
           onClick={() => setSelectedImage(text)}
         >
@@ -124,7 +147,7 @@ export default function ViewVitrinaProducts({ idshop }) {
             alt="product"
             onError={(e) => {
               e.target.onerror = null;
-              e.target.src = 'placeholder-image-url';
+              e.target.src = "placeholder-image-url";
             }}
           />
         </div>
@@ -142,13 +165,26 @@ export default function ViewVitrinaProducts({ idshop }) {
         onSearch={onSearch}
         placeholder="Артикул бўйича қидириш"
       />
-      
+
       {isLoading ? (
         <div className="flex justify-center items-center h-[300px]">
           <Spin size="large" />
         </div>
       ) : (
-        <div className="w-full px-4">
+        <div className="w-full px-4 flex flex-col gap-4">
+          <Button
+            onClick={handleDownloadExcel}
+            loading={excelLoading}
+            className="flex self-end mb-3 items-center "
+            style={{
+              background: "oklch(0.627 0.194 149.214)",
+              border: "none",
+              color: "white",
+              fontSize: "18px",
+            }}
+          >
+            <RiFileExcel2Line size={18} /> Excel орқали юклаб олиш
+          </Button>
           {filteredData.length > 0 ? (
             <Table
               columns={columns}
@@ -163,7 +199,9 @@ export default function ViewVitrinaProducts({ idshop }) {
               }}
             />
           ) : (
-            <div className="text-center text-white text-xl py-10">Маълумот топилмади</div>
+            <div className="text-center text-white text-xl py-10">
+              Маълумот топилмади
+            </div>
           )}
         </div>
       )}
@@ -183,19 +221,19 @@ export default function ViewVitrinaProducts({ idshop }) {
       )}
 
       {selectedImage && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" 
+        <div
+          className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
           onClick={() => setSelectedImage(null)}
         >
           <div className="relative max-h-[80vh] overflow-auto bg-white rounded-lg shadow-xl">
-            <img 
-              src={selectedImage} 
-              crossOrigin='anonymous' 
-              alt="Увеличенное изображение" 
-              className="w-full h-full" 
+            <img
+              src={selectedImage}
+              crossOrigin="anonymous"
+              alt="Увеличенное изображение"
+              className="w-full h-full"
             />
           </div>
-          <button 
+          <button
             className="absolute top-3 right-2 bg-white/50 cursor-pointer text-white w-8 h-8 rounded-full flex items-center justify-center"
             onClick={(e) => {
               e.stopPropagation();

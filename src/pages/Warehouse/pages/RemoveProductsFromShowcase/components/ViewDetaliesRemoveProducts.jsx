@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
-import { Table, Pagination, Tag, Button, Spin, Checkbox } from 'antd';
+import { Table, Pagination, Tag, Button, Spin, Checkbox } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
-import 'antd/dist/reset.css';
-import bgsklad from '@/assets/images/bg-sklad.png';
-import SearchForm from '@/components/SearchForm/SearchForm';
+import "antd/dist/reset.css";
+import bgsklad from "@/assets/images/bg-sklad.png";
+import SearchForm from "@/components/SearchForm/SearchForm";
 import ModalComponentContent from "@/components/modal/ModalContent";
 import DeleteProductVitrina from "../modules/DeleteProductVitrina/DeleteProductVitrina";
 import ImageModal from "@/components/modal/ImageModal";
 import useFetch from "@/hooks/useFetch";
-import useUserStore from "@/store/useUser";
-
+import Total from "@/components/total/Total";
+import { RiFileExcel2Line } from "react-icons/ri";
+import api from "@/services/api";
 export default function ViewDetaliesRemoveProducts() {
   const { name } = useParams();
   const location = useLocation();
@@ -22,26 +23,53 @@ export default function ViewDetaliesRemoveProducts() {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [excelLoading, setExcelLoading] = useState(false);
 
-  const { data: productsData, isLoading: productsLoading, refetch: refetchProducts } = useFetch(
+  const {
+    data: productsData,
+    isLoading: productsLoading,
+    refetch: refetchProducts,
+  } = useFetch(
     shopId ? `shop-product/all-products/${shopId}` : null,
     shopId ? `shop-product/all-products/${shopId}` : null,
     {
       page: currentPage,
       limit: itemsPerPage,
-      ...(searchQuery && { article: searchQuery })
+      ...(searchQuery && { article: searchQuery }),
     },
     {
       enabled: !!shopId,
     }
   );
 
+  const handleDownloadExcel = async () => {
+    try {
+      setExcelLoading(true);
+      const response = await api.get(`shop-product/export-excel/${shopId}`, {
+        responseType: "blob", // Fayl sifatida yuklab olish
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "data.xlsx"); // Fayl nomi
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Excel yuklab olishda xatolik:", error);
+    } finally {
+      setExcelLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (productsData?.data?.data) {
-      setFilteredData(productsData.data.data.map(item => ({
-        ...item,
-        key: item.id
-      })));
+      setFilteredData(
+        productsData.data.data.map((item) => ({
+          ...item,
+          key: item.id,
+        }))
+      );
     } else {
       setFilteredData([]);
     }
@@ -123,23 +151,29 @@ export default function ViewDetaliesRemoveProducts() {
     {
       title: (
         <Checkbox
-          indeterminate={selectedProducts.length > 0 && selectedProducts.length < filteredData.length}
-          checked={selectedProducts.length === filteredData.length && filteredData.length > 0}
+          indeterminate={
+            selectedProducts.length > 0 &&
+            selectedProducts.length < filteredData.length
+          }
+          checked={
+            selectedProducts.length === filteredData.length &&
+            filteredData.length > 0
+          }
           onChange={handleSelectAll}
         />
       ),
-      key: 'selection',
+      key: "selection",
       width: 50,
       render: (_, record) => (
         <Checkbox
-          checked={selectedProducts.some(item => item.id === record.id)}
+          checked={selectedProducts.some((item) => item.id === record.id)}
           onChange={() => handleCheckboxChange(record)}
         />
       ),
     },
     {
       title: "№",
-      key: 'index',
+      key: "index",
       width: 50,
       render: (_, __, index) => (
         <span className="text-gray-100">
@@ -174,7 +208,7 @@ export default function ViewDetaliesRemoveProducts() {
       dataIndex: "image_url",
       key: "image_url",
       render: (text) => (
-        <div 
+        <div
           className="max-h-[60px] max-w-[60px] cursor-pointer"
           onClick={() => setSelectedImage(text)}
         >
@@ -185,7 +219,7 @@ export default function ViewDetaliesRemoveProducts() {
             alt="product"
             onError={(e) => {
               e.target.onerror = null;
-              e.target.src = 'placeholder-image-url';
+              e.target.src = "placeholder-image-url";
             }}
           />
         </div>
@@ -194,6 +228,9 @@ export default function ViewDetaliesRemoveProducts() {
     },
   ];
 
+  const totalQuantity = productsData?.data?.total;
+  const totalPrice = productsData?.data?.total_price;
+
   return (
     <div
       className="min-h-screen bg-cover bg-center p-1 relative"
@@ -201,35 +238,51 @@ export default function ViewDetaliesRemoveProducts() {
     >
       <div className="absolute inset-0 bg-black/50 backdrop-blur-md z-0"></div>
       <div className="relative z-0 max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[120px]">
-        <SearchForm 
+        <SearchForm
           title={`${name} витринасини ўчириш`}
           showDatePicker={false}
           searchBy="article"
           onSearch={onSearch}
           placeholder="Артикул бўйича қидириш"
         />
-        
-        <div className='w-full flex justify-between mb-4'>
+        <Total totalQuantity={totalQuantity} totalPrice={totalPrice} />
+        <div className="w-full flex justify-between mb-4">
           <div className="flex items-center justify-end w-full gap-2">
-            <span className='bg-gray-700 py-1 px-3 text-white text-sm rounded-lg shadow-lg'>
-              Танланган: {selectedProducts.length}
+            <Button
+              onClick={handleDownloadExcel}
+              loading={excelLoading}
+              className="flex self-end mb-3 items-center "
+              style={{
+                background: "oklch(0.627 0.194 149.214)",
+                border: "none",
+                color: "white",
+                fontSize: "14px",
+              }}
+            >
+              <RiFileExcel2Line size={18} /> Excel орқали юклаб олиш
+            </Button>
+            <span className="bg-gray-700 py-[6px] px-3 text-white text-sm rounded-lg shadow-lg">
+              Танланган: {selectedProducts?.length}
             </span>
             <Button
               type="primary"
               onClick={showModal}
-              disabled={selectedProducts.length === 0}
+              disabled={selectedProducts?.length === 0}
               style={{
-                backgroundColor: selectedProducts.length === 0 ? '#888' : '#364153',
-                borderColor: '#364153',
+                backgroundColor:
+                  selectedProducts?.length === 0 ? "#888" : "#364153",
+                borderColor: "#364153",
               }}
               onMouseEnter={(e) => {
-                if (selectedProducts.length > 0) e.currentTarget.style.backgroundColor = "#2b3445";
+                if (selectedProducts?.length > 0)
+                  e.currentTarget.style.backgroundColor = "#2b3445";
               }}
               onMouseLeave={(e) => {
-                if (selectedProducts.length > 0) e.currentTarget.style.backgroundColor = "#364153";
+                if (selectedProducts.length > 0)
+                  e.currentTarget.style.backgroundColor = "#364153";
               }}
             >
-             Ўчириш 
+              Ўчириш
             </Button>
           </div>
         </div>
@@ -254,7 +307,9 @@ export default function ViewDetaliesRemoveProducts() {
                 }}
               />
             ) : (
-              <div className="text-center text-white text-xl py-10">Маълумот топилмади</div>
+              <div className="text-center text-white text-xl py-10">
+                Маълумот топилмади
+              </div>
             )}
           </div>
         )}
@@ -272,7 +327,7 @@ export default function ViewDetaliesRemoveProducts() {
             />
           </div>
         )}
-        
+
         <ImageModal
           isOpen={!!selectedImage}
           onClose={() => setSelectedImage(null)}

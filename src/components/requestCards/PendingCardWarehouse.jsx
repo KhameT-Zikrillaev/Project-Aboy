@@ -42,6 +42,8 @@ const PendingCardWarehouse = ({ item, fetchRequests }) => {
         method: "DELETE",
         data,
       });
+      fetchRequests()
+      setShopList({});
       toast.success("Витринадан маҳсулот ўчирилди");
     } catch {
       toast.error("Витринадан маҳсулот ўчиришда хатолик юз берди");
