@@ -20,9 +20,7 @@ export default function Vitrina() {
 
   // Fetch data from API
   const id = user?.shop?.id;
-  const { data, isLoading } = useFetch(
-    id ? `shop-product/all-products/${id}` : null,
-    id ? `shop-product/all-products/${id}` : null,
+  const { data, isLoading } = useFetch(`shop-product/all-products/${id}`, `shop-product/all-products/${id}`,
     { page, limit, article: searchQuery || null },
     { enabled: !!id }
   );
