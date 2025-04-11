@@ -7,6 +7,7 @@ import Loading from "@/components/Loading/Loading";
 import useApiMutation from "@/hooks/useApiMutation";
 import api from "@/services/api";
 import useUserStore from "@/store/useUser";
+import Cookies from "js-cookie";
 
 export default function Login() {
   const { setUser } = useUserStore();
@@ -31,7 +32,7 @@ export default function Login() {
     method: "POST",
     onSuccess: async (data) => {
       if (data?.data?.accessToken) {
-        localStorage.setItem("tokenWall", data?.data?.accessToken); // Сохраняем токен
+        Cookies.set("authToken", data?.data?.accessToken, { expires: 1 }); // Сохраняем токен
         try {
           setLoadingUser(true); // Показываем загрузку
           const response = await api.get("auth/profile", {
@@ -53,16 +54,14 @@ export default function Login() {
             navigate("/director");
           }
         } catch (error) {
-          console.error("User data error:", error);
-          setError("Ma'lumotlarni yuklashda xatolik yuz berdi");
+          setError("Маълумотларни юклашда хатолик юз берди");
         } finally {
           setLoadingUser(false);
         }
       }
     },
-    onError: (error) => {
-      setError("Login parol xato!");
-      console.error("Login error:", error);
+    onError: () => {
+      setError("Логин парол хато!");
     },
   });
 
@@ -72,10 +71,9 @@ export default function Login() {
 
     // Проверка на пустые поля
     if (!username || !password) {
-      setError("Iltimos hammasini to'ldiring!");
+      setError("Илтимос ҳаммасини тўлдиринг!");
       return;
     }
-
     mutate({ phone: username, password }); // Отправляем запрос на сервер
   };
 
@@ -129,7 +127,7 @@ export default function Login() {
           <div className="absolute inset-4 border-2 border-white/10 rounded-xl pointer-events-none"></div>
 
           <h2 className="text-3xl font-bold mb-8 text-center text-white bg-clip-text">
-            Kirish
+            Кириш
           </h2>
 
           {/* Поле для логина */}
@@ -138,12 +136,12 @@ export default function Login() {
               className="block text-white/80 text-sm font-bold mb-2"
               htmlFor="username"
             >
-              Login
+              Логин
             </label>
             <input
               type="text"
               id="username"
-              placeholder="Loginni kiriting!"
+              placeholder="Логинни киритинг!"
               value={username}
               style={{ color: "white" }}
               onChange={(e) => setUsername(e.target.value)}
@@ -152,7 +150,7 @@ export default function Login() {
           </div>
 
           {/* Поле для пароля */}
-          <div className="mb-8 relative">
+          <div className="mb-2 relative">
             <label
               className="block text-white/80 text-sm font-bold mb-2"
               htmlFor="password"
@@ -162,7 +160,7 @@ export default function Login() {
             <input
               type={showPassword ? "text" : "password"} // Переключаем тип поля
               id="password"
-              placeholder="Parolni kiriting"
+              placeholder="Паролни киритинг"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               style={{ color: "white" }}
@@ -181,7 +179,7 @@ export default function Login() {
 
           {/* Отображение ошибки */}
           {error && (
-            <div className="mb-4 p-2 text-center text-red-500 rounded-xl">
+            <div className="mb-2 p-2 text-center text-red-500 rounded-xl">
               {error}
             </div>
           )}
@@ -192,7 +190,7 @@ export default function Login() {
             type="submit"
             className="w-full cursor-pointer py-3 px-6 rounded-xl bg-yellow-400 text-gray-900 font-bold hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:ring-offset-2 focus:ring-offset-yellow-100 transition-all duration-300 border-2 border-yellow-500/30 hover:border-yellow-500/50 shadow-lg hover:shadow-xl active:scale-95"
           >
-            {isMutating || loadingUser ? "Qidiruv..." : "Kirish"}
+            {isMutating || loadingUser ? "Қидирув..." : "Кириш"}
           </button>
         </form>
       </div>

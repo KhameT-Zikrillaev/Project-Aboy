@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, DatePicker, Pagination, Spin, Tag } from "antd";
+import { Button, DatePicker, Pagination, Table} from "antd";
 import "antd/dist/reset.css";
 import { useParams } from "react-router-dom";
 import bgsklad from "@/assets/images/bg-sklad.png";
@@ -13,24 +13,31 @@ import { FaArchive } from "react-icons/fa";
 
 export default function ReturnProducts() {
   const [selectedImage, setSelectedImage] = useState(null);
-  const [hoveredItem, setHoveredItem] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [page, setPage] = useState(1);
-  const limit = 10;
+  const limit = 100;
   const [dates, setDates] = useState();
+  const [expandedRowKeys, setExpandedRowKeys] = useState([]);
 
   const { id } = useParams();
 
   const { data, isLoading, refetch } = useFetch(
     `order/shop/${id}`,
     `order/shop/${id}`,
-    { page, limit, date: dates ? format(new Date(dates), "yyyy-MM-dd") : null },
+    { page, limit, date: dates ? format(new Date(dates), "yyyy-MM-dd") : null }
   );
-  
 
   const handleDateChange = (dates) => {
     setDates(dates);
+  };
+
+  const handleExpand = (expanded, record) => {
+    if (expanded) {
+      setExpandedRowKeys([record.id]); // Faqat bitta qator ochiladi
+    } else {
+      setExpandedRowKeys([]); // Barchasini yopish
+    }
   };
 
   const formatDate = (dateString) => {
@@ -86,6 +93,85 @@ export default function ReturnProducts() {
     return originalElement;
   };
 
+  const columns = [
+    {
+      title: "№",
+      render: (_, __, index) => (
+        <span className="text-gray-100 font-semibold">
+          {(page - 1) * limit + index + 1}
+        </span>
+      ),
+      width: 70,
+    },
+    {
+      title: "Магазин",
+      dataIndex: "shop",
+      render: ( text) => (
+        <span className="text-gray-100 font-semibold">{text.name}</span>
+      ),
+    },
+    {
+      title: "Умумий тушум ($)",
+      dataIndex: "total_amount",
+      render: (text) => (
+        <span className="text-gray-100 font-semibold">
+          {Math.floor(text)}
+        </span>
+      ),
+    },
+    {
+      title: "Сана",
+      dataIndex: "createdAt",
+      render: (text) => (
+        <span className="text-gray-100 font-semibold">{formatDate(text)}</span>
+      ),
+    },
+    {
+      title: "Harakatlar",
+      render: (record) => (
+        <Button
+            type="primary"
+            icon={<EditOutlined />}
+            className="edit-btn"
+            onClick={() => showModal(record)}
+          />
+      ),
+    },
+  ];
+
+  const columnsNested = [
+    {
+      title: "№",
+      render: (_, __, index) => (
+        <span className="text-gray-100 font-semibold">
+          {(page - 1) * limit + index + 1}
+        </span>
+      ),
+      width: 70,
+    },
+    {
+      title: "Артикле",
+      dataIndex: "product",
+      render: (text) => (
+        <span className="text-gray-100 font-semibold">{text?.article}</span>
+      ),
+    },
+    {
+      title: "Партия",
+      dataIndex: "product",
+      render: (text) => (
+        <span className="text-gray-100 font-semibold">{text?.batch_number}</span>
+      ),
+    },
+    {
+      title: "Рулон  сони",
+      dataIndex: "quantity",
+      render: (text) => (
+        <span className="text-gray-100 font-semibold">{Math.floor(text)}</span>
+      ),
+    },
+  ];
+
   return (
     <div
       className="min-h-screen bg-cover bg-center p-1 relative"
@@ -99,7 +185,7 @@ export default function ReturnProducts() {
           <div className="flex justify-center md:justify-start items-center">
             <FaArchive className="text-3xl text-white" />
             <span className="text-xl font-semibold ml-2 text-white">
-              Sotilgan mahsulotlar
+              Сотилган маҳсулотлар
             </span>
           </div>
 
@@ -117,116 +203,46 @@ export default function ReturnProducts() {
             />
           </div>
         </div>
+        <div className="w-full">
+          <Table
+            columns={columns}
+            dataSource={data?.data[0]}
+            pagination={false}
+            rowKey="id"
+            className="custom-table custom-table-inner"
+            rowClassName={() => "custom-row"}
+            bordered
+            loading={isLoading}
+            expandable={{
+              expandedRowKeys,
+              onExpand: handleExpand,
+              expandedRowRender: (record) =>
+                record?.items && record?.items?.length > 0 ? (
+                  <Table
+                    columns={columnsNested}
+                    dataSource={record?.items}
+                    pagination={false}
+                  />
+                ) : null,
+            }}
+          />
+        </div>
 
-        {isLoading ? (
-          <div className="flex justify-center items-center h-[400px]">
-            <Spin size="large" />
-          </div>
-        ) : (
-          <>
-            <div className="grid grid-cols-1 gap-4 w-full px-4">
-              {data?.data[0]?.map((item) => (
-                <Card
-                  key={item.key}
-                  className="shadow-lg hover:shadow-xl transition-shadow rounded-lg"
-                  style={{
-                    background: "rgba(255, 255, 255, 0.1)",
-                    backdropFilter: "blur(10px)",
-                    border: "1px solid rgba(255, 255, 255, 0.2)",
-                  }}
-                  bodyStyle={{ padding: "12px", color: "white" }}
-                >
-                  <div className="flex gap-4">
-                    {/* Фото обоев */}
-                    <div className=" bg-cover bg-center rounded-lg cursor-pointer" />
-                    <div>
-                      <img
-                        onClick={() =>
-                          setSelectedImage(item?.items[0]?.product?.image_url)
-                        }
-                        className="max-h-[135px] max-w-[200px] h-full object-cover"
-                        crossOrigin="anonymous"
-                        src={item?.items[0]?.product?.image_url}
-                        alt="product img"
-                      />
-                    </div>
-
-                    {/* Данные */}
-                    <div className="w-4/5 flex flex-col gap-2">
-                      <div className="flex gap-2 items-center justify-between">
-                        <div className="flex gap-[5px]">
-                          <Tag color="blue">
-                            {item?.items[0]?.product?.article}
-                          </Tag>
-                          <Tag color="orange">
-                            {item?.items[0]?.product?.batch_number}
-                          </Tag>
-                        </div>
-                        <h4 className="text-sm font-semibold text-white">
-                          Do'kon nomi: {item?.shop?.name}
-                        </h4>
-                      </div>
-                      <div>
-                        <p className="text-gray-300 text-xs">
-                          Narxi:{" "}
-                          {Math.floor(item?.items[0]?.price).toLocaleString()}{" "}
-                          $
-                        </p>
-                        <p className="text-gray-300 text-xs">
-                          Soni: {Math.floor(item?.items[0]?.quantity)} dona
-                        </p>
-                        <p className="text-gray-300 text-xs">
-                          Jami narxi:{" "}
-                          {Math.floor(item?.items[0]?.total).toLocaleString()}{" "}
-                          $
-                        </p>
-                        <div className="flex items-center justify-between">
-                          <p className="text-gray-300 text-xs">
-                            Sotilgan sanasi: {formatDate(item?.createdAt)}
-                          </p>
-                          <button onClick={() => showModal(item)}>
-                            <EditOutlined
-                              style={{
-                                color:
-                                  hoveredItem === item?.id ? "white" : "orange",
-                                cursor: "pointer",
-                                backgroundColor:
-                                  hoveredItem === item?.id
-                                    ? "orange"
-                                    : "transparent",
-                                border: "2px solid orange",
-                                padding: "3px",
-                                borderRadius: "2px",
-                                transition: "all 0.3s ease-in-out",
-                              }}
-                              onMouseEnter={() => setHoveredItem(item?.id)} // Faqat shu item uchun hover
-                              onMouseLeave={() => setHoveredItem(null)} // Hoverdan chiqsa qaytarish
-                            />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-            <div className="my-2 mb-12 md:mb-2  flex justify-center">
-              <Pagination
-                current={page}
-                total={data?.data[1]}
-                onChange={handlePageChange}
-                pageSize={limit}
-                itemRender={itemRender}
-                className="custom-pagination"
-              />
-            </div>
-          </>
-        )}
+        <div className="my-2 mb-12 md:mb-2  flex justify-center">
+          <Pagination
+            current={page}
+            total={data?.data[1]}
+            onChange={handlePageChange}
+            pageSize={limit}
+            itemRender={itemRender}
+            className="custom-pagination"
+          />
+        </div>
 
         <ModalComponent
           isOpen={isModalOpen}
           onClose={onClose}
-          title={"Mahsulotni qaytarish"}
+          title={"Маҳсулотни қайтариш"}
         >
           <EditReturnProduct
             refetch={refetch}

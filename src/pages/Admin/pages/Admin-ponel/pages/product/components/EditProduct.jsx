@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Input, Button, Form, Upload } from "antd";
-// import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
 import useApiMutation from "@/hooks/useApiMutation";
 import { toast } from "react-toastify";
+import useFetch from "@/hooks/useFetch";
 
 const { TextArea } = Input;
 
@@ -13,7 +14,9 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
     control,
     formState: { errors },
     reset,
+    watch
   } = useForm();
+  console.log(productSingleData);
 
   useEffect(() => {
     if (productSingleData) {
@@ -21,10 +24,14 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
         article: productSingleData.article,
         name: productSingleData.name,
         batch_number: productSingleData.batch_number,
-        price: productSingleData.price
+        price: productSingleData.price,
       });
     }
   }, [productSingleData, reset]);
+  const imageFile = watch("image");
+    const [previewImage, setPreviewImage] = useState(productSingleData?.image_url || null);
+
+    
 
   const { mutate, isLoading } = useApiMutation({
     url: `products/${productSingleData?.id}`,
@@ -34,13 +41,13 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
       reset(); // Formani tozalash
       onClose();
       refetch();
-      toast.success("Mahsulot muvaffaqiyatli yangilandi!");
+      toast.success("Маҳсулот муваффақиятли янгиланди!");
     },
     onError: (error) => {
       if (error?.response?.data?.message === "This product already exists") {
-        toast.error("Bunday partiyali mahsulot mavjud");
+        toast.error("Бундай партияли маҳсулот мавжуд");
       } else {
-        toast.error("Mahsulotni yangilashda xatolik yuz berdi");
+        toast.error("Маҳсулотни янгилашда хатолик юз берди");
       }
     },
   });
@@ -52,47 +59,48 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
       }
       return acc;
     }, {});
-  
+
     // Agar o'zgarish bo'lmasa, API chaqirmaslik
     if (Object.keys(updatedFields).length === 0) {
-      toast.info("Hech qanday o'zgarish kiritilmadi.");
+      toast.info("Ҳеч қандай ўзгариш киритилмади.");
       return;
     }
-  
+
     mutate(updatedFields);
   };
 
-  // const beforeUpload = (file) => {
-  //   const isImage = file.type.startsWith("image/");
-  //   if (!isImage) {
-  //     message.error("Faqat rasm yuklash mumkin!");
-  //     return false;
-  //   }
+  const beforeUpload = (file) => {
+    const isImage = file.type.startsWith("image/");
+    
+    if (!isImage) {
+      // message.error("Faqat rasm yuklash mumkin!");
+      return false;
+    }
+    // setValue("image", file); // Rasmni react-hook-form state ga saqlash
+    const reader = new FileReader();
+    
+    reader.onload = () => setPreviewImage(reader.result);
+    reader.readAsDataURL(file);
 
-  //   setValue("image", file); // Rasmni react-hook-form state ga saqlash
-  //   const reader = new FileReader();
-  //   reader.onload = () => setPreviewImage(reader.result);
-  //   reader.readAsDataURL(file);
-
-  //   return false; // Ant Design uploadni avtomatik yuborishining oldini olish
-  // };
+    return false; // Ant Design uploadni avtomatik yuborishining oldini olish
+  };
 
   return (
     <div className="">
       <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
         {/* Ombor nomi */}
         <Form.Item
-          label={<span className="text-gray-100 font-semibold">Artikul</span>}
+          label={<span className="text-gray-100 font-semibold">Артикул</span>}
           validateStatus={errors.article ? "error" : ""}
           help={errors.article?.message}
         >
           <Controller
             name="article"
             control={control}
-            rules={{ required: "Artikul majburiy" }}
+            rules={{ required: "Артикул мажбурий" }}
             render={({ field }) => (
               <Input
-                placeholder="Artikulni kiriting"
+                placeholder="Артикулни киритинг"
                 className="custom-input"
                 {...field}
               />
@@ -101,17 +109,17 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
         </Form.Item>
 
         <Form.Item
-          label={<span className="text-gray-100 font-semibold">Partiya</span>}
+          label={<span className="text-gray-100 font-semibold">Партия</span>}
           validateStatus={errors.batch_number ? "error" : ""}
           help={errors.batch_number?.message}
         >
           <Controller
             name="batch_number"
             control={control}
-            rules={{ required: "Partiya majburiy" }}
+            rules={{ required: "Партия мажбурий" }}
             render={({ field }) => (
               <Input
-                placeholder="Partiyani kiriting"
+                placeholder="Партияни киритинг"
                 className="custom-input"
                 {...field}
               />
@@ -119,17 +127,17 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
           />
         </Form.Item>
         <Form.Item
-          label={<span className="text-gray-100 font-semibold">Narxi ($)</span>}
+          label={<span className="text-gray-100 font-semibold">Нархи ($)</span>}
           validateStatus={errors.price ? "error" : ""}
           help={errors.price?.message}
         >
           <Controller
             name="price"
             control={control}
-            rules={{ required: "Narxi majburiy" }}
+            rules={{ required: "Нархи мажбурий" }}
             render={({ field }) => (
               <Input
-                placeholder="Narxini kiriting"
+                placeholder="Нархини киритинг"
                 type="number"
                 className="custom-input"
                 {...field}
@@ -137,9 +145,9 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
             )}
           />
         </Form.Item>
-        {/* <Form.Item
+        <Form.Item
           label={
-            <span className="text-gray-100 font-semibold">Rasm yuklash</span>
+            <span className="text-gray-100 font-semibold">Расм юклаш</span>
           }
           validateStatus={errors.image ? "error" : ""}
           help={errors.image?.message}
@@ -147,7 +155,7 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
           <Controller
             name="image"
             control={control}
-            rules={{ required: "Rasm yuklash majburiy" }}
+            rules={{ required: false }}
             render={({ field }) => (
               <Upload
                 listType="picture-card"
@@ -158,9 +166,10 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
                   return false;
                 }}
               >
-                {imageFile ? (
+                {imageFile || previewImage ? (
                   <img
                     src={previewImage}
+                    crossOrigin="anonymous"
                     alt="avatar"
                     style={{ width: "100%" }}
                   />
@@ -170,27 +179,27 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
                     <div
                       style={{ marginTop: 8, color: "#fff", fontWeight: "500" }}
                     >
-                      Rasm yuklash
+                      Расм юклаш  
                     </div>
                   </div>
                 )}
               </Upload>
             )}
           />
-        </Form.Item> */}
+        </Form.Item>
         <Form.Item
-          label={<span className="text-gray-100 font-semibold">Izoh</span>}
+          label={<span className="text-gray-100 font-semibold">Изоҳ</span>}
           validateStatus={errors.comment ? "error" : ""}
           help={errors.comment?.message}
         >
           <Controller
             name="comment"
             control={control}
-            rules={{ required: "Izoh majburiy" }}
+            rules={{ required: "Изоҳ мажбурий" }}
             render={({ field }) => (
               <TextArea
                 rows={4}
-                placeholder="Izohni kiriting"
+                placeholder="Изоҳни киритинг"
                 className="custom-input"
                 {...field}
               />
@@ -214,7 +223,7 @@ const EditProduct = ({ onClose, productSingleData, refetch }) => {
               width: "100%",
             }}
           >
-            Tahrirlash
+            Таҳрирлаш
           </Button>
         </Form.Item>
       </Form>

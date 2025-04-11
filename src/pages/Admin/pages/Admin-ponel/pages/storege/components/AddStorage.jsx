@@ -19,15 +19,15 @@ const AddStorage = ({ onClose, refetch }) => {
       reset(); // Formani tozalash
       onClose();
       refetch();
-      toast.success("Ombor muvaffaqiyatli qo‘shildi!");
+      toast.success("Омбор муваффақиятли қўшилди!");
     },
     onError: (error) => {
       if (error?.response?.data?.message === "Warehouse with this name already exists") {
-        toast.error("Bunday ombor nomi mavjud");
+        toast.error("Бундай омбор номи мавжуд");
       }else if(error?.response?.data?.message === "Main warehouse already exists!"){
-        toast.error("Asosiy ombor mavjud");
+        toast.error("Асосий омбор мавжуд");
       }else{
-        toast.error("Ombor qo'shishda xatolik yuz berdi");
+        toast.error("Омбор қўшишда хатолик юз берди");
       }
     },
   });
@@ -47,7 +47,7 @@ const AddStorage = ({ onClose, refetch }) => {
         {/* Ombor nomi */}
         <Form.Item
           label={
-            <span className="text-gray-100 font-semibold">Ombor nomi</span>
+            <span className="text-gray-100 font-semibold">Омбор номи</span>
           }
           validateStatus={errors.name ? "error" : ""}
           help={errors.name?.message}
@@ -55,10 +55,10 @@ const AddStorage = ({ onClose, refetch }) => {
           <Controller
             name="name"
             control={control}
-            rules={{ required: "Ombor nomi majburiy" }}
+            rules={{ required: "Омбор номи мажбурий" }}
             render={({ field }) => (
               <Input
-                placeholder="Ombor nomini kiriting"
+                placeholder="Омбор номини киритинг"
                 className="custom-input"
                 {...field}
               />
@@ -66,9 +66,9 @@ const AddStorage = ({ onClose, refetch }) => {
           />
         </Form.Item>
 
-        <Form.Item
+        {/* <Form.Item
           label={
-            <span className="text-gray-100 font-semibold">Narx farqi ($)</span>
+            <span className="text-gray-100 font-semibold">Нарх фарқи ($)</span>
           }
           validateStatus={errors.priceDifference ? "error" : ""}
           help={errors.priceDifference?.message}
@@ -76,7 +76,7 @@ const AddStorage = ({ onClose, refetch }) => {
           <Controller
             name="priceDifference"
             control={control}
-            rules={{ required: "Narx farqi majburiy" }}
+            rules={{ required: "Нарх фарқи мажбурий" }}
             render={({ field }) => (
               <Input
                 placeholder="Narx farqini kiriting"
@@ -85,13 +85,13 @@ const AddStorage = ({ onClose, refetch }) => {
               />
             )}
           />
-        </Form.Item>
+        </Form.Item> */}
 
         <div className="flex justify-between">
           {/* Ruxsat berish Switch */}
           <Form.Item
             label={
-              <span className="text-gray-100 font-semibold">Asosiy ombor</span>
+              <span className="text-gray-100 font-semibold">Асосий омбор</span>
             }
           >
             <Controller
@@ -106,7 +106,7 @@ const AddStorage = ({ onClose, refetch }) => {
           {/* Ruxsat berish Switch */}
           <Form.Item
             label={
-              <span className="text-gray-100 font-semibold">Ruxsat berish</span>
+              <span className="text-gray-100 font-semibold">Рухсат бериш</span>
             }
           >
             <Controller
@@ -135,7 +135,7 @@ const AddStorage = ({ onClose, refetch }) => {
               width: "100%"
             }}
           >
-            Yaratish
+            Яратиш
           </Button>
         </Form.Item>
       </Form>

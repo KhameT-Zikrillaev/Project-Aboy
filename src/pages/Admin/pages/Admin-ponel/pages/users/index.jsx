@@ -31,10 +31,10 @@ const Statistics = () => {
 
       onSuccess: () => {
         refetch();
-        toast.success("Foydalanuvchi muvaffaqiyatli o'chirildi!");
+        toast.success("Фойдаланувчи муваффақиятли ўчирилди!");
       },
       onError: (error) => {
-        toast.error("Foydalanuvchini o'chirishda xatolik yuz berdi");
+        toast.error("Фойдаланувчини ўчиришда хатолик юз берди");
       },
     });
   
@@ -100,25 +100,25 @@ const Statistics = () => {
       width: 70,
     },
     {
-      title: "Foydalanuvchi nomi",
+      title: "Фойдаланувчи номи",
       dataIndex: "name",
       key: "name",
       render: (text) => <span className="text-gray-100 font-semibold">{text}</span>,
     },
     {
-      title: "Telfon raqami",
+      title: "Тельфон рақами",
       dataIndex: "phone",
       key: "phone",
       render: (text) => <span className="text-gray-100 font-semibold">{text}</span>,
     },
     {
-      title: "Foydalanuvchi roli",
+      title: "Фойдаланувчи роли",
       dataIndex: "role",
       key: "role",
       render: (text) => <span className="text-gray-100 font-semibold">{text}</span>,
     },
     {
-      title: "Actions",
+      title: "Ҳаракатлар",
       key: "actions",
       render: (_, record) => (
         <Space size="middle">
@@ -129,10 +129,10 @@ const Statistics = () => {
             onClick={() => handleEdit(record)}
           />
           <Popconfirm
-            title="O‘chirishni tasdiqlaysizmi?"
+            title="Ўчиришни тасдиқлайсизми?"
             onConfirm={() => handleDelete(record?.id)}
-            okText="Ha"
-            cancelText="Yo‘q"
+            okText="Ҳа"
+            cancelText="Йўқ"
           >
             <Button type="primary" danger icon={<DeleteOutlined />} className="edit-btn" />
           </Popconfirm>
@@ -144,26 +144,25 @@ const Statistics = () => {
   return (
     <div className="p-5">
       <div className="flex justify-between items-center mb-5">
-        <div className="text-3xl font-bold text-gray-100">Foydalanuvchilar</div>
+        <div className="text-3xl font-bold text-gray-100">Фойдаланувчилар</div>
         <div className="flex gap-3 items-center">
           <Search
-            placeholder="Qidirish"
+            placeholder="Қидириш"
             onSearch={onSearch}
             enterButton
             className="custom-search"
           />
           <Select
             value={userRole}
-            placeholder="Rol tanlang"
+            placeholder="Рол танланг"
             className="custom-select-filter"
             onChange={handleChange}
             dropdownClassName="custom-dropdown"
           >
-            <Option value="staff">Omborchi</Option>
-            <Option value="seller">Sotuvchi</Option>
-            <Option value="user">Sotuvchi 2</Option>
-            <Option value="admin">Admin</Option>
-            <Option value="director">Direktor</Option>
+            <Option value="staff">Омборчи</Option>
+            <Option value="seller">Сотувчи</Option>
+            <Option value="user">Сотувчи 2</Option>
+            <Option value="admin">Админ</Option>
           </Select>
           <Button
             type="primary"
@@ -178,7 +177,7 @@ const Statistics = () => {
             className="hover:bg-[#0056b3] hover:border-[#004494] focus:bg-[#004494]"
             onClick={() => showModal("add")}
           >
-            Qo'shish
+            Қўшиш
           </Button>
         </div>
       </div>
@@ -207,7 +206,7 @@ const Statistics = () => {
         isOpen={isModalOpen}
         onClose={onClose}
         title={
-          formType === "add" ? "Foydalanuchi qo'shish" : "Foydalanuvchini tahrirlash"
+          formType === "add" ? "Фойдаланувчи қўшиш" : "Фойдаланувчини таҳрирлаш"
         }
       >
         {formType === "add" ? (

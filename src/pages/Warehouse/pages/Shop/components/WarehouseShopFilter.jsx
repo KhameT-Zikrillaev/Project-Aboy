@@ -2,15 +2,12 @@ import React, { useState } from "react";
 import { Input, DatePicker } from "antd"; // Импортируем DatePicker из antd
 import { FaArchive } from "react-icons/fa";
 import dayjs from "dayjs"; // Для работы с датами
-import { useParams } from "react-router-dom";
 
 const { Search } = Input;
-const { RangePicker } = DatePicker;
 
 const warehouseShopFilter = ({ data, onSearch }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [dates, setDates] = useState(dayjs()); // Состояние для хранения выбранных дат
-  const { name } = useParams();
 
   const handleSearch = (value) => {
     setSearchTerm(value);
@@ -31,7 +28,7 @@ const warehouseShopFilter = ({ data, onSearch }) => {
       <div className="flex justify-center md:justify-start items-center">
         <FaArchive className="text-3xl text-white" />
         <span className="text-xl font-semibold ml-2 text-white">
-          Qaytarilgan mahsulotlar
+          Қайтарилган маҳсулотлар
         </span>
       </div>
 
@@ -50,7 +47,7 @@ const warehouseShopFilter = ({ data, onSearch }) => {
         />
 
         <Search
-          placeholder="Qidirish"
+          placeholder="Қидириш"
           onChange={(e) => handleSearch(e.target.value)}
           enterButton
           className="custom-search max-w-md"

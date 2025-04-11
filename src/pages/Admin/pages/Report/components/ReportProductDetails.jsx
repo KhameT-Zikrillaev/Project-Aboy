@@ -97,13 +97,13 @@ export default function ReportWarehouseSend() {
   const getStatusBadge = (status) => {
     switch(status) {
       case 'approved':
-        return <Badge status="success" text="Tasdiqlangan" />;
+        return <Badge status="success" text="Тасдиқланган" />;
       case 'pending':
-        return <Badge status="processing" text="Kutilmoqda" />;
+        return <Badge status="processing" text="Кутилмоқда" />;
       case 'rejected':
-        return <Badge status="error" text="Rad etilgan" />;
+        return <Badge status="error" text="Рад этилган" />;
       default:
-        return <Badge status="default" text={status || 'Noma\'lum'} />;
+        return <Badge status="default" text={status || 'Номаълум'} />;
     }
   };
 
@@ -119,7 +119,7 @@ export default function ReportWarehouseSend() {
         <SearchForm 
           data={data?.data} 
           name="" 
-          title="Hisobotlar omborlar" 
+          title="Ҳисоботлар омборлар" 
           showDatePicker={false} 
           onSearch={handleSearch} 
           className="w-full mb-6"
@@ -132,7 +132,7 @@ export default function ReportWarehouseSend() {
         ) : filteredData.length === 0 ? (
           <Empty 
             description={
-              <span className="text-white">Ma'lumot topilmadi</span>
+              <span className="text-white">Маълумот топилмади</span>
             } 
             className="my-12"
           />
@@ -153,12 +153,12 @@ export default function ReportWarehouseSend() {
                   <div className="flex justify-between items-start">
                     <div>
                       <h3 className="text-lg font-semibold text-white mb-1 flex items-center">
-                        <Tooltip title="Manba ombor">
-                          <span>{item.sourceWarehouse?.name || 'Noma\'lum'}</span>
+                        <Tooltip title="Манба омбор">
+                          <span>{item.sourceWarehouse?.name || 'Номаълум'}</span>
                         </Tooltip>
                         <ArrowRightOutlined className="mx-2 text-yellow-400" />
-                        <Tooltip title="Manzil ombor">
-                          <span>{item.destinationWarehouse?.name || 'Noma\'lum'}</span>
+                        <Tooltip title="Манзил омбор">
+                          <span>{item.destinationWarehouse?.name || 'Номаълум'}</span>
                         </Tooltip>
                       </h3>
                       <div className="mb-2">
@@ -173,31 +173,31 @@ export default function ReportWarehouseSend() {
                   </div>
                   
                   <div className="bg-black/20 p-3 rounded-lg">
-                    <h4 className="text-sm font-medium text-yellow-300 mb-2">Mahsulotlar</h4>
+                    <h4 className="text-sm font-medium text-yellow-300 mb-2">Маҳсулотлар</h4>
                     {item.items && item.items.length > 0 ? (
                       <div className="space-y-3">
                         {item.items.map((product, index) => (
                           <div key={index} className="border-b border-gray-600 pb-2 last:border-0 last:pb-0">
                             <div className="flex justify-between">
-                              <span className="text-sm font-medium">{product.product?.article || 'Noma\'lum'}</span>
-                              <span className="text-sm">{product.quantity} dona</span>
+                              <span className="text-sm font-medium">{product.product?.article || 'Номаълум'}</span>
+                              <span className="text-sm">{product.quantity} дона</span>
                             </div>
                             <div className="flex justify-between text-xs text-gray-300 mt-1">
-                              <span>Partiya: {product.product?.batch_number || 'Noma\'lum'}</span>
-                              <Tooltip title="Narx o'zgarishi">
+                              <span>Партия: {product.product?.batch_number || 'Номаълум'}</span>
+                              <Tooltip title="Нарх ўзгариши">
                                 <span className={`${product.new_price > product.orginal_price ? 'text-green-400' : 'text-red-400'}`}>
                                   {product.orginal_price?.toLocaleString()} → {product.new_price?.toLocaleString()} $
                                 </span>
                               </Tooltip>
                             </div>
                             {product.remarks && (
-                              <p className="text-xs text-gray-400 mt-1 italic">Izoh: {product.remarks}</p>
+                              <p className="text-xs text-gray-400 mt-1 italic">Изоҳ: {product.remarks}</p>
                             )}
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-sm text-gray-400">Mahsulotlar mavjud emas</p>
+                      <p className="text-sm text-gray-400">Маҳсулотлар мавжуд эмас</p>
                     )}
                   </div>
                 </div>

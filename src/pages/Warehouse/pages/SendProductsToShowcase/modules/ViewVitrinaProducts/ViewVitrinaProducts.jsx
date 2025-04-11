@@ -1,116 +1,247 @@
 import React, { useState, useEffect } from "react";
 import useFetch from "@/hooks/useFetch";
-import { Card, Spin, Empty, Tag, Pagination } from "antd";
+import { Table, Spin, Empty, Tag, Pagination, Button } from "antd";
+import SearchForm from "@/components/SearchForm/SearchForm";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import api from "@/services/api";
+import { RiFileExcel2Line } from "react-icons/ri";
 
-export default function ViewVitrinaProducts({ idwarehouse }) {
+export default function ViewVitrinaProducts({ idshop }) {
   const [filteredData, setFilteredData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(2);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [excelLoading, setExcelLoading] = useState(false);
 
-  const { data, isLoading, refetch } = useFetch(
-    `Storefront-product/${idwarehouse}`, // Уникальный ключ для кеширования
-    `Storefront-product/${idwarehouse}`, // URL запроса
-    {}, // Параметры запроса
+  const { data, isLoading } = useFetch(
+    `shop-product/all-products/${idshop}`,
+    `shop-product/all-products/${idshop}`,
     {
-      enabled: !!idwarehouse, // Запрос будет выполнен только если id существует
-      staleTime: 0, // Данные всегда считаются устаревшими
-      cacheTime: 0, // Не кешируем данные
+      page: currentPage,
+      limit: itemsPerPage,
+      ...(searchQuery && { article: searchQuery }),
+    },
+    {
+      enabled: !!idshop,
     }
   );
 
   useEffect(() => {
-    if (idwarehouse) {
-      setFilteredData([]);
-      setCurrentPage(1);
-      refetch();
-    }
-  }, [idwarehouse, refetch]);
-
-  useEffect(() => {
-    if (data?.data) {
-      setFilteredData(data?.data);
-    }else {
+    if (data?.data?.data) {
+      setFilteredData(
+        data.data.data.map((item) => ({
+          ...item,
+          key: item.id,
+        }))
+      );
+    } else {
       setFilteredData([]);
     }
   }, [data]);
 
-  const startIndex = (currentPage - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
-  const currentData = filteredData?.slice(startIndex, endIndex);
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
+  const handleDownloadExcel = async () => {
+    try {
+      setExcelLoading(true);
+      const response = await api.get(`shop-product/export-excel/${idshop}`, {
+        responseType: "blob", // Fayl sifatida yuklab olish
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "data.xlsx"); // Fayl nomi
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Excel yuklab olishda xatolik:", error);
+    } finally {
+      setExcelLoading(false);
+    }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <Spin size="large" />
-      </div>
-    );
-  }
+  const onSearch = (searchParams) => {
+    const searchValue = searchParams.article || "";
+    setSearchQuery(searchValue);
+    setCurrentPage(1);
+  };
 
-  if (!filteredData || filteredData?.length === 0) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <Empty description="Нет данных для отображения" />
-      </div>
-    );
-  }
+  const updateItemsPerPage = () => {
+    setItemsPerPage(window.innerWidth < 768 ? 5 : 10);
+  };
+
+  useEffect(() => {
+    updateItemsPerPage();
+    window.addEventListener("resize", updateItemsPerPage);
+    return () => window.removeEventListener("resize", updateItemsPerPage);
+  }, []);
+
+  const itemRender = (page, type, originalElement) => {
+    if (type === "prev") {
+      return (
+        <button style={{ color: "white", border: "none", cursor: "pointer" }}>
+          <LeftOutlined />
+        </button>
+      );
+    }
+    if (type === "next") {
+      return (
+        <button style={{ color: "white", border: "none", cursor: "pointer" }}>
+          <RightOutlined />
+        </button>
+      );
+    }
+    return originalElement;
+  };
+
+  const columns = [
+    {
+      title: "№",
+      key: "index",
+      width: 50,
+      render: (_, __, index) => (
+        <span className="text-gray-100">
+          {(currentPage - 1) * itemsPerPage + index + 1}
+        </span>
+      ),
+    },
+    {
+      title: "Artikul/Nomi",
+      dataIndex: "article",
+      key: "article",
+      render: (text, record) => (
+        <span className="text-gray-100">
+          {text || record?.name || "Без названия"}
+        </span>
+      ),
+    },
+    {
+      title: "Partiya",
+      dataIndex: "batch_number",
+      key: "batch_number",
+      render: (text) => (
+        <Tag color="blue" className="text-gray-100">
+          {text || "N/A"}
+        </Tag>
+      ),
+    },
+    {
+      title: "Narxi ($)",
+      dataIndex: "price",
+      key: "price",
+      render: (text) => <span className="text-gray-100">{text || 0} $</span>,
+    },
+    {
+      title: "Rasm",
+      dataIndex: "image_url",
+      key: "image_url",
+      render: (text) => (
+        <div
+          className="max-h-[60px] max-w-[60px] cursor-pointer"
+          onClick={() => setSelectedImage(text)}
+        >
+          <img
+            className="h-auto w-full object-cover"
+            src={text}
+            crossOrigin="anonymous"
+            alt="product"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = "placeholder-image-url";
+            }}
+          />
+        </div>
+      ),
+      width: 100,
+    },
+  ];
 
   return (
     <div className="p-4 w-full">
-      <div className="grid grid-cols-1 sm:grid-cols-2  gap-2 w-full px-4">
-        {currentData?.map((item) => (
-          <Card
-            key={item?.id}
-            className="shadow-lg hover:shadow-xl transition-shadow rounded-lg"
-            style={{ background: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255, 255, 255, 0.2)' }}
-            cover={
-              <div/>
-            }
-            bodyStyle={{ padding: '12px', color: 'white' }}
-          >
-            <img  onClick={() => setSelectedImage(item?.image_url)} className="h-28 w-full bg-cover cursor-pointer bg-center rounded-t-lg" crossOrigin='anonymous' src={item?.image_url} alt=""/>
-            <div className="flex flex-col gap-2">
-              <h3 className="text-lg font-semibold text-white">{item?.article || item?.name || 'Без названия'}</h3>
-              <Tag color="blue">Part: <span className="text-red-500">{item?.batch_number || 'N/A'}</span></Tag>
-              <h4 className="text-sm font-semibold text-white">{(item?.price || 0) + " $"}</h4>
-            </div>
-          </Card>
-        ))}
-      </div>
+      <SearchForm
+        title="Витринаси"
+        showDatePicker={false}
+        searchBy="article"
+        onSearch={onSearch}
+        placeholder="Артикул бўйича қидириш"
+      />
 
-      {/* Пагинация */}
-      {filteredData.length > pageSize && (
-        <div className="flex justify-center mt-4">
+      {isLoading ? (
+        <div className="flex justify-center items-center h-[300px]">
+          <Spin size="large" />
+        </div>
+      ) : (
+        <div className="w-full px-4 flex flex-col gap-4">
+          <Button
+            onClick={handleDownloadExcel}
+            loading={excelLoading}
+            className="flex self-end mb-3 items-center "
+            style={{
+              background: "oklch(0.627 0.194 149.214)",
+              border: "none",
+              color: "white",
+              fontSize: "18px",
+            }}
+          >
+            <RiFileExcel2Line size={18} /> Excel орқали юклаб олиш
+          </Button>
+          {filteredData.length > 0 ? (
+            <Table
+              columns={columns}
+              dataSource={filteredData}
+              pagination={false}
+              className="custom-table"
+              rowClassName={() => "custom-row"}
+              bordered
+              style={{
+                background: "rgba(255, 255, 255, 0.1)",
+                backdropFilter: "blur(10px)",
+              }}
+            />
+          ) : (
+            <div className="text-center text-white text-xl py-10">
+              Маълумот топилмади
+            </div>
+          )}
+        </div>
+      )}
+
+      {data?.data?.total > 0 && (
+        <div className="my-2 mb-12 md:mb-0 flex justify-center">
           <Pagination
             current={currentPage}
-            pageSize={pageSize}
-            total={filteredData.length}
-            onChange={handlePageChange}
+            total={data?.data?.total}
+            pageSize={itemsPerPage}
+            onChange={(page) => setCurrentPage(page)}
             showSizeChanger={false}
             className="custom-pagination"
+            itemRender={itemRender}
           />
         </div>
       )}
 
-      {/* Модальное окно с изображением */}
       {selectedImage && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={() => setSelectedImage(null)}>
-          <div className="relative max-w-[450px] max-h-[80vh] overflow-auto bg-white rounded-lg shadow-xl">
-            <img src={selectedImage} crossOrigin='anonymous' alt="Увеличенное изображение" className="max-w-full max-h-full object-contain" />
-            <button 
-              className="absolute top-0 right-2 bg-white/50 cursor-pointer text-white w-8 h-8 rounded-full flex items-center justify-center"
-              onClick={(e) => {
-                e.stopPropagation();
-                setSelectedImage(null);
-              }}
-            >
-              ×
-            </button>
+        <div
+          className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div className="relative max-h-[80vh] overflow-auto bg-white rounded-lg shadow-xl">
+            <img
+              src={selectedImage}
+              crossOrigin="anonymous"
+              alt="Увеличенное изображение"
+              className="w-full h-full"
+            />
           </div>
+          <button
+            className="absolute top-3 right-2 bg-white/50 cursor-pointer text-white w-8 h-8 rounded-full flex items-center justify-center"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedImage(null);
+            }}
+          >
+            ×
+          </button>
         </div>
       )}
     </div>

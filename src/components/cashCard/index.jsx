@@ -14,17 +14,17 @@ const CashCard = ({ transaction }) => {
 
   // Форматирование суммы
   const formatAmount = (amount) => {
-    if (!amount) return '0 so\'m';
+    if (!amount) return '0 $';
     return `${parseFloat(amount).toLocaleString('ru-RU')} $`;
   };
 
   // Получение информации о товарах
   const getItemsInfo = (items) => {
-    if (!items || items.length === 0) return 'Tovarlar mavjud emas';
+    if (!items || items.length === 0) return 'Товарлар мавжуд эмас';
     return items.map((item) => (
       <div key={item.id} className="text-sm space-y-1">
         {/* Название товара */}
-        <span className="font-medium">{item.product?.article || 'Noma’lum'}</span>
+        <span className="font-medium">{item.product?.article || 'Номаълум'}</span>
         {/* Количество и цена */}
         <div className="flex justify-between">
           <span>
@@ -33,7 +33,7 @@ const CashCard = ({ transaction }) => {
         </div>
         {/* Партия */}
         {item.product?.batch_number && (
-          <span className="text-gray-400">Partiya: {item.product.batch_number}</span>
+          <span className="text-gray-400">Партия: {item.product.batch_number}</span>
         )}
       </div>
     ));
@@ -53,10 +53,10 @@ const CashCard = ({ transaction }) => {
         <div className="flex justify-between items-start">
           <div>
             <h3 className="text-lg font-semibold text-white mb-1">
-              {transaction.type === 'income' ? 'Kirim' : 'Chiqim'} - {formatAmount(transaction.amount)}
+              {transaction.type === 'income' ? 'Кирим' : 'Чиқим'} - {formatAmount(transaction.amount)}
             </h3>
           </div>
-          <Tooltip title="Yaratilgan sana">
+          <Tooltip title="Яратилган сана">
             <span className="text-xs text-gray-300">
               {formatDate(transaction?.createdAt)}
             </span>
@@ -64,16 +64,16 @@ const CashCard = ({ transaction }) => {
         </div>
 
         <div className="bg-black/20 p-3 rounded-lg">
-          <h4 className="text-sm font-medium text-yellow-300 mb-2">Tafsilotlar</h4>
+          <h4 className="text-sm font-medium text-yellow-300 mb-2">Тафсилотлар</h4>
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span>To'lov turi:</span>
+              <span>Тўлов тури:</span>
               <span className="font-medium">
                 {transaction.order?.payment_method || 'Noma\'lum'}
               </span>
             </div>
             <div className="flex justify-between text-sm">
-              <span>Umumiy summa:</span>
+              <span>Умумий сумма:</span>
               <span className="text-gray-300">
                 {formatAmount(transaction.order?.total_amount)}
               </span>

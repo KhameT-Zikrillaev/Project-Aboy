@@ -37,11 +37,10 @@ const EditUser = ({ onClose, storageSingleData,refetch }) => {
       onClose();
       refetch();
       reset()
-      toast.success("Foydalanuvchi muvaffaqiyatli yangilandi!");
+      toast.success("Фойдаланувчи муваффақиятли янгиланди!");
     },
-    onError: (error) => {
-      console.log(error);
-      
+    onError: () => {
+      toast.error("Фойдаланувчи янгилашда хатолик юз берди!");
     },
   });
 
@@ -56,7 +55,7 @@ const EditUser = ({ onClose, storageSingleData,refetch }) => {
         <Form.Item
           label={
             <span className="text-gray-100 font-semibold">
-              Foydalanuvchi nomi
+              Фойдаланувчи номи
             </span>
           }
           validateStatus={errors.name ? "error" : ""}
@@ -65,10 +64,10 @@ const EditUser = ({ onClose, storageSingleData,refetch }) => {
           <Controller
             name="name"
             control={control}
-            rules={{ required: "Foydalanuvchi nomi majburiy" }}
+            rules={{ required: "Фойдаланувчи номи мажбурий" }}
             render={({ field }) => (
               <Input
-                placeholder="Foydalanuvchi nomini kiriting"
+                placeholder="Фойдаланувчи номини киритинг"
                 className="custom-input"
                 {...field}
               />
@@ -110,7 +109,7 @@ const EditUser = ({ onClose, storageSingleData,refetch }) => {
           <Form.Item
           label={
             <span className="text-gray-100 font-semibold">
-              Ombor nomi
+              Омбор номи
             </span>
           }
           validateStatus={errors.warehouse_id ? "error" : ""}
@@ -119,11 +118,11 @@ const EditUser = ({ onClose, storageSingleData,refetch }) => {
           <Controller
             name="warehouse_id"
             control={control}
-            rules={{ required: "Ombor majburiy" }}
+            rules={{ required: "Омбор мажбурий" }}
             render={({ field }) => (
               <Select
                 {...field}
-                placeholder="Omborni tanlang"
+                placeholder="Омборни танланг"
                 className="custom-select"
                 onChange={(value) => field.onChange(value)}
                 dropdownClassName="custom-dropdown"
@@ -146,7 +145,7 @@ const EditUser = ({ onClose, storageSingleData,refetch }) => {
           <Form.Item
           label={
             <span className="text-gray-100 font-semibold">
-              Magazin nomi
+              Магазин номи
             </span>
           }
           validateStatus={errors.shop_id ? "error" : ""}
@@ -155,11 +154,11 @@ const EditUser = ({ onClose, storageSingleData,refetch }) => {
           <Controller
             name="shop_id"
             control={control}
-            rules={{ required: "Magazin majburiy" }}
+            rules={{ required: "Магазин мажбурий" }}
             render={({ field }) => (
               <Select
                 {...field}
-                placeholder="Magazinni tanlang"
+                placeholder="Магазинни танланг"
                 className="custom-select"
                 onChange={(value) => field.onChange(value)}
                 dropdownClassName="custom-dropdown"
@@ -180,7 +179,7 @@ const EditUser = ({ onClose, storageSingleData,refetch }) => {
         {/* Telfon nomer */}
         <Form.Item
           label={
-            <span className="text-gray-100 font-semibold">Telefon raqami</span>
+            <span className="text-gray-100 font-semibold">Телефон рақами (Логин)</span>
           }
           validateStatus={errors.phone ? "error" : ""}
           help={errors.phone?.message}
@@ -188,30 +187,30 @@ const EditUser = ({ onClose, storageSingleData,refetch }) => {
           <Controller
             name="phone"
             control={control}
-            rules={{ required: "Telefon raqami majburiy" }}
+            rules={{ required: "Телефон рақами мажбурий" }}
             render={({ field }) => (
               <Input
-                placeholder="Telefon raqamini kiriting"
+                placeholder="Телефон рақамини киритинг"
                 className="custom-input"
                 {...field}
               />
-            )}
+            )}  
           />
         </Form.Item>
 
         {/* Parol */}
         <Form.Item
-          label={<span className="text-gray-100 font-semibold">Parol</span>}
+          label={<span className="text-gray-100 font-semibold">Парол</span>}
           validateStatus={errors.password ? "error" : ""}
           help={errors.password?.message}
         >
           <Controller
             name="password"
             control={control}
-            rules={{ required: "Parol majburiy" }}
+            rules={{ required: false }}
             render={({ field }) => (
               <Input
-                placeholder="Parolni kiriting"
+                placeholder="Паролни киритинг"
                 className="custom-input"
                 {...field}
               />
@@ -234,7 +233,7 @@ const EditUser = ({ onClose, storageSingleData,refetch }) => {
               width: "100%",
             }}
           >
-            Tahrirlash
+            Таҳрирлаш
           </Button>
         </Form.Item>
       </Form>

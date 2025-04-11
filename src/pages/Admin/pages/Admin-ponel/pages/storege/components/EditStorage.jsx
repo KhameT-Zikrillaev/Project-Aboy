@@ -18,7 +18,7 @@ const EditStorage = ({ onClose, storageSingleData, refetch }) => {
         name: storageSingleData.name,
         isMain: storageSingleData.isMain,
         isTrusted: storageSingleData.isTrusted,
-        priceDifference: storageSingleData.priceDifference,
+        // priceDifference: storageSingleData.priceDifference,
       });
     }
   }, [storageSingleData, reset]);
@@ -29,18 +29,18 @@ const EditStorage = ({ onClose, storageSingleData, refetch }) => {
     onSuccess: () => {
       onClose();
       refetch();
-      toast.success("Ombor muvaffaqiyatli yangilandi!");
+      toast.success("Омбор муваффақиятли янгиланди!");
     },
     onError: (error) => {
       if (
         error?.response?.data?.message ===
         "Warehouse with this name already exists"
       ) {
-        toast.error("Bunday ombor nomi mavjud");
+        toast.error("Бундай омбор номи мавжуд");
       } else if (error?.response?.data?.message === "Main warehouse already exists!") {
-        toast.error("Asosiy ombor mavjud");
+        toast.error("Асосий омбор мавжуд");
       } else {
-        toast.error("Omborni yangilashda xatolik yuz berdi");
+        toast.error("Омборни янгилашда хатолик юз берди");
       }
     },
   });
@@ -56,7 +56,7 @@ const EditStorage = ({ onClose, storageSingleData, refetch }) => {
 
     // Agar hech qanday o'zgarish bo'lmasa, zapros yubormaslik
     if (Object.keys(changedValues).length === 0) {
-      toast.info("Hech qanday o'zgarish qilinmadi");
+      toast.info("Ҳеч қандай ўзгариш қилинмади");
       return;
     }
 
@@ -68,22 +68,22 @@ const EditStorage = ({ onClose, storageSingleData, refetch }) => {
       <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
         {/* Ombor nomi */}
         <Form.Item
-          label={<span className="text-gray-100 font-semibold">Ombor nomi</span>}
+          label={<span className="text-gray-100 font-semibold">Омбор номи</span>}
           validateStatus={errors.name ? "error" : ""}
           help={errors.name?.message}
         >
           <Controller
             name="name"
             control={control}
-            rules={{ required: "Ombor nomi majburiy" }}
+            rules={{ required: "Омбор номи мажбурий" }}
             render={({ field }) => (
-              <Input placeholder="Ombor nomini kiriting" className="custom-input" {...field} />
+              <Input placeholder="Омбор номини киритинг" className="custom-input" {...field} />
             )}
           />
         </Form.Item>
 
-        <Form.Item
-          label={<span className="text-gray-100 font-semibold">Narx farqi ($)</span>}
+        {/* <Form.Item
+          label={<span className="text-gray-100 font-semibold">Нарх фарқи ($)</span>}
           validateStatus={errors.priceDifference ? "error" : ""}
           help={errors.priceDifference?.message}
         >
@@ -95,11 +95,11 @@ const EditStorage = ({ onClose, storageSingleData, refetch }) => {
               <Input placeholder="Narx farqini kiriting" className="custom-input" {...field} />
             )}
           />
-        </Form.Item>
+        </Form.Item> */}
 
         <div className="flex justify-between">
           {/* Asosiy ombor Switch */}
-          <Form.Item label={<span className="text-gray-100 font-semibold">Asosiy ombor</span>}>
+          <Form.Item label={<span className="text-gray-100 font-semibold">Асосий омбор</span>}>
             <Controller
               name="isMain"
               control={control}
@@ -110,7 +110,7 @@ const EditStorage = ({ onClose, storageSingleData, refetch }) => {
           </Form.Item>
 
           {/* Ruxsat berish Switch */}
-          <Form.Item label={<span className="text-gray-100 font-semibold">Ruxsat berish</span>}>
+          <Form.Item label={<span className="text-gray-100 font-semibold">Рухсат бериш</span>}>
             <Controller
               name="isTrusted"
               control={control}
@@ -137,7 +137,7 @@ const EditStorage = ({ onClose, storageSingleData, refetch }) => {
               width: "100%",
             }}
           >
-            Tahrirlash
+            Таҳрирлаш
           </Button>
         </Form.Item>
       </Form>

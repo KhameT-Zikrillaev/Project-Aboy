@@ -49,9 +49,8 @@ const DirectorProduct = lazy(() => import("@/pages/Director/pages/Product"));
 const DirectorSeller = lazy(() => import("@/pages/Director/pages/Seller"));
 const DirectorReport = lazy(() => import("@/pages/Director/pages/Report"));
 const ProductDetails = lazy(() => import("@/pages/Director/pages/Product/components/ProductDetalies")) ;
-const DirectorReportDetails = lazy(() => import("@/pages/Director/pages/Report/components/ReportDetalies")) ;
-
-const getRoutesByRole = (role) => {
+const DirectorReportDetailsSellers = lazy(() => import("@/pages/Director/pages/Report/components/ReportDetaliesSellers")) ;
+const getRoutesByRole = (role, isTrusted) => {
   if (!role) return null;
   switch (role) {
     case "admin":
@@ -80,8 +79,14 @@ const getRoutesByRole = (role) => {
           <Route path="remove-from-showcase/:name" element={<WarehouseViewDetaliesRemoveProducts />}/>
           <Route path="transfer-to-warehouse" element={<WarehouseTransferProductsToWarehouse />}/>
           <Route path="transfer-to-warehouse/:name" element={<WarehouseViewDetaliesTransferProducts />}/>
-          <Route path="order-products" element={<WarehouseOrderProducts />}/>
-          <Route path="order-products/:name" element={<WarehouseDetailProductsLists />}/>
+            {
+              isTrusted && (
+                <>
+                <Route path="order-products" element={<WarehouseOrderProducts />}/>
+                <Route path="order-products/:name" element={<WarehouseDetailProductsLists />}/>
+                </>
+              )
+            }
           <Route path="cash-register" element={<WarehouseCashregister />} />
           <Route path="cash-register/:name" element={<WarehouseCashregisterDetails />}/>
           <Route path="shop" element={<WarehouseShop />} />
@@ -122,7 +127,7 @@ const getRoutesByRole = (role) => {
           <Route path="product-list" element={<DirectorProduct />} />
           <Route path="product-list/:name" element={<ProductDetails />} />
           <Route path="report" element={<DirectorReport />} />
-          <Route path="report/:name" element={<DirectorReportDetails />} />
+          <Route path="report/:name" element={<DirectorReportDetailsSellers />} />    
         </Route>
       );
   }
@@ -137,7 +142,7 @@ export default function RouterConfig() {
     <Suspense fallback={<Loading/>}>
       <Routes>
         <Route path="/" element={<Login />} />
-        {getRoutesByRole(user?.role)}
+        {getRoutesByRole(user?.role, user?.warehouse?.isTrusted)}
         <Route path="*" element={<Error404 />} />
       </Routes>
     </Suspense>

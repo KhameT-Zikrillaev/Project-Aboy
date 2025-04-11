@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { Input, Button, Form, Upload } from "antd";
+import { Input, Button, Form, Upload, Select } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import useApiMutation from "@/hooks/useApiMutation";
 import { toast } from "react-toastify";
+import useFetch from "@/hooks/useFetch";
+
+const { Option } = Select;
 
 const AddProduct = ({ onClose, refetch }) => {
   const {
@@ -14,8 +17,11 @@ const AddProduct = ({ onClose, refetch }) => {
     reset,
     watch,
   } = useForm();
+  
   const imageFile = watch("image");
   const [previewImage, setPreviewImage] = useState(null);
+
+  const { data: warehouses } = useFetch("warehouse", "warehouse");
 
   const { mutate, isLoading } = useApiMutation({
     url: 'products',
@@ -25,14 +31,14 @@ const AddProduct = ({ onClose, refetch }) => {
       reset(); // Formani tozalash
       onClose();
       refetch();
-      toast.success("Mahsulot muvaffaqiyatli qo‘shildi!");
+      toast.success("Маҳсулот муваффақиятли қўшилди!");
     },
     onError: (error) => {
       if(
         error?.response?.data?.message === "This product already exists"){
-          toast.error("Bunday partiyali mahsulot mavjud");
+          toast.error("Бундай партияли маҳсулот мавжуд");
         }else{
-          toast.error("Mahsulot qo'shishda xatolik yuz berdi");
+          toast.error("Маҳсулот қўшишда хатолик юз берди");
         }
     },
   });
@@ -44,7 +50,7 @@ const AddProduct = ({ onClose, refetch }) => {
   const beforeUpload = (file) => {
     const isImage = file.type.startsWith("image/");
     if (!isImage) {
-      message.error("Faqat rasm yuklash mumkin!");
+      message.error("Фақат расм юклаш мумкин!");
       return false;
     }
 
@@ -61,17 +67,17 @@ const AddProduct = ({ onClose, refetch }) => {
       <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
         {/* Ombor nomi */}
         <Form.Item
-          label={<span className="text-gray-100 font-semibold">Artikul</span>}
+          label={<span className="text-gray-100 font-semibold">Артикул</span>}
           validateStatus={errors.article ? "error" : ""}
           help={errors.article?.message}
         >
           <Controller
             name="article"
             control={control}
-            rules={{ required: "Artikul majburiy" }}
+            rules={{ required: "Артикул мажбурий" }}
             render={({ field }) => (
               <Input
-                placeholder="Artikulni kiriting"
+                placeholder="Артикулни киритинг"
                 className="custom-input"
                 {...field}
               />
@@ -80,17 +86,17 @@ const AddProduct = ({ onClose, refetch }) => {
         </Form.Item>
 
         <Form.Item
-          label={<span className="text-gray-100 font-semibold">Partiya</span>}
+          label={<span className="text-gray-100 font-semibold">Партия</span>}
           validateStatus={errors.batch_number ? "error" : ""}
           help={errors.batch_number?.message}
         >
           <Controller
             name="batch_number"
             control={control}
-            rules={{ required: "Partiya majburiy" }}
+            rules={{ required: "Партия мажбурий" }}
             render={({ field }) => (
               <Input
-                placeholder="Partiyani kiriting"
+                placeholder="Партияни киритинг"
                 className="custom-input"
                 {...field}
               />
@@ -99,7 +105,7 @@ const AddProduct = ({ onClose, refetch }) => {
         </Form.Item>
         <Form.Item
           label={
-            <span className="text-gray-100 font-semibold">Rulon soni</span>
+            <span className="text-gray-100 font-semibold">Рулон сони</span>
           }
           validateStatus={errors.quantity ? "error" : ""}
           help={errors.quantity?.message}
@@ -107,10 +113,10 @@ const AddProduct = ({ onClose, refetch }) => {
           <Controller
             name="quantity"
             control={control}
-            rules={{ required: "Rulon soni majburiy" }}
+            rules={{ required: "Рулон сони мажбурий" }}
             render={({ field }) => (
               <Input
-                placeholder="Rulon sonini kiriting"
+                placeholder="Рулон сонини киритинг"
                 type="number"
                 className="custom-input"
                 {...field}
@@ -119,17 +125,17 @@ const AddProduct = ({ onClose, refetch }) => {
           />
         </Form.Item>
         <Form.Item
-          label={<span className="text-gray-100 font-semibold">Narxi ($)</span>}
+          label={<span className="text-gray-100 font-semibold">Нархи ($)</span>}
           validateStatus={errors.price ? "error" : ""}
           help={errors.price?.message}
         >
           <Controller
             name="price"
             control={control}
-            rules={{ required: "Narxi majburiy" }}
+            rules={{ required: "Нархи мажбурий" }}
             render={({ field }) => (
               <Input
-                placeholder="Narxini kiriting"
+                placeholder="Нархини киритинг"
                 type="number"
                 className="custom-input"
                 {...field}
@@ -139,8 +145,35 @@ const AddProduct = ({ onClose, refetch }) => {
         </Form.Item>
 
         <Form.Item
+          label={<span className="text-gray-100 font-semibold">Омборлар</span>}
+          validateStatus={errors.warehouse_id ? "error" : ""}
+          help={errors.warehouse_id?.message}
+        >
+          <Controller
+            name="warehouse_id"
+            control={control}
+            rules={{ required: "Омбор мажбурий" }}
+            render={({ field }) => (
+              <Select
+                {...field}
+                placeholder="Омбор танланг"
+                className="custom-select"
+                onChange={(value) => field.onChange(value)}
+                dropdownClassName="custom-dropdown"
+              >
+                {warehouses?.data?.warehouses?.map((warehouse) => (
+                  <Option key={warehouse?.id} value={warehouse?.id}>
+                    {warehouse?.name}
+                  </Option>
+                ))}
+              </Select>
+            )}
+          />
+        </Form.Item>
+
+        <Form.Item
           label={
-            <span className="text-gray-100 font-semibold">Rasm yuklash</span>
+            <span className="text-gray-100 font-semibold">Расм юклаш</span>
           }
           validateStatus={errors.image ? "error" : ""}
           help={errors.image?.message}
@@ -148,7 +181,7 @@ const AddProduct = ({ onClose, refetch }) => {
           <Controller
             name="image"
             control={control}
-            rules={{ required: "Rasm yuklash majburiy" }}
+            rules={{ required: false }}
             render={({ field }) => (
               <Upload
                 listType="picture-card"
@@ -171,7 +204,7 @@ const AddProduct = ({ onClose, refetch }) => {
                     <div
                       style={{ marginTop: 8, color: "#fff", fontWeight: "500" }}
                     >
-                      Rasm yuklash
+                      Расм юклаш
                     </div>
                   </div>
                 )}
@@ -196,7 +229,7 @@ const AddProduct = ({ onClose, refetch }) => {
               width: "100%",
             }}
           >
-            Yaratish
+            Яратиш
           </Button>
         </Form.Item>
       </Form>

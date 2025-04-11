@@ -11,7 +11,7 @@ const Loading = () => {
                     <div className="stripe"></div>
                     <div className="stripe"></div>
                 </div>
-                <div className="loading-text">Yuklanmoqda...</div>
+                <div className="loading-text">Юкланмоқда...</div>
             </div>
         </div>
     );

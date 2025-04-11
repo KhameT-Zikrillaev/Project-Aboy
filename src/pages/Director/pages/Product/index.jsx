@@ -5,90 +5,92 @@ import useFetch from "@/hooks/useFetch";
 import { Spin } from "antd";
 import useUserStore from "@/store/useUser";
 
-export default function DirectorProduct() {
-  const [visibleDistricts, setVisibleDistricts] = useState(12);
-  const { user } = useUserStore();
-  const { data, isLoading, refetch } = useFetch('warehouse', 'warehouse', {});
-  const [filteredData, setFilteredData] = useState([]);
-  const [filteredBySearch, setFilteredBySearch] = useState([]);
-  const loadMoreDistricts = () => {
-    setVisibleDistricts((prevVisibleDistricts) => prevVisibleDistricts + 12);
-  };
 
-  // Фильтрация складов при загрузке данных
+export default function DirectorProduct() {
+  const [visibleWarehouses, setVisibleWarehouses] = useState(12);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const limit = 12;
+  const { user } = useUserStore();
+
+  const { data, isLoading } = useFetch(
+    'warehouse',
+    'warehouse',
+    {
+      page,
+      limit,
+      ...(searchQuery && { name: searchQuery })
+    }
+  );
+
+  const [filteredWarehouses, setFilteredWarehouses] = useState([]);
+
   useEffect(() => {
     if (data?.data?.warehouses && user?.name) {
-      // Приводим имя пользователя к нижнему регистру для сравнения
       const userName = user.name.toLowerCase();
-      
-      const filtered = data?.data?.warehouses?.filter(warehouse => {
-        // Приводим имя склада к нижнему регистру для сравнения
+      const filtered = data.data.warehouses.filter(warehouse => {
         const warehouseName = warehouse?.name?.toLowerCase().trim();
-        
-        // Проверяем, содержится ли имя пользователя в имени склада
-        const isUserWarehouse = userName.includes(warehouseName);
-        
-        // console.log(`Склад: ${warehouse?.name}, Совпадение: ${isUserWarehouse}`);
-        
-        return !isUserWarehouse; // Возвращаем true, если имя пользователя НЕ содержится в имени склада
+        return !userName.includes(warehouseName);
       });
-      
-      console.log("Фильтрованные склады:", filtered);
-      setFilteredData(filtered);
-      setFilteredBySearch(filtered); // Изначально устанавливаем то же самое данные для поиска
+      setFilteredWarehouses(filtered);
     } else {
-      setFilteredData(data?.data?.warehouses || []);
-      setFilteredBySearch(data?.data?.warehouses || []);
+      setFilteredWarehouses(data?.data?.warehouses || []);
     }
   }, [data, user?.name]);
 
-  // Обработчик поиска, который работает с уже отфильтрованными данными
-  const handleSearch = (searchResults) => {
-    setFilteredBySearch(searchResults);
+  const loadMoreWarehouses = () => {
+    setPage(prevPage => prevPage + 1);
+  };
+
+  const onSearch = (searchParams) => {
+    const searchValue = searchParams.name || "";
+    setSearchQuery(searchValue);
+    setPage(1);
+    setVisibleWarehouses(12);
   };
 
   return (
     <div className="DirectorProduct mt-[150px] p-4">
-      {/* Передаем отфильтрованные данные в компонент поиска */}
       <SearchForm 
-        data={filteredData} 
-        name="" 
-        title="Omborlar" 
-        showDatePicker={false} 
-        onSearch={handleSearch} 
+        name=""
+        title="Омборлар" 
+        showDatePicker={false}
+        searchBy="name"
+        onSearch={onSearch}
+        placeholder="Омбор номи бўйича қидириш"
       />
       
       {isLoading ? (
         <div className="flex justify-center items-center h-[300px]">
           <Spin size="large" />
         </div>
-      ) : filteredBySearch?.length > 0 ? (
+      ) : filteredWarehouses?.length > 0 ? (
         <div className="grid grid-cols-2 gap-4">
-          {filteredBySearch?.slice(0, visibleDistricts)?.map((product) => (
+          {filteredWarehouses.slice(0, visibleWarehouses).map((warehouse) => (
             <Link
-              key={product?.id}
-              state={{ warehouseId: product?.id }} 
-              to={`/director/product-list/${product?.name}`}
+              key={warehouse.id}
+              to={`/director/product-list/${warehouse.name}`}
+              state={{ warehouseId: warehouse.id }}
               className="block bg-gray-800 text-white p-4 rounded-lg hover:bg-gray-700 transition"
             >
-              <h4>{product?.name}</h4>
-              <p>{product?.description}</p>
+              <h4>{warehouse.name}</h4>
+              {warehouse.description && <p>{warehouse.description}</p>}
             </Link>
           ))}
         </div>
       ) : (
         <div className="flex justify-center items-center h-[300px] text-gray-400">
-          Ombor topilmadi
+          Омбор топилмади
         </div>
       )}
       
-      {visibleDistricts < filteredBySearch?.length && (
+      {data?.data?.warehouses?.length >= limit && (
         <div className="flex justify-center mt-4">
           <button
-            onClick={loadMoreDistricts}
+            onClick={loadMoreWarehouses}
             className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
           >
-            Yana
+            Яна
           </button>
         </div>
       )}

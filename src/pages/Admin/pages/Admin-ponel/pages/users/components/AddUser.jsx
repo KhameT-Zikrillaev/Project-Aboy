@@ -26,13 +26,17 @@ const AddUser = ({ onClose, refetch }) => {
           reset(); // Formani tozalash
           onClose();
           refetch();
-          toast.success("Foydalanuvchi muvaffaqiyatli qo'shildi!");
+          toast.success("Фойдаланувчи муваффақиятли қўшилди!");
         },
         onError: (error) => {
+          
           if(error?.response?.data?.message == "Bu shop'ning seller'i mavjud!"){
-            toast.error("Bu magazinda sotuvchi biriktirilgan");
-          }else{
-            toast.error("Foydalanuvchi qo'shishda xatolik yuz berdi");
+            toast.error("Бу магазинда сотувчи бириктирилган");
+          }else if(error?.response?.data?.message == "User with this phone already exists"){
+            toast.error("Бундай телефон рақамли фойдаланувчи мавжуд");
+          }
+          else{
+            toast.error("Фойдаланувчи қўшишда хатолик юз берди");
           }
         },
       });
@@ -48,7 +52,7 @@ const AddUser = ({ onClose, refetch }) => {
         <Form.Item
           label={
             <span className="text-gray-100 font-semibold">
-              Foydalanuvchi nomi
+              Фойдаланувчи номи
             </span>
           }
           validateStatus={errors.name ? "error" : ""}
@@ -57,10 +61,10 @@ const AddUser = ({ onClose, refetch }) => {
           <Controller
             name="name"
             control={control}
-            rules={{ required: "Foydalanuvchi nomi majburiy" }}
+            rules={{ required: "Фойдаланувчи номи мажбурий" }}
             render={({ field }) => (
               <Input
-                placeholder="Foydalanuvchi nomini kiriting"
+                placeholder="Фойдаланувчи номини киритинг"
                 className="custom-input"
                 {...field}
               />
@@ -71,7 +75,7 @@ const AddUser = ({ onClose, refetch }) => {
         <Form.Item
           label={
             <span className="text-gray-100 font-semibold">
-              Foydalanuvchi roli
+              Фойдаланувчи роли
             </span>
           }
           validateStatus={errors.role ? "error" : ""}
@@ -80,18 +84,18 @@ const AddUser = ({ onClose, refetch }) => {
           <Controller
             name="role"
             control={control}
-            rules={{ required: "Foydalanuvchi roli" }}
+            rules={{ required: "Фойдаланувчи роли" }}
             render={({ field }) => (
               <Select
                 {...field}
-                placeholder="Foydalanuvchi roli"
+                placeholder="Фойдаланувчи роли"
                 className="custom-select"
                 onChange={(value) => field.onChange(value)}
                 dropdownClassName="custom-dropdown"
               >
-                <Option value="staff">Omborchi</Option>
-                <Option value="seller">Sotuvchi</Option>
-                <Option value="user">Sotuvchi 2</Option>
+                <Option value="staff">Омборчи</Option>
+                <Option value="seller">Сотувчи</Option>
+                <Option value="user">Сотувчи 2</Option>
               </Select>
             )}
           />
@@ -102,7 +106,7 @@ const AddUser = ({ onClose, refetch }) => {
           <Form.Item
           label={
             <span className="text-gray-100 font-semibold">
-              Ombor nomi
+              Омбор номи
             </span>
           }
           validateStatus={errors.warehouse_id ? "error" : ""}
@@ -111,11 +115,11 @@ const AddUser = ({ onClose, refetch }) => {
           <Controller
             name="warehouse_id"
             control={control}
-            rules={{ required: "Ombor majburiy" }}
+            rules={{ required: "Омбор мажбурий" }}
             render={({ field }) => (
               <Select
                 {...field}
-                placeholder="Omborni tanlang"
+                placeholder="Омборни танланг"
                 className="custom-select"
                 onChange={(value) => field.onChange(value)}
                 dropdownClassName="custom-dropdown"
@@ -138,7 +142,7 @@ const AddUser = ({ onClose, refetch }) => {
           <Form.Item
           label={
             <span className="text-gray-100 font-semibold">
-              Magazin nomi
+              Магазин номи
             </span>
           }
           validateStatus={errors.shop_id ? "error" : ""}
@@ -147,11 +151,11 @@ const AddUser = ({ onClose, refetch }) => {
           <Controller
             name="shop_id"
             control={control}
-            rules={{ required: "Magazin majburiy" }}
+            rules={{ required: "Магазин мажбурий" }}
             render={({ field }) => (
               <Select
                 {...field}
-                placeholder="Magazinni tanlang"
+                placeholder="Магазинни танланг"
                 className="custom-select"
                 onChange={(value) => field.onChange(value)}
                 dropdownClassName="custom-dropdown"
@@ -172,7 +176,7 @@ const AddUser = ({ onClose, refetch }) => {
         {/* Telfon nomer */}
         <Form.Item
           label={
-            <span className="text-gray-100 font-semibold">Telefon raqami</span>
+            <span className="text-gray-100 font-semibold">Телефон рақами (Логин)</span>
           }
           validateStatus={errors.phone ? "error" : ""}
           help={errors.phone?.message}
@@ -180,10 +184,10 @@ const AddUser = ({ onClose, refetch }) => {
           <Controller
             name="phone"
             control={control}
-            rules={{ required: "Telefon raqami majburiy" }}
+            rules={{ required: "Телефон рақами мажбурий" }}
             render={({ field }) => (
               <Input
-                placeholder="Telefon raqamini kiriting"
+                placeholder="Телефон рақамини киритинг"
                 className="custom-input"
                 {...field}
               />
@@ -193,17 +197,17 @@ const AddUser = ({ onClose, refetch }) => {
 
         {/* Parol */}
         <Form.Item
-          label={<span className="text-gray-100 font-semibold">Parol</span>}
+          label={<span className="text-gray-100 font-semibold">Парол</span>}
           validateStatus={errors.password ? "error" : ""}
           help={errors.password?.message}
         >
           <Controller
             name="password"
             control={control}
-            rules={{ required: "Parol majburiy" }}
+            rules={{ required: "Парол мажбурий" }}
             render={({ field }) => (
               <Input
-                placeholder="Parolni kiriting"
+                placeholder="Паролни киритинг"
                 className="custom-input"
                 {...field}
               />
@@ -227,7 +231,7 @@ const AddUser = ({ onClose, refetch }) => {
               width: "100%",
             }}
           >
-            Yaratish
+            Яратиш
           </Button>
         </Form.Item>
       </Form>

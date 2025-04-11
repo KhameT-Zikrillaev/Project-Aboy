@@ -24,14 +24,13 @@ const AddSeller = ({ onClose, refetch }) => {
       reset(); // Formani tozalash
       onClose();
       refetch();
-      toast.success("Magazin muvaffaqiyatli qo‘shildi!");
+      toast.success("Магазин муваффақиятли қўшилди!");
     },
     onError: (error) => {
-      console.log(error);
       if (
         error?.response?.data?.message === "Shop with this name already exists"
       ) {
-        toast.error("Bunday magazin nomi mavjud");
+        toast.error("Бундай магазин номи мавжуд");
       }
     },
   });
@@ -46,7 +45,7 @@ const AddSeller = ({ onClose, refetch }) => {
         {/* Sotuvchi nomi */}
         <Form.Item
           label={
-            <span className="text-gray-100 font-semibold">Magazin nomi</span>
+            <span className="text-gray-100 font-semibold">Магазин номи</span>
           }
           validateStatus={errors.name ? "error" : ""}
           help={errors.name?.message}
@@ -54,10 +53,10 @@ const AddSeller = ({ onClose, refetch }) => {
           <Controller
             name="name"
             control={control}
-            rules={{ required: "Magazin nomi majburiy" }}
+            rules={{ required: "Магазин номи мажбурий" }}
             render={({ field }) => (
               <Input
-                placeholder="Magazin nomini kiriting"
+                placeholder="Магазин номини киритинг"
                 className="custom-input"
                 {...field}
               />
@@ -67,18 +66,18 @@ const AddSeller = ({ onClose, refetch }) => {
 
         {/* Kategoriya tanlash */}
         <Form.Item
-          label={<span className="text-gray-100 font-semibold">Omborlar</span>}
+          label={<span className="text-gray-100 font-semibold">Омборлар</span>}
           validateStatus={errors.warehouse_id ? "error" : ""}
           help={errors.warehouse_id?.message}
         >
           <Controller
             name="warehouse_id"
             control={control}
-            rules={{ required: "Ombor majburiy" }}
+            rules={{ required: "Омбор мажбурий" }}
             render={({ field }) => (
               <Select
                 {...field}
-                placeholder="Ombor tanlang"
+                placeholder="Омбор танланг"
                 className="custom-select"
                 onChange={(value) => field.onChange(value)}
                 dropdownClassName="custom-dropdown"
@@ -109,7 +108,7 @@ const AddSeller = ({ onClose, refetch }) => {
               width: "100%",
             }}
           >
-            Yaratish
+            Яратиш
           </Button>
         </Form.Item>
       </Form>

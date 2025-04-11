@@ -1,29 +1,30 @@
 import React, { useState } from "react";
-import { useNavigate, } from "react-router-dom";
-import SearchFormStartEnd from "@/components/SearchFormStartEnd/SearchFormStartEnd";
-import { Pagination, Table } from "antd";
+import { useParams } from "react-router-dom";
 import useFetch from "@/hooks/useFetch";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
-import useUserStore from "@/store/useUser";
-import Total from "@/components/total/Total";
+import SearchFormStartEnd from "@/components/SearchFormStartEnd/SearchFormStartEnd";
+import { Pagination, Table } from "antd";
 
-const ReportDetailes = () => {
+export default function ReportDetaliesSellers() {
   const [selectedDates, setSelectedDates] = useState({ from: null, to: null });
   const [page, setPage] = useState(1);
-  const limit = 100;
-  const navigate = useNavigate()
-  const {user} = useUserStore()
-  const shopId = user?.shop?.id;
-  const startDate = selectedDates?.from;
+    const limit = 100;
+    const {name} = useParams()
+    const startDate = selectedDates?.from;
   const endDate = selectedDates?.to;
-  const isFetchEnabled = !!(shopId && startDate && endDate);
+  // const isFetchEnabled = !!(shopId && startDate && endDate);
+  const warehouseId = sessionStorage.getItem("warehouseId");
 
-  const { data, isLoading, refetch } = useFetch(
-    `cash-register/date-range/shop/${shopId}`,
-    `cash-register/date-range/shop/${shopId}`,
-    { startDate, endDate, page, limit },
-    { enabled: isFetchEnabled }
-  );
+ const { data, isLoading, refetch } = useFetch(
+     `cash-register/warehouse/${warehouseId}`,
+     `cash-register/warehouse/${warehouseId}`,
+     { 
+      // startDate, 
+      // endDate, 
+      page, 
+      limit },
+    //  { enabled: isFetchEnabled }
+   );
 
   const handleDateSearch = (from, to) => {
     setSelectedDates({ from, to });
@@ -103,15 +104,23 @@ const ReportDetailes = () => {
         <span className="text-gray-100 font-semibold">{text}</span>
       ),
     },
+    {
+      title: "Магазин",
+      dataIndex: "shop",
+      render: (text) => (
+        <span className="text-gray-100 font-semibold">{text || ""}</span>
+      ),
+    },
   ];
 
-  const totalPrice = data?.data?.totalPrice
-  const totalQuantity = data?.data?.totalQuantity
 
   return (
     <div className="mt-[120px] px-2">
       <div className="relative max-w-[1440px] mx-auto flex flex-col items-center justify-center mt-[110px]">
-        <SearchFormStartEnd title={`Ҳисоботлар`} onSearch={handleDateSearch} />
+        <SearchFormStartEnd
+          title={`${name} ҳисоботлари`}
+          onSearch={handleDateSearch}
+        />
 
         {!startDate || !endDate ? (
           <p className="text-center text-gray-500 text-[20px] pt-14">
@@ -119,24 +128,20 @@ const ReportDetailes = () => {
           </p>
         ) : (
           <div className="text-gray-100 w-full px-4">
-            <Total totalPrice={totalPrice} totalQuantity={totalQuantity}/>
             <Table
               columns={columns}
-              dataSource={data?.data?.registers}
+              dataSource={data?.data[0]}
               pagination={false}
               className="custom-table"
-              rowClassName={() => "custom-row custom-row-click"}
+              rowClassName={() => "custom-row"}
               bordered
               loading={isLoading}
-              onRow={(record) => ({
-                onClick: () => navigate(`/seller/report/${record?.date}`),
-              })}
             />
             <div className="flex justify-center mt-5">
               <Pagination
                 className="custom-pagination"
                 current={page}
-                total={data?.data?.total || 0}
+                total={data?.data[1] || 0}
                 pageSize={limit}
                 onChange={handlePageChange}
                 itemRender={itemRender}
@@ -147,6 +152,4 @@ const ReportDetailes = () => {
       </div>
     </div>
   );
-};
-
-export default ReportDetailes;
+}

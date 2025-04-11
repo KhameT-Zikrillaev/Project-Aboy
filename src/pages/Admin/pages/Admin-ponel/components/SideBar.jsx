@@ -69,7 +69,7 @@ const SideBar = () => {
                 }`}
                 onClick={() => setIsSidebarOpen(false)}
               >
-                Omborlar
+                Омборлар
               </Link>
             </li>
             <li>
@@ -82,7 +82,7 @@ const SideBar = () => {
                 }`}
                 onClick={() => setIsSidebarOpen(false)}
               >
-                Magazinlar
+                Магазинлар
               </Link>
             </li>
             <li>
@@ -95,7 +95,7 @@ const SideBar = () => {
                 }`}
                 onClick={() => setIsSidebarOpen(false)}
               >
-                Mahsulotlar
+                Маҳсулотлар
               </Link>
             </li>
             <li>
@@ -108,7 +108,7 @@ const SideBar = () => {
                 }`}
                 onClick={() => setIsSidebarOpen(false)}
               >
-                Userlar
+                Админлар
               </Link>
             </li>
           </ul>
