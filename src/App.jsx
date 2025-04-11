@@ -13,8 +13,7 @@ function App() {
   const { setUser } = useUserStore();
   const navigate = useNavigate();
   const token = Cookies.get("authToken");
-  const [isLoading, setIsLoading] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(false);  
   const getUser = async () => {
     try {
       setIsLoading(true); // Zapros ketayotgani belgilanadi
