@@ -47,7 +47,7 @@ export default function WarehouseTransferProducts() {
   };
 
   return (
-    <div className="WarehouseTransferProduct mt-[150px] p-4">
+    <div className="WarehouseTransferProduct mt-[150px] p-4 max-w-[1440px] mx-auto">
       <SearchForm 
         name="" 
         title="Омборлар" 

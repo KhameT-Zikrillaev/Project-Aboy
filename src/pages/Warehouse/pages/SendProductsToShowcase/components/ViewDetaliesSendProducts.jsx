@@ -5,7 +5,6 @@ import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import 'antd/dist/reset.css';
 import bgsklad from '@/assets/images/bg-sklad.png';
 import SearchForm from '@/components/SearchForm/SearchForm';
-import ModalComponent from "@/components/modal/Modal";
 import ModalComponentContent from "@/components/modal/ModalContent";
 import AddProductVitrina from "../modules/AddProductVitrina/AddProductVitrina";
 import ViewWareHoustProducts from "../modules/ViewVitrinaProducts/ViewVitrinaProducts";
@@ -18,32 +17,24 @@ export default function ViewDetaliesSendProducts() {
   const location = useLocation();
   const shopId = location.state?.shopId;
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(50);
+  const [itemsPerPage, setItemsPerPage] = useState(100);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [warehouseId, setWarehouseId] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const { user } = useUserStore();
   const [isWareHouseOpen, setIsWareHouseOpen] = useState(false);
 
   const id = user?.warehouse?.id;
 
-  useEffect(() => {
-    if (id) {
-      setWarehouseId(id);
-    }
-  }, [id]);
-
   const { data: productsData, isLoading: productsLoading, refetch: refetchProducts } = useFetch(
-    id ? "warehouse-products/all-products" : null,
-    id ? "warehouse-products/all-products" : null,
+    id ? `shop-product/no-products/${shopId}` : null,
+    id ? `shop-product/no-products/${shopId}` : null,
     { 
-      warehouseId: id,
       page: currentPage,
       limit: itemsPerPage,
-      ...(searchQuery && { article: searchQuery })
+      article: searchQuery || null
     },
     {
       enabled: !!id,
@@ -51,8 +42,8 @@ export default function ViewDetaliesSendProducts() {
   );
 
   useEffect(() => {
-    if (productsData?.data?.data) {
-      setFilteredData(productsData.data.data.map(item => ({
+    if (productsData?.data) {
+      setFilteredData(productsData?.data?.data?.map(item => ({
         ...item,
         key: item.id
       })));
@@ -77,7 +68,7 @@ export default function ViewDetaliesSendProducts() {
   };
 
   const updateItemsPerPage = () => {
-    setItemsPerPage(window.innerWidth < 768 ? 10 : 50);
+    setItemsPerPage(window.innerWidth < 768 ? 50 : 100);
   };
 
   useEffect(() => {
@@ -136,8 +127,8 @@ export default function ViewDetaliesSendProducts() {
     {
       title: (
         <Checkbox
-          indeterminate={selectedProducts.length > 0 && selectedProducts.length < filteredData.length}
-          checked={selectedProducts.length === filteredData.length && filteredData.length > 0}
+          indeterminate={selectedProducts?.length > 0 && selectedProducts?.length < filteredData?.length}
+          checked={selectedProducts?.length === filteredData?.length && filteredData?.length > 0}
           onChange={handleSelectAll}
         />
       ),
@@ -145,7 +136,7 @@ export default function ViewDetaliesSendProducts() {
       width: 50,
       render: (_, record) => (
         <Checkbox
-          checked={selectedProducts.some(item => item.id === record.id)}
+          checked={selectedProducts?.some(item => item?.id === record?.id)}
           onChange={() => handleCheckboxChange(record)}
         />
       ),
@@ -306,7 +297,7 @@ export default function ViewDetaliesSendProducts() {
           isOpen={!!selectedImage}
           onClose={() => setSelectedImage(null)}
           imageUrl={selectedImage}
-          idWarehouse={warehouseId}
+          idWarehouse={id}
         />
 
         <ModalComponentContent
@@ -319,7 +310,7 @@ export default function ViewDetaliesSendProducts() {
             selectedProducts={selectedProducts}
             onSuccess={handleSuccessSubmit}
             warehouseName={name}
-            warehouseId={warehouseId}
+            warehouseId={id}
             shopId={shopId}
           />
         </ModalComponentContent>

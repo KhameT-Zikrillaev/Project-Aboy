@@ -61,7 +61,7 @@ export default function WarehouseProducts() {
   };
 
   return (
-    <div className="DirectorProduct mt-[150px] p-4">
+    <div className="DirectorProduct mt-[150px] p-4 max-w-[1440px] mx-auto">
       <SearchForm
         title="Сотувчилар"
         showDatePicker={false}
